@@ -67,44 +67,46 @@ EOF
 function check_chain_is_true_or_false() {
     chain_input=$1
 
-    if [[ "$chain_input" == "yes" ]] || [[ "$chain_input" == "y" ]] || [["$chain_input" == "true" ]]; then 
+    if [[ "$chain_input" == "yes" ]] || [[ "$chain_input" == "y" ]] || [[ "$chain_input" == "true" ]]; then 
         chain="true"
     else
-        if [[ "$chain_input" == "no" ]] || [[ "$chain_input" == "n" ]] || [["$chain_input" == "false" ]]; then 
-            chain="true"
+        if [[ "$chain_input" == "no" ]] || [[ "$chain_input" == "n" ]] || [[ "$chain_input" == "false" ]]; then 
+            chain="false"
         else 
-            error "--chain parameter should be yes,y,true,no,n or false."
+            error "--chain parameter value '$chain_input' should be yes,y,true,no,n or false."
             exit 1
         fi
     fi
     success "--chain option is value. $chain"
 }
 
-module_names=( \
+module_names=(\
     "wrapping" \
     "buildutils" \
     "gradle" \
     "maven" \
-    "framework" \ 
-    "extensions" \ 
+    "framework" \
+    "extensions" \
     "managers" \
-    "obr"      \   
-    "cli"       \
+    "obr" \
+    "cli" \
 )
 
 function check_module_name_is_supported() {
     module_input=$1
     is_valid="false"
     # Loop through all the keys of our command
-    for valid_module_name in "${module_names[@]}"; do
-        if [[ "$module_input" == "$valid_modile_name" ]]; then 
-            is_valid="true"
-        fi
-    done
+    if [[ " ${module_names[*]} " =~ " ${module_input} " ]]; then
+        is_valid="true"
+    fi
+
     if [[ "$is_valid" != "true" ]]; then 
-        error "`$module_input` is an invalid module name. See help for the valid list."
+        msg="'$module_input' is an invalid module name. Valid module names are: [ ${module_names[*]} ]"
+        error "$msg"
         exit 1
     fi
+
+    success "--module '$module_input' is a valid module name."
 }
 
 #-----------------------------------------------------------------------------------------                   
@@ -118,11 +120,11 @@ while [ "$1" != "" ]; do
                         exit
                         ;;
 
-        --module )      module_input="$1"
+        --module )      module_input="$2"
                         shift
                         ;;
 
-        --chain )       chain_input="$1"
+        --chain )       chain_input="$2"
                         shift
                         ;;
 
@@ -153,99 +155,108 @@ function clean_local_m2() {
 function build_module() {
     module=$1
     chain=$2
-    h1 "Building..."
+    h1 "Building... module:'$module' chain:'$chain'"
 
     # buildutils
-    if [[ "module" == "buildutils" ]]; then
+    if [[ "$module" == "buildutils" ]]; then
         h2 "Building $module"
+        cd ${PROJECT_DIR}/modules/$module
         ${PROJECT_DIR}/modules/$module/build-locally.sh
         rc=$? ;  if [[ "${rc}" != "0" ]]; then error "Failed to build module $module. rc=$rc" ; exit 1 ; fi
         success "Built module $module OK"
-        if [[ "$chain" == "true" ]]; then ; 
+        if [[ "$chain" == "true" ]]; then
             module="wrapping"
         fi
     fi
 
     # wrapping
-    if [[ "module" == "wrapping" ]]; then
+    if [[ "$module" == "wrapping" ]]; then
         h2 "Building $module"
+        cd ${PROJECT_DIR}/modules/$module
         ${PROJECT_DIR}/modules/$module/build-locally.sh
         rc=$? ;  if [[ "${rc}" != "0" ]]; then error "Failed to build module $module. rc=$rc" ; exit 1 ; fi
         success "Built module $module OK"
-        if [[ "$chain" == "true" ]]; then ; 
+        if [[ "$chain" == "true" ]]; then 
             module="gradle"
         fi
     fi
 
     # gradle
-    if [[ "module" == "gradle" ]]; then
+    if [[ "$module" == "gradle" ]]; then
         h2 "Building $module"
+        cd ${PROJECT_DIR}/modules/$module
         ${PROJECT_DIR}/modules/$module/build-locally.sh
         rc=$? ;  if [[ "${rc}" != "0" ]]; then error "Failed to build module $module. rc=$rc" ; exit 1 ; fi
         success "Built module $module OK"
-        if [[ "$chain" == "true" ]]; then ; 
+        if [[ "$chain" == "true" ]]; then 
             module="maven"
         fi
     fi
 
     # maven
-    if [[ "module" == "maven" ]]; then
+    if [[ "$module" == "maven" ]]; then
         h2 "Building $module"
+        cd ${PROJECT_DIR}/modules/$module
         ${PROJECT_DIR}/modules/$module/build-locally.sh
         rc=$? ;  if [[ "${rc}" != "0" ]]; then error "Failed to build module $module. rc=$rc" ; exit 1 ; fi
         success "Built module $module OK"
-        if [[ "$chain" == "true" ]]; then ; 
+        if [[ "$chain" == "true" ]]; then 
             module="framework"
         fi
     fi
 
     # framework
-    if [[ "module" == "framework" ]]; then
+    if [[ "$module" == "framework" ]]; then
         h2 "Building $module"
-        ${PROJECT_DIR}/modules/$module/build-locally.sh --cleam
+        cd ${PROJECT_DIR}/modules/$module
+        ${PROJECT_DIR}/modules/$module/build-locally.sh --clean
         rc=$? ;  if [[ "${rc}" != "0" ]]; then error "Failed to build module $module. rc=$rc" ; exit 1 ; fi
         success "Built module $module OK"
-        if [[ "$chain" == "true" ]]; then ; 
+        if [[ "$chain" == "true" ]]; then 
             module="extensions"
         fi
     fi
 
     # extensions
-    if [[ "module" == "extensions" ]]; then
+    if [[ "$module" == "extensions" ]]; then
         h2 "Building $module"
-        ${PROJECT_DIR}/modules/$module/build-locally.sh --cleam
+        cd ${PROJECT_DIR}/modules/$module
+        ${PROJECT_DIR}/modules/$module/build-locally.sh --clean
         rc=$? ;  if [[ "${rc}" != "0" ]]; then error "Failed to build module $module. rc=$rc" ; exit 1 ; fi
         success "Built module $module OK"
-        if [[ "$chain" == "true" ]]; then ; 
+        if [[ "$chain" == "true" ]]; then 
             module="managers"
         fi
     fi
 
     # managers
-    if [[ "module" == "managers" ]]; then
+    if [[ "$module" == "managers" ]]; then
         h2 "Building $module"
-        ${PROJECT_DIR}/modules/$module/build-locally.sh --cleam
+        cd ${PROJECT_DIR}/modules/$module
+        ${PROJECT_DIR}/modules/$module/build-locally.sh --clean
         rc=$? ;  if [[ "${rc}" != "0" ]]; then error "Failed to build module $module. rc=$rc" ; exit 1 ; fi
         success "Built module $module OK"
-        if [[ "$chain" == "true" ]]; then ; 
+        if [[ "$chain" == "true" ]]; then 
             module="obr"
         fi
     fi
 
     # obr
-    if [[ "module" == "obr" ]]; then
+    if [[ "$module" == "obr" ]]; then
         h2 "Building $module"
+        cd ${PROJECT_DIR}/modules/$module
         ${PROJECT_DIR}/modules/$module/build-locally.sh
         rc=$? ;  if [[ "${rc}" != "0" ]]; then error "Failed to build module $module. rc=$rc" ; exit 1 ; fi
         success "Built module $module OK"
-        if [[ "$chain" == "true" ]]; then ; 
+        if [[ "$chain" == "true" ]]; then 
             module="cli"
         fi
     fi
 
     # cli
-    if [[ "module" == "cli" ]]; then
-        ${PROJECT_DIR}/modules/$module/build-locally.sh --cleam
+    if [[ "$module" == "cli" ]]; then
+        cd ${PROJECT_DIR}/modules/$module
+        ${PROJECT_DIR}/modules/$module/build-locally.sh --clean
         rc=$? ;  if [[ "${rc}" != "0" ]]; then error "Failed to build module $module. rc=$rc" ; exit 1 ; fi
         success "Built module $module OK"
     fi
@@ -253,4 +264,4 @@ function build_module() {
 }
 
 clean_local_m2
-build $module_input $chain
+build_module $module_input $chain
