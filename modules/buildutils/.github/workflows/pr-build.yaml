@@ -8,6 +8,7 @@ name: PR build
 on:
   pull_request:
     branches: [main]
+  workflow_call:
 
 env:
   IMAGE_TAG: ${{ github.event.number }}
