@@ -29,6 +29,7 @@ jobs:
       
       - name: Build galasabld using the Makefile
         run: |
+          cd modules/buildutils
           make all 
       
       - name: Build and test galasabld image
