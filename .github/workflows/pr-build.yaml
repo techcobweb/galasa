@@ -12,6 +12,6 @@ on:
 # The build jobs.
 jobs:
   call-workflow-passing-data:
-    uses: ./modules/buildutils/.github/workflows/pr-build.yaml
+    uses: ../../modules/buildutils/.github/workflows/pr-build.yaml
     
     
