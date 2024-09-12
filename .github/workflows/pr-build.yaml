@@ -12,7 +12,7 @@ on:
 # The build jobs.
 jobs:
   build-buildutils:
-    uses: buildutils/pr-buildutils.yaml
+    uses: pr-buildutils.yaml
     
   call-workflow-passing-data:
     uses: buildutils.yaml
