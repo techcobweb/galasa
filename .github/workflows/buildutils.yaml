@@ -1,0 +1,12 @@
+on:
+    workflow_call:
+
+jobs:
+
+  buildutils:
+    runs-on: ubuntu-latest
+    steps:
+      - id: sets-a-secret
+        name: Generate, mask, and output a secret
+        run: |
+          echo "Hello"

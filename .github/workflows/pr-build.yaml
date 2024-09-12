@@ -1,0 +1,15 @@
+#
+# Copyright contributors to the Galasa project
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+name: PR build
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  call-workflow-passing-data:
+    uses: ./.github/workflows/buildutils.yaml
+    
