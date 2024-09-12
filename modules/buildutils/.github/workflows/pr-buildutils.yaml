@@ -35,7 +35,7 @@ jobs:
       - name: Build and test galasabld image
         run: |
           cd modules/buildutils
-          docker build -t galasabld:${{ env.IMAGE_TAG }} --build-arg platform=linux-amd64 -f dockerfiles/galasabld/dockerfile.galasabld modules/buildutils
+          docker build -t galasabld:${{ env.IMAGE_TAG }} --build-arg platform=linux-amd64 -f modules/buildutils/dockerfiles/galasabld/dockerfile.galasabld modules/buildutils
           docker run --rm galasabld:${{ env.IMAGE_TAG }}
         
       - name: Push galasabld-linux-amd64 executables
