@@ -9,11 +9,11 @@ plugins {
 // It is used as the version number of the managers bundle, which contains a yaml
 // file which is in a release.yaml, but published to maven, so that the OBR build 
 // can pick it up later.
-version = "0.38.0"
+version = "0.39.0"
 
 allprojects {
     group = 'dev.galasa'
-    version = "0.38.0"
+    version = "0.39.0"
 }
 
 // A configuration to publish the merge exec into
@@ -229,12 +229,12 @@ publishing {
                 name = "Manifest for managers bundle versions"
                 artifactId = "dev.galasa.managers.manifest"
                 groupId = 'dev.galasa'
-				version = "0.38.0"
+				version = "0.39.0"
                 description = "Conveys bundle version information to OBR builds."
                 licenses {
                     license {
                         name = 'Eclipse Public License - v 2.0'
-                        url = 'https://www.eclipse.org/legal/epl-2.0/t'
+                        url = 'https://www.eclipse.org/legal/epl-2.0'
                     }
                 }
                 url = 'https://galasa.dev'
@@ -247,9 +247,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection = 'scm:git:git:://github.com/galasa-dev/managers'
-                    developerConnection = 'scm:git:git:://github.com/galasa-dev/managers'
-                    url = 'https://github.com/galasa-dev/managers'
+                    connection = 'scm:git:git:://github.com/galasa-dev/galasa'
+                    developerConnection = 'scm:git:git:://github.com/galasa-dev/galasa'
+                    url = 'https://github.com/galasa-dev/galasa'
                 }
                 issueManagement {
                     system = 'GitHub'
