@@ -170,6 +170,7 @@ function update_dependency_versions {
     success "Dependency versions updated OK."
 }
 
+
 temp_dir=$BASEDIR/temp/versions
 rm -fr $temp_dir
 mkdir -p $temp_dir
@@ -179,4 +180,3 @@ update_release_yaml ${BASEDIR}/release.yaml $temp_dir/release.yaml $temp_dir "^.
 update_release_yaml ${BASEDIR}/release.yaml $temp_dir/release.yaml $temp_dir "^.*artifact[:] dev[.]galasa[.]wrapping[.]httpclient-osgi.*$" "    "
 
 update_dependency_versions $temp_dir
-
