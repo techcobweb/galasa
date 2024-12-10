@@ -5,6 +5,6 @@ ARG tag
 FROM ${dockerRepository}/galasa-dev/obr-maven-artefacts:${tag}
 
 ARG platform
-COPY bin/galasabld-${platform} /bin/galasabld
+COPY galasabld-${platform} /bin/galasabld
 
 ENTRYPOINT ["/bin/galasabld"]
