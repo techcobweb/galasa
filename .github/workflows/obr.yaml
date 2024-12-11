@@ -696,7 +696,7 @@ jobs:
 
   trigger-next-workflows:
     name: Trigger next workflows in the build chain
-    needs: [build-obr, build-obr-generic, build-obr-javadocs]
+    needs: [build-obr, build-obr-generic, build-obr-javadocs, build-obr-galasabld-image]
     runs-on: ubuntu-latest
 
     steps:
