@@ -252,6 +252,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modules/obr
+
       - name: Download galasabld executables
         id: download-galasabld
         uses: actions/download-artifact@v4
