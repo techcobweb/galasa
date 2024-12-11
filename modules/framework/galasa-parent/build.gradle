@@ -31,7 +31,7 @@ tasks.withType(Sign) {
 dependencies {
     // We need the swagger generator to generate API documentation from the openapi.yaml file
     // https://mvnrepository.com/artifact/io.swagger.codegen.v3/swagger-codegen-cli
-    compileOnly platform('dev.galasa:dev.galasa.platform:0.39.0')
+    compileOnly platform('dev.galasa:dev.galasa.platform:'+version)
     compileOnly 'io.swagger.codegen.v3:swagger-codegen-cli'
 }
 
