@@ -128,7 +128,7 @@ function set_version_in_readme() {
 function set_version_in_build_properties() {
     h2 "Setting the version number in the build.properties"
     mkdir -p ${REPO_ROOT_DIR}/temp
-    cat ${REPO_ROOT_DIR}/build.properties | sed "s/^GALASA_VERSION=.*$/GALASA_VERSION ${component_version}/g" > ${REPO_ROOT_DIR}/temp/build.properties
+    cat ${REPO_ROOT_DIR}/build.properties | sed "s/^GALASA_VERSION=.*$/GALASA_VERSION=${component_version}/g" > ${REPO_ROOT_DIR}/temp/build.properties
     cp ${REPO_ROOT_DIR}/temp/build.properties ${REPO_ROOT_DIR}/build.properties
     success "set version in build.properties file OK"
 }
