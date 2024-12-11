@@ -160,4 +160,5 @@ mvn versions:set -DnewVersion=$component_version
 mvn versions:commit
 
 replace_line_following ${BASEDIR}/galasa-maven-plugin/pom.xml ${BASEDIR}/galasa-maven-plugin/pom.xml $temp_dir "^.*dev.galasa.plugin.common.*$" "version" "				<version>$component_version</version>"
+replace_line_following ${BASEDIR}/galasa-maven-plugin/pom.xml ${BASEDIR}/galasa-maven-plugin/pom.xml $temp_dir "^.*dev.galasa.platform.*$" "version" "				<version>$component_version</version>"
 

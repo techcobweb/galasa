@@ -175,3 +175,7 @@ cp $temp_dir/galasa.api.server.gradle ${BASEDIR}/galasa-parent/buildSrc/src/main
 
 cat ${BASEDIR}/galasa-parent/buildSrc/src/main/groovy/galasa.framework.gradle | sed "s/   implementation platform('dev[.]galasa[:]dev[.]galasa[.]platform[:].*')/   implementation platform('dev.galasa:dev.galasa.platform:$component_version')/1" > $temp_dir/galasa.framework.gradle
 cp  $temp_dir/galasa.framework.gradle ${BASEDIR}/galasa-parent/buildSrc/src/main/groovy/galasa.framework.gradle
+
+# The top-level build.gradle has this: id 'dev.galasa.githash' version '$version' apply false
+cat $BASEDIR/galasa-parent/build.gradle | sed  "s/id 'dev[.]galasa[.]githash' version '.*'/id 'dev.galasa.githash' version '$component_version'/1" > $temp_dir/top-build.gradle
+cp $temp_dir/top-build.gradle $BASEDIR/galasa-parent/build.gradle
