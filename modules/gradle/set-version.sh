@@ -111,7 +111,10 @@ function upgrade_build_gradle {
     # of the this component lives.
     # For example: version = "0.29.0"
     
-    cat $source_path | sed "s/version[ ]*=.*/version = \"$component_version\"/1" > $temp_dir/build.gradle
+    cat $source_path \
+    | sed "s/version[ ]*=.*/version = \"$component_version\"/1" > $temp_dir/build.gradle \
+    | sed "s/'dev[.]galasa[.]githash' version '.*'/'dev.galasa.githash' version '$component_version'/1" \
+    > $temp_dir/build.gradle
     rc=$? ; if [[ "${rc}" != "0" ]]; then error "Failed to replace master version in file $source_path" ; exit 1 ; fi
 
     cp $temp_dir/build.gradle $source_path
@@ -120,4 +123,21 @@ function upgrade_build_gradle {
     success "Upgraded build.gradle file OK."
 }
 
+
+function upgrade_readme {
+
+    h2 "upgrading the readme for gradle module"
+
+    cat $BASEDIR/README.md \
+    | sed "s/id 'dev[.]galasa[.]tests' version '.*'/id 'dev.galasa.tests' version '$component_version'/1" \
+    | sed "s/id 'dev[.]galasa[.]obr' version '.*'/id 'dev.galasa.obr' version '$component_version'/1" \
+    | sed "s/id 'dev[.]galasa[.]testcatalog' version '.*'/id 'dev.galasa.testcatalog' version '$component_version'/1" \
+    > $temp_dir/README.md
+    cp $temp_dir/README.md $BASEDIR/README.md
+
+    success "gradle module upgraded OK."
+}
+
 upgrade_build_gradle
+
+upgrade_readme
