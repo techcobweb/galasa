@@ -117,8 +117,28 @@ function set_version_in_all_modules() {
     success "OK - All modules have had their versions set to $component_version"
 }
 
+function set_version_in_readme() {
+    h2 "Setting the version number in the README.md"
+    mkdir -p ${REPO_ROOT_DIR}/temp
+    cat ${REPO_ROOT_DIR}/README.md | sed "s/\`set-version.sh --version .*\`/\`set-version.sh --version ${component_version}\`/g" > ${REPO_ROOT_DIR}/temp/readme.md
+    cp ${REPO_ROOT_DIR}/temp/readme.md ${REPO_ROOT_DIR}/README.md
+    success "set version in README.md OK"
+}
+
+function set_version_in_build_properties() {
+    h2 "Setting the version number in the build.properties"
+    mkdir -p ${REPO_ROOT_DIR}/temp
+    cat ${REPO_ROOT_DIR}/build.properties | sed "s/^GALASA_VERSION=.*$/GALASA_VERSION ${component_version}/g" > ${REPO_ROOT_DIR}/temp/build.properties
+    cp ${REPO_ROOT_DIR}/temp/build.properties ${REPO_ROOT_DIR}/build.properties
+    success "set version in build.properties file OK"
+}
+
 h1 "Setting version of this repository to $component_version"
 set_version_in_all_modules
 check_for_error "Failed to set version in all modules"
+
+set_version_in_readme
+set_version_in_build_properties
+
 success "OK"
 
