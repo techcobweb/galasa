@@ -246,7 +246,8 @@ jobs:
   # to deploy artifacts to the Sonatype staging repo.
   build-obr-galasabld-image:
     name: Build Docker image with OBR artifacts and galasabld executable
-    if: ${{ github.repository_owner == 'galasa-dev' && ( github.ref_name == 'release' || github.ref_name == 'prerelease' ) }}
+    # Skip for forks.
+    if: ${{ github.repository_owner == 'galasa-dev' }}
     needs: build-obr
     runs-on: ubuntu-latest
 
