@@ -167,7 +167,7 @@ jobs:
 
   pr-build-obr:
     name: Build the 'obr' module
-    needs: [get-changed-modules, find-artifacts, pr-build-extensions, pr-build-managers, set-build-properties]
+    needs: [get-changed-modules, find-artifacts, pr-build-extensions, pr-build-managers]
     uses: ./.github/workflows/pr-obr.yaml
     secrets: inherit
     with:
