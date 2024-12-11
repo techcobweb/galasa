@@ -40,7 +40,7 @@ jobs:
 
       - id: set-build-properties
         run: |
-          cat build.properties >> $GITHUB_OUTPUT
+          cat build.properties | grep "=" >> $GITHUB_OUTPUT
 
   build-platform:
     name: Build the 'platform' module
