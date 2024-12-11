@@ -265,6 +265,13 @@ jobs:
           name: galasabld
           path: modules/artifacts/galasabld
 
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.WRITE_GITHUB_PACKAGES_USERNAME }}
+          password: ${{ secrets.WRITE_GITHUB_PACKAGES_TOKEN }}
+
       - name: Extract metadata for OBR artifacts and galasabld executable image
         id: metadata-obr-galasabld
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
@@ -689,7 +696,7 @@ jobs:
 
   trigger-next-workflows:
     name: Trigger next workflows in the build chain
-    needs: [build-obr, build-obr-generic, build-obr-javadocs]
+    needs: [build-obr, build-obr-generic, build-obr-javadocs, build-obr-galasabld-image]
     runs-on: ubuntu-latest
 
     steps:
