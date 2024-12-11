@@ -21,6 +21,10 @@ jobs:
     steps:
       - id: checkout-code
         uses: actions/checkout@v4 
+        with:
+          sparse-checkout: |
+            build.properties
+          sparse-checkout-cone-mode: false
 
       - id: set-build-properties
         run: |

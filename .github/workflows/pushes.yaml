@@ -12,7 +12,7 @@ on:
 jobs:
 
   set-build-properties:
-    # Use the version.properties file to source the 'galasa-version' output variable.
+    # Use the version.properties file to source the galasa-version output variable.
     # This variable can be referenced by other jobs in this flow using 
     # ${{needs.set-build-properties.outputs.galasa-version}}
     runs-on: ubuntu-latest
@@ -21,6 +21,10 @@ jobs:
     steps:
       - id: checkout-code
         uses: actions/checkout@v4 
+        with:
+          sparse-checkout: |
+            build.properties
+          sparse-checkout-cone-mode: false
 
       - id: set-build-properties
         run: |
