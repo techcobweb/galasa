@@ -22,7 +22,6 @@ metadata:
 framework:
   bundles:
 
-
   - artifact: dev.galasa
     version: 0.39.0
     obr:          true
@@ -131,9 +130,9 @@ framework:
     isolated:     false
     codecoverage: false
 
+
 api:
   bundles:
-
 
   - artifact: dev.galasa.framework.api
     version: 0.39.0
