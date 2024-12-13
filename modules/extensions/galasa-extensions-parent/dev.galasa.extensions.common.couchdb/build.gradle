@@ -15,7 +15,7 @@ dependencies {
 
     testImplementation(testFixtures(project(':dev.galasa.extensions.common')))
 
-    testFixturesImplementation platform('dev.galasa:dev.galasa.platform:0.39.0')
+    testFixturesImplementation platform('dev.galasa:dev.galasa.platform:'+version)
     testFixturesImplementation(testFixtures(project(':dev.galasa.extensions.common')))
 
     testFixturesImplementation 'dev.galasa:dev.galasa.wrapping.httpclient-osgi'
