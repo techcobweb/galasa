@@ -33,8 +33,10 @@ public class K8sController {
 
     private Log                      logger           = LogFactory.getLog(this.getClass());
 
-    private boolean                  shutdown          = false;
-    private boolean                  shutdownComplete  = false;
+    // Note: These two flags are shared-state between two threads, so must be marked volatile.
+    private volatile boolean shutdown         = false;
+    private volatile boolean shutdownComplete = false;
+
     private boolean                  controllerRunning = false;
 
     private ScheduledExecutorService scheduledExecutorService;
@@ -57,124 +59,129 @@ public class K8sController {
         // *** Add shutdown hook to allow for orderly shutdown
         Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
-        // *** Initialise the framework services
-        FrameworkInitialisation frameworkInitialisation = null;
         try {
-            frameworkInitialisation = new FrameworkInitialisation(bootstrapProperties, overrideProperties);
-        } catch (Exception e) {
-            throw new FrameworkException("Unable to initialise the Framework Services", e);
-        }
-        IFramework framework = frameworkInitialisation.getFramework();
 
-        IConfigurationPropertyStoreService cps = framework.getConfigurationPropertyService("framework");
-        IDynamicStatusStoreService dss = framework.getDynamicStatusStoreService("framework");
-
-        // *** Now start the Kubernetes Controller framework
-
-        logger.info("Starting Kubernetes Controller");
-
-        // *** Create the API to k8s
-
-        ApiClient client;
-        try {
-            client = Config.defaultClient();
-        } catch (IOException e) {
-            throw new FrameworkException("Unable to load Kubernetes API", e);
-        }
-        Configuration.setDefaultApiClient(client);
-        ProtoClient pc = new ProtoClient(client);
-        CoreV1Api api = new CoreV1Api();
-
-        // *** Fetch the settings
-
-        settings = new Settings(this, api);
-        settings.init();
-
-        // *** Setup defaults and properties
-
-        int metricsPort = 9010;
-        int healthPort = 9011;
-
-        String port = nulled(cps.getProperty("controller.metrics", "port"));
-        if (port != null) {
-            metricsPort = Integer.parseInt(port);
-        }
-
-        port = nulled(cps.getProperty("controller.health", "port"));
-        if (port != null) {
-            healthPort = Integer.parseInt(port);
-        }
-
-        // *** Setup scheduler
-        scheduledExecutorService = new ScheduledThreadPoolExecutor(3);
-
-        // *** Start the heartbeat
-        scheduledExecutorService.scheduleWithFixedDelay(new Heartbeat(dss, settings), 0, 20, TimeUnit.SECONDS);
-        // *** Start the settings poll
-        scheduledExecutorService.scheduleWithFixedDelay(settings, 20, 20, TimeUnit.SECONDS);
-
-        // *** Start the metrics server
-        if (metricsPort > 0) {
+            // *** Initialise the framework services
+            FrameworkInitialisation frameworkInitialisation = null;
             try {
-                this.metricsServer = new HTTPServer(metricsPort);
-                logger.info("Metrics server running on port " + metricsPort);
-            } catch (IOException e) {
-                throw new FrameworkException("Unable to start the metrics server", e);
-            }
-        } else {
-            logger.info("Metrics server disabled");
-        }
-
-        // *** Create metrics
-        // DefaultExports.initialize() - problem within the the exporter at the moment
-        // TODO
-
-        // *** Create Health Server
-        if (healthPort > 0) {
-            this.healthServer = new Health(healthPort);
-            logger.info("Health monitoring on port " + healthPort);
-        } else {
-            logger.info("Health monitoring disabled");
-        }
-        // *** Start the run polling
-        runDeleted = new RunDeleted(settings, api, pc, framework.getFrameworkRuns());
-        scheduleDelete();
-        podScheduler = new TestPodScheduler(dss, settings, api, framework.getFrameworkRuns());
-        schedulePoll();
-
-        
-        logger.info("Kubernetes controller has started");
-
-        // *** Loop until we are asked to shutdown
-        controllerRunning = true;
-        while (!shutdown) {
-            try {
-                Thread.sleep(500);
+                frameworkInitialisation = new FrameworkInitialisation(bootstrapProperties, overrideProperties);
             } catch (Exception e) {
-                throw new FrameworkException("Interrupted sleep", e);
+                throw new FrameworkException("Unable to initialise the Framework Services", e);
             }
-        }
-        
-        // *** shutdown the scheduler
-        this.scheduledExecutorService.shutdown();
-        try {
-            this.scheduledExecutorService.awaitTermination(30, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            logger.error("Unable to shutdown the scheduler");
+            IFramework framework = frameworkInitialisation.getFramework();
+
+            IConfigurationPropertyStoreService cps = framework.getConfigurationPropertyService("framework");
+            IDynamicStatusStoreService dss = framework.getDynamicStatusStoreService("framework");
+
+            // *** Now start the Kubernetes Controller framework
+
+            logger.info("Starting Kubernetes Controller");
+
+            // *** Create the API to k8s
+
+            ApiClient client;
+            try {
+                client = Config.defaultClient();
+            } catch (IOException e) {
+                throw new FrameworkException("Unable to load Kubernetes API", e);
+            }
+            Configuration.setDefaultApiClient(client);
+            ProtoClient pc = new ProtoClient(client);
+            CoreV1Api api = new CoreV1Api();
+
+            // *** Fetch the settings
+
+            settings = new Settings(this, api);
+            settings.init();
+
+            // *** Setup defaults and properties
+
+            int metricsPort = 9010;
+            int healthPort = 9011;
+
+            String port = nulled(cps.getProperty("controller.metrics", "port"));
+            if (port != null) {
+                metricsPort = Integer.parseInt(port);
+            }
+
+            port = nulled(cps.getProperty("controller.health", "port"));
+            if (port != null) {
+                healthPort = Integer.parseInt(port);
+            }
+
+            // *** Setup scheduler
+            scheduledExecutorService = new ScheduledThreadPoolExecutor(3);
+
+            // *** Start the heartbeat
+            scheduledExecutorService.scheduleWithFixedDelay(new Heartbeat(dss, settings), 0, 20, TimeUnit.SECONDS);
+            // *** Start the settings poll
+            scheduledExecutorService.scheduleWithFixedDelay(settings, 20, 20, TimeUnit.SECONDS);
+
+            // *** Start the metrics server
+            if (metricsPort > 0) {
+                try {
+                    this.metricsServer = new HTTPServer(metricsPort);
+                    logger.info("Metrics server running on port " + metricsPort);
+                } catch (IOException e) {
+                    throw new FrameworkException("Unable to start the metrics server", e);
+                }
+            } else {
+                logger.info("Metrics server disabled");
+            }
+
+            // *** Create metrics
+            // DefaultExports.initialize() - problem within the the exporter at the moment
+            // TODO
+
+            // *** Create Health Server
+            if (healthPort > 0) {
+                this.healthServer = new Health(healthPort);
+                logger.info("Health monitoring on port " + healthPort);
+            } else {
+                logger.info("Health monitoring disabled");
+            }
+            // *** Start the run polling
+            runDeleted = new RunDeleted(settings, api, pc, framework.getFrameworkRuns());
+            scheduleDelete();
+            podScheduler = new TestPodScheduler(dss, settings, api, framework.getFrameworkRuns());
+            schedulePoll();
+
+            
+            logger.info("Kubernetes controller has started");
+
+            // *** Loop until we are asked to shutdown
+            controllerRunning = true;
+            while (!shutdown) {
+                try {
+                    Thread.sleep(500);
+                } catch (Exception e) {
+                    throw new FrameworkException("Interrupted sleep", e);
+                }
+            }
+            
+            // *** shutdown the scheduler
+            this.scheduledExecutorService.shutdown();
+            try {
+                this.scheduledExecutorService.awaitTermination(30, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                logger.error("Unable to shutdown the scheduler");
+            }
+
+            // *** Stop the metics server
+            if (metricsPort > 0) {
+                this.metricsServer.close();
+            }
+
+            // *** Stop the health server
+            if (healthPort > 0) {
+                this.healthServer.shutdown();
+            }
+        } finally {
+            logger.info("Kubernetes Controller shutdown");
+            // This allows the shutdown hook to exit.
+            shutdownComplete = true;
         }
 
-        // *** Stop the metics server
-        if (metricsPort > 0) {
-            this.metricsServer.close();
-        }
-
-        // *** Stop the health server
-        if (healthPort > 0) {
-            this.healthServer.shutdown();
-        }
-
-        logger.info("Kubernetes Controller shutdown");
-        shutdownComplete = true;
         return;
 
     }
@@ -199,6 +206,8 @@ public class K8sController {
         @Override
         public void run() {
             K8sController.this.logger.info("Shutdown request received");
+            
+            // Tell the main thread to shut down via this shared variable.
             K8sController.this.shutdown = true;
 
             while (!shutdownComplete && controllerRunning) {
@@ -207,7 +216,7 @@ public class K8sController {
                 } catch (InterruptedException e) {
                     K8sController.this.logger.info("Shutdown wait was interrupted", e);
                     Thread.currentThread().interrupt();
-                    return;
+                    break;
                 }
             }
         }

@@ -45,8 +45,9 @@ public class MetricsServer implements IMetricsServer {
     private final ArrayList<IMetricsProvider> metricsProviders                    = new ArrayList<>();
     private ScheduledExecutorService          scheduledExecutorService;
 
-    private boolean                           shutdown                            = false;
-    private boolean                           shutdownComplete                    = false;
+    // Note: These two flags are shared-state between two threads, so must be marked volatile.
+    private volatile boolean shutdown         = false;
+    private volatile boolean shutdownComplete = false;
 
     private long                              successfulPollsSinceLastHealthCheck = 0;
 
@@ -69,175 +70,178 @@ public class MetricsServer implements IMetricsServer {
 
         // *** Add shutdown hook to allow for orderly shutdown
         Runtime.getRuntime().addShutdownHook(new ShutdownHook());
-
-        // *** Initialise the framework services
-        FrameworkInitialisation frameworkInitialisation = null;
         try {
-            frameworkInitialisation = new FrameworkInitialisation(bootstrapProperties, overrideProperties);
-        } catch (Exception e) {
-            throw new FrameworkException("Unable to initialise the Framework Services", e);
-        }
-        IFramework framework = frameworkInitialisation.getFramework();
 
-        IConfigurationPropertyStoreService cps = framework.getConfigurationPropertyService("framework");
-        IDynamicStatusStoreService dss = framework.getDynamicStatusStoreService("framework");
-
-        // *** Now start the Metrics Server framework
-
-        logger.info("Starting Metrics Server");
-
-        // *** Calculate servername
-
-        this.hostname = "unknown";
-        try {
-            this.hostname = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            logger.error("Unable to obtain the host name", e);
-        }
-        this.serverName = AbstractManager.nulled(cps.getProperty("server", "name"));
-        if (this.serverName == null) {
-            this.serverName = AbstractManager.nulled(System.getenv("framework.server.name"));
-            if (this.serverName == null) {
-                String[] split = this.hostname.split("\\.");
-                if (split.length >= 1) {
-                    this.serverName = split[0];
-                }
-            }
-        }
-        if (serverName == null) {
-            this.serverName = "unknown";
-        }
-        this.serverName = this.serverName.toLowerCase();
-        this.hostname = this.hostname.toLowerCase();
-        this.serverName = this.serverName.replaceAll("\\.", "-");
-
-        // *** Setup defaults and properties
-
-        int numberOfRunThreads = 5;
-        int metricsPort = 9010;
-        int healthPort = 9011;
-
-        String threads = AbstractManager.nulled(cps.getProperty("metrics", "threads"));
-        if (threads != null) {
-            numberOfRunThreads = Integer.parseInt(threads);
-        }
-
-        String port = AbstractManager.nulled(cps.getProperty("metrics", "port"));
-        if (port != null) {
-            metricsPort = Integer.parseInt(port);
-        }
-
-        port = AbstractManager.nulled(cps.getProperty("metrics.health", "port"));
-        if (port != null) {
-            healthPort = Integer.parseInt(port);
-        }
-
-        // *** Setup scheduler
-        scheduledExecutorService = new ScheduledThreadPoolExecutor(numberOfRunThreads);
-
-        // *** Start the metrics server
-        if (metricsPort > 0) {
+            // *** Initialise the framework services
+            FrameworkInitialisation frameworkInitialisation = null;
             try {
-                this.metricsServer = new HTTPServer(metricsPort);
-                logger.info("Metrics server running on port " + metricsPort);
-            } catch (IOException e) {
-                throw new FrameworkException("Unable to start the metrics server", e);
+                frameworkInitialisation = new FrameworkInitialisation(bootstrapProperties, overrideProperties);
+            } catch (Exception e) {
+                throw new FrameworkException("Unable to initialise the Framework Services", e);
             }
-        } else {
-            logger.info("Metrics server disabled");
-        }
+            IFramework framework = frameworkInitialisation.getFramework();
 
-        // *** Create metrics
-        // DefaultExports.initialize() - problem within the the exporter at the moment
-        // TODO
+            IConfigurationPropertyStoreService cps = framework.getConfigurationPropertyService("framework");
+            IDynamicStatusStoreService dss = framework.getDynamicStatusStoreService("framework");
 
-        this.successfulPollsCounter = Counter.build().name("galasa_metric_successfull_polls")
-                .help("The number of successfull metrics pools").register();
+            // *** Now start the Metrics Server framework
 
-        // *** Create Health Server
-        if (healthPort > 0) {
-            this.healthServer = new MetricsServerHealth(this, healthPort);
-            logger.info("Health monitoring on port " + healthPort);
-        } else {
-            logger.info("Health monitoring disabled");
-        }
+            logger.info("Starting Metrics Server");
 
-        // *** Locate all the Metrics providers in the framework
-        try {
-            final ServiceReference<?>[] mpServiceReference = bundleContext
-                    .getAllServiceReferences(IMetricsProvider.class.getName(), null);
-            if ((mpServiceReference == null) || (mpServiceReference.length == 0)) {
-                logger.info("No additional Metrics providers have been found");
-            } else {
-                for (final ServiceReference<?> mpReference : mpServiceReference) {
-                    final IMetricsProvider mpStoreRegistration = (IMetricsProvider) bundleContext
-                            .getService(mpReference);
-                    try {
-                        if (mpStoreRegistration.initialise(framework, this)) {
-                            logger.info("Found Metrics Provider " + mpStoreRegistration.getClass().getName());
-                            metricsProviders.add(mpStoreRegistration);
-                        } else {
-                            logger.info("Metrics Provider " + mpStoreRegistration.getClass().getName()
-                                    + " opted out of this Metrics run");
-                        }
-                    } catch (Exception e) {
-                        logger.error("Failed initialisation of Metrics Provider "
-                                + mpStoreRegistration.getClass().getName() + " ignoring", e);
+            // *** Calculate servername
+
+            this.hostname = "unknown";
+            try {
+                this.hostname = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException e) {
+                logger.error("Unable to obtain the host name", e);
+            }
+            this.serverName = AbstractManager.nulled(cps.getProperty("server", "name"));
+            if (this.serverName == null) {
+                this.serverName = AbstractManager.nulled(System.getenv("framework.server.name"));
+                if (this.serverName == null) {
+                    String[] split = this.hostname.split("\\.");
+                    if (split.length >= 1) {
+                        this.serverName = split[0];
                     }
                 }
             }
-        } catch (Exception e) {
-            throw new FrameworkException("Problem during Metrics Server initialisation", e);
-        }
+            if (serverName == null) {
+                this.serverName = "unknown";
+            }
+            this.serverName = this.serverName.toLowerCase();
+            this.hostname = this.hostname.toLowerCase();
+            this.serverName = this.serverName.replaceAll("\\.", "-");
 
-        // *** Start the providers
-        for (IMetricsProvider provider : metricsProviders) {
-            provider.start();
-        }
-        
-        logger.info("Metrics Server has started");
+            // *** Setup defaults and properties
 
-        // *** Loop until we are asked to shutdown
-        long heartbeatExpire = 0;
-        while (!shutdown) {
-            if (System.currentTimeMillis() >= heartbeatExpire) {
-                updateHeartbeat(dss);
-                heartbeatExpire = System.currentTimeMillis() + 20000;
+            int numberOfRunThreads = 5;
+            int metricsPort = 9010;
+            int healthPort = 9011;
+
+            String threads = AbstractManager.nulled(cps.getProperty("metrics", "threads"));
+            if (threads != null) {
+                numberOfRunThreads = Integer.parseInt(threads);
             }
 
+            String port = AbstractManager.nulled(cps.getProperty("metrics", "port"));
+            if (port != null) {
+                metricsPort = Integer.parseInt(port);
+            }
+
+            port = AbstractManager.nulled(cps.getProperty("metrics.health", "port"));
+            if (port != null) {
+                healthPort = Integer.parseInt(port);
+            }
+
+            // *** Setup scheduler
+            scheduledExecutorService = new ScheduledThreadPoolExecutor(numberOfRunThreads);
+
+            // *** Start the metrics server
+            if (metricsPort > 0) {
+                try {
+                    this.metricsServer = new HTTPServer(metricsPort);
+                    logger.info("Metrics server running on port " + metricsPort);
+                } catch (IOException e) {
+                    throw new FrameworkException("Unable to start the metrics server", e);
+                }
+            } else {
+                logger.info("Metrics server disabled");
+            }
+
+            // *** Create metrics
+            // DefaultExports.initialize() - problem within the the exporter at the moment
+            // TODO
+
+            this.successfulPollsCounter = Counter.build().name("galasa_metric_successfull_polls")
+                    .help("The number of successfull metrics pools").register();
+
+            // *** Create Health Server
+            if (healthPort > 0) {
+                this.healthServer = new MetricsServerHealth(this, healthPort);
+                logger.info("Health monitoring on port " + healthPort);
+            } else {
+                logger.info("Health monitoring disabled");
+            }
+
+            // *** Locate all the Metrics providers in the framework
             try {
-                Thread.sleep(500);
+                final ServiceReference<?>[] mpServiceReference = bundleContext
+                        .getAllServiceReferences(IMetricsProvider.class.getName(), null);
+                if ((mpServiceReference == null) || (mpServiceReference.length == 0)) {
+                    logger.info("No additional Metrics providers have been found");
+                } else {
+                    for (final ServiceReference<?> mpReference : mpServiceReference) {
+                        final IMetricsProvider mpStoreRegistration = (IMetricsProvider) bundleContext
+                                .getService(mpReference);
+                        try {
+                            if (mpStoreRegistration.initialise(framework, this)) {
+                                logger.info("Found Metrics Provider " + mpStoreRegistration.getClass().getName());
+                                metricsProviders.add(mpStoreRegistration);
+                            } else {
+                                logger.info("Metrics Provider " + mpStoreRegistration.getClass().getName()
+                                        + " opted out of this Metrics run");
+                            }
+                        } catch (Exception e) {
+                            logger.error("Failed initialisation of Metrics Provider "
+                                    + mpStoreRegistration.getClass().getName() + " ignoring", e);
+                        }
+                    }
+                }
             } catch (Exception e) {
-                throw new FrameworkException("Interrupted sleep", e);
+                throw new FrameworkException("Problem during Metrics Server initialisation", e);
             }
-        }
 
-        // *** shutdown the scheduler
-        this.scheduledExecutorService.shutdown();
-        try {
-            this.scheduledExecutorService.awaitTermination(30, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            logger.error("Unable to shutdown the scheduler");
-        }
+            // *** Start the providers
+            for (IMetricsProvider provider : metricsProviders) {
+                provider.start();
+            }
+            
+            logger.info("Metrics Server has started");
 
-        // *** shutdown the providers
-        for (IMetricsProvider provider : metricsProviders) {
-            logger.info("Requesting Metrics Management Provider " + provider.getClass().getName() + " shutdown");
-            provider.shutdown();
-        }
+            // *** Loop until we are asked to shutdown
+            long heartbeatExpire = 0;
+            while (!shutdown) {
+                if (System.currentTimeMillis() >= heartbeatExpire) {
+                    updateHeartbeat(dss);
+                    heartbeatExpire = System.currentTimeMillis() + 20000;
+                }
 
-        // *** Stop the metics server
-        if (metricsPort > 0) {
-            this.metricsServer.stop();
-        }
+                try {
+                    Thread.sleep(500);
+                } catch (Exception e) {
+                    throw new FrameworkException("Interrupted sleep", e);
+                }
+            }
 
-        // *** Stop the health server
-        if (healthPort > 0) {
-            this.healthServer.shutdown();
-        }
+            // *** shutdown the scheduler
+            this.scheduledExecutorService.shutdown();
+            try {
+                this.scheduledExecutorService.awaitTermination(30, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                logger.error("Unable to shutdown the scheduler");
+            }
 
-        logger.info("Metrics Server shutdown");
-        shutdownComplete = true;
+            // *** shutdown the providers
+            for (IMetricsProvider provider : metricsProviders) {
+                logger.info("Requesting Metrics Management Provider " + provider.getClass().getName() + " shutdown");
+                provider.shutdown();
+            }
+
+            // *** Stop the metics server
+            if (metricsPort > 0) {
+                this.metricsServer.close();
+            }
+
+            // *** Stop the health server
+            if (healthPort > 0) {
+                this.healthServer.shutdown();
+            }
+        } finally {
+            logger.info("Metrics Server shutdown");
+            // This allows the shutdown hook to exit.
+            shutdownComplete = true;
+        }
         return;
     }
 
@@ -281,6 +285,8 @@ public class MetricsServer implements IMetricsServer {
         @Override
         public void run() {
             MetricsServer.this.logger.info("Shutdown request received");
+            
+            // Tell the main thread to shut down via this shared variable.
             MetricsServer.this.shutdown = true;
 
             while (!shutdownComplete) {
@@ -289,7 +295,7 @@ public class MetricsServer implements IMetricsServer {
                 } catch (InterruptedException e) {
                     MetricsServer.this.logger.info("Shutdown wait was interrupted", e);
                     Thread.currentThread().interrupt();
-                    return;
+                    break;
                 }
             }
         }
