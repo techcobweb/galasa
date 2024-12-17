@@ -327,7 +327,7 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
     @Override
     public List<IRunResult> getRunsByGroupName(@NotNull String groupName) throws ResultArchiveStoreException {
 
-        List<IRunResult> runs = getRunsByCritera(RUN_GROUP_VIEW_NAME, groupName);
+        List<IRunResult> runs = getRunsFromViewByKey(RUN_GROUP_VIEW_NAME, groupName);
         
         return runs;
     }
@@ -335,7 +335,7 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
     @Override
     public List<IRunResult> getRunsByRunName(@NotNull String runName) throws ResultArchiveStoreException {
          
-        List<IRunResult> runs = getRunsByCritera(RUN_NAMES_VIEW_NAME, runName);
+        List<IRunResult> runs = getRunsFromViewByKey(RUN_NAMES_VIEW_NAME, runName);
         return runs;
 
     }
@@ -386,8 +386,7 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
             for (TestStructureCouchdb ts : found.docs) {
                 if (ts.isValid()) {
 
-                    // Don't load the artifacts for the found runs, just set a root location for
-                    // artifacts
+                    // Don't load the artifacts for the found runs, just set a root location for artifacts
                     // and add this run to the results
                     runs.add(new CouchdbRunResult(store, ts, logFactory));
                 }
@@ -552,7 +551,7 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
         }
     }
 
-    private List<IRunResult> getRunsByCritera(String viewName, String criteriaValue) throws ResultArchiveStoreException{
+    private List<IRunResult> getRunsFromViewByKey(String viewName, String criteriaValue) throws ResultArchiveStoreException{
 
         List<IRunResult> runs = new ArrayList<>();
 
@@ -565,7 +564,7 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
                     includeDocuments);
 
             if (viewResponse.rows == null) {
-                String errorMessage = ERROR_FAILED_TO_GET_VIEW_DOCUMENTS_FROM_DATABASE.getMessage(RUN_NAMES_VIEW_NAME,
+                String errorMessage = ERROR_FAILED_TO_GET_VIEW_DOCUMENTS_FROM_DATABASE.getMessage(viewName,
                         RUNS_DB);
                 throw new ResultArchiveStoreException(errorMessage);
             }

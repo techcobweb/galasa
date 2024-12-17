@@ -28,39 +28,20 @@ public class MockRun implements IRun {
         String testClassName, String testRunName , 
         String testStream, String testStreamOBR, 
         String testStreamRepoUrl, String requestorName, 
-        boolean isRunLocal 
+        boolean isRunLocal
     ) {
         this( testBundleName, 
             testClassName, testRunName , 
             testStream, testStreamOBR, 
             testStreamRepoUrl, requestorName, 
-            isRunLocal ,null);
+            isRunLocal ,null, null);
     }
     public MockRun(
         String testBundleName, 
         String testClassName, String testRunName , 
         String testStream, String testStreamOBR, 
         String testStreamRepoUrl, String requestorName, 
-        boolean isRunLocal , String gherkinUrl
-    ) {
-        this.testBundleName = testBundleName;
-        this.testClassName = testClassName ;
-        this.testRunName = testRunName;
-        this.testStream = testStream;
-        this.testStreamOBR = testStreamOBR;
-        this.testStreamRepoUrl = testStreamRepoUrl;
-        this.requestorName = requestorName;
-        this.isRunLocal = isRunLocal;
-        this.gherkinUrl = gherkinUrl;
-    }
-
-    public MockRun(
-        String testBundleName, 
-        String testClassName, String testRunName , 
-        String testStream, String testStreamOBR, 
-        String testStreamRepoUrl, String requestorName, 
-        boolean isRunLocal , String gherkinUrl,
-        String group
+        boolean isRunLocal , String gherkinUrl, String group
     ) {
         this.testBundleName = testBundleName;
         this.testClassName = testClassName ;
@@ -72,8 +53,7 @@ public class MockRun implements IRun {
         this.isRunLocal = isRunLocal;
         this.gherkinUrl = gherkinUrl;
         this.group = group;
-    }
-    
+    }    
 
     @Override
     public String getTestBundleName() {
