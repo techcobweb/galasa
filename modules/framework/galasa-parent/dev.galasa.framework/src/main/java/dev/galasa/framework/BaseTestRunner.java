@@ -188,6 +188,7 @@ public class BaseTestRunner {
         TestStructure testStructure = new TestStructure();
 
         String runName = run.getName();
+        String group = run.getGroup();         
         Instant queuedAt = run.getQueued();
         String requestor = AbstractManager.defaultString(run.getRequestor(), "unknown");         
 
@@ -195,6 +196,7 @@ public class BaseTestRunner {
         testStructure.setStartTime(Instant.now());
         testStructure.setRunName(runName);
         testStructure.setRequestor(requestor);
+        testStructure.setGroup(group);
         return testStructure;
     }
 

@@ -40,6 +40,7 @@ import dev.galasa.framework.spi.ResultArchiveStoreException;
 import dev.galasa.framework.spi.ras.IRasSearchCriteria;
 import dev.galasa.framework.spi.ras.RasRunResultPage;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaBundle;
+import dev.galasa.framework.spi.ras.RasSearchCriteriaGroup;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaQueuedFrom;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaQueuedTo;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaRequestor;
@@ -324,6 +325,39 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
     }
 
     @Override
+    public List<IRunResult> getRunsByGroupName(@NotNull String groupName) throws ResultArchiveStoreException {
+
+    
+        List<IRunResult> runs = new ArrayList<>();
+        try {
+            boolean includeDocuments = true;
+            ViewResponse viewResponse = store.getDocumentsFromDatabaseViewByKey(
+                RUNS_DB,
+                RUN_GROUP_VIEW_NAME,
+                groupName,
+                includeDocuments
+            );
+
+            if (viewResponse.rows == null) {
+                String errorMessage = ERROR_FAILED_TO_GET_VIEW_DOCUMENTS_FROM_DATABASE.getMessage(RUN_GROUP_VIEW_NAME, RUNS_DB);
+                throw new ResultArchiveStoreException(errorMessage);
+            }
+
+            for (ViewRow row : viewResponse.rows) {
+                if (row.doc != null) {
+                    JsonObject testStructureJson = gson.toJsonTree(row.doc).getAsJsonObject();
+                    TestStructureCouchdb testStructure = gson.fromJson(testStructureJson, TestStructureCouchdb.class);
+                    runs.add(new CouchdbRunResult(store, testStructure, logFactory));
+                }
+            }
+        } catch (CouchdbException e) {
+            // This error has a custom message, so pass it up
+            throw new ResultArchiveStoreException(e);
+        }
+        return runs;
+    }
+
+    @Override
     public List<IRunResult> getRunsByRunName(@NotNull String runName) throws ResultArchiveStoreException {
         List<IRunResult> runs = new ArrayList<>();
         try {
@@ -502,7 +536,12 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
                 RasSearchCriteriaBundle sBundle = (RasSearchCriteriaBundle) searchCriteria;
 
                 inArray(and, "bundle", sBundle.getBundles());
-            } else if (searchCriteria instanceof RasSearchCriteriaResult) {
+            }else if (searchCriteria instanceof RasSearchCriteriaGroup) {
+                RasSearchCriteriaGroup sBundle = (RasSearchCriteriaGroup) searchCriteria;
+
+                inArray(and, "group", sBundle.getGroups());
+            }
+             else if (searchCriteria instanceof RasSearchCriteriaResult) {
                 RasSearchCriteriaResult sResult = (RasSearchCriteriaResult) searchCriteria;
 
                 inArray(and, "result", sResult.getResults());

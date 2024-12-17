@@ -29,6 +29,7 @@ public class TestStructure {
 
     private String           status;
     private String           result;
+    private String           group;
 
     private Instant          queued;
 
@@ -202,6 +203,17 @@ public class TestStructure {
             return "invalid";
         }
         return this.runName;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    public String getGroup() {
+        if (this.group == null) {
+            return "none";
+        }
+        return this.group;
     }
     
     public boolean isValid() {

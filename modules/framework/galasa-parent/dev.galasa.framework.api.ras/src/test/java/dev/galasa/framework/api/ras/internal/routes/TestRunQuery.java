@@ -81,11 +81,25 @@ public class TestRunQuery extends RasServletTest {
 		return parameterMap;
 	}
 
+	private Map<String, String[]> setQueryParameter (Integer page, Integer size,String sort, String runname, String requestor, Integer agemin, Integer agemax, String group){
+		Map<String, String[]> parameterMap = new HashMap<String,String[]>();
+		parameterMap = addQueryIntParameter(parameterMap, "page", page);
+		parameterMap = addQueryIntParameter(parameterMap, "size", size);
+		parameterMap = addQueryParameter(parameterMap, "sort", sort);
+		parameterMap = addQueryParameter(parameterMap, "runname", runname);
+		parameterMap = addQueryParameter(parameterMap, "requestor", requestor);
+		parameterMap = addQueryTimeParameter(parameterMap, "from", agemin);
+		parameterMap = addQueryTimeParameter(parameterMap, "to", agemax);
+		parameterMap = addQueryParameter(parameterMap, "group", group);
+		return parameterMap;
+	}
+
     private IRunResult createTestRun(String runId, Instant queuedTime, Instant startTime, Instant endTime) {
         String runName = RandomStringUtils.insecure().nextAlphanumeric(5);
         String testShortName = RandomStringUtils.insecure().nextAlphanumeric(5);
         String requestor = RandomStringUtils.insecure().nextAlphanumeric(8);
         String bundleName = RandomStringUtils.insecure().nextAlphanumeric(16);
+		String group = RandomStringUtils.insecure().nextAlphabetic(8);
 
         TestStructure testStructure = new TestStructure();
         testStructure.setRunName(runName);
@@ -96,6 +110,7 @@ public class TestRunQuery extends RasServletTest {
         testStructure.setQueued(queuedTime);
         testStructure.setStartTime(startTime);
         testStructure.setEndTime(endTime);
+		testStructure.setGroup(group);
 
         Path artifactsRoot = new MockPath("/", mockFileSystem);
         String log = RandomStringUtils.insecure().nextAlphanumeric(6);
@@ -2394,6 +2409,96 @@ public class TestRunQuery extends RasServletTest {
 		// Then...
 		String expectedJson = generateExpectedJson(mockInputRunResults, null, pageSize);
 		assertThat(resp.getStatus()).isEqualTo(200);
+		assertThat(outStream.toString()).isEqualTo(expectedJson);
+		assertThat(resp.getContentType()).isEqualTo("application/json");
+	}
+
+	@Test
+	public void testQueryWithGroupNameGetsMatchingRunsOk() throws Exception {
+		// Given..
+		List<IRunResult> mockInputRunResults = generateTestDataAscendingTime(1,1,1);
+        IRunResult run = mockInputRunResults.get(0);
+
+        // Build query parameters
+        int pageSize = 100;
+		Map<String, String[]> parameterMap = setQueryParameter(null,pageSize,null, null,null, null, null, run.getTestStructure().getGroup());
+        parameterMap = addQueryParameter(parameterMap, "includeCursor", "true");
+
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest(parameterMap, "/runs");
+		MockRasServletEnvironment mockServletEnvironment = new MockRasServletEnvironment(mockInputRunResults,mockRequest);
+
+		RasServlet servlet = mockServletEnvironment.getServlet();
+		HttpServletRequest req = mockServletEnvironment.getRequest();
+		HttpServletResponse resp = mockServletEnvironment.getResponse();
+		ServletOutputStream outStream = resp.getOutputStream();
+
+		// When...
+		servlet.init();
+		servlet.doGet(req,resp);
+
+		// Then...
+		String expectedJson = generateExpectedJson(mockInputRunResults, null, pageSize);
+		assertThat(resp.getStatus()).isEqualTo(200);
+		assertThat(outStream.toString()).isEqualTo(expectedJson);
+		assertThat(resp.getContentType()).isEqualTo("application/json");
+	}
+
+	@Test
+	public void testQueryWithGroupNameGetsMatchingRunsWithFromTimeOk() throws Exception {
+		// Given..
+		List<IRunResult> mockInputRunResults = generateTestDataAscendingTime(1,1,1);
+        IRunResult run = mockInputRunResults.get(0);
+
+        // Build query parameters
+        int pageSize = 100;
+		Map<String, String[]> parameterMap = setQueryParameter(null,pageSize,null, null,null, 5, null, run.getTestStructure().getGroup());
+        parameterMap = addQueryParameter(parameterMap, "includeCursor", "true");
+
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest(parameterMap, "/runs");
+		MockRasServletEnvironment mockServletEnvironment = new MockRasServletEnvironment(mockInputRunResults,mockRequest);
+
+		RasServlet servlet = mockServletEnvironment.getServlet();
+		HttpServletRequest req = mockServletEnvironment.getRequest();
+		HttpServletResponse resp = mockServletEnvironment.getResponse();
+		ServletOutputStream outStream = resp.getOutputStream();
+
+		// When...
+		servlet.init();
+		servlet.doGet(req,resp);
+
+		// Then...
+		String expectedJson = generateExpectedJson(mockInputRunResults, null, pageSize);
+		assertThat(resp.getStatus()).isEqualTo(200);
+		assertThat(outStream.toString()).isEqualTo(expectedJson);
+		assertThat(resp.getContentType()).isEqualTo("application/json");
+	}
+
+	@Test
+	public void testQueryWithGroupNameGetsMatchingRunsWithDifferentGroupNameReturnEmptyRunsOk() throws Exception {
+		// Given..
+		List<IRunResult> mockInputRunResults = generateTestDataAscendingTime(0,1,1);
+
+        // Build query parameters
+        int pageSize = 100;
+		Map<String, String[]> parameterMap = setQueryParameter(null,pageSize,null, null,null, 5, null, "12345");
+        parameterMap = addQueryParameter(parameterMap, "includeCursor", "true");
+
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest(parameterMap, "/runs");
+		MockRasServletEnvironment mockServletEnvironment = new MockRasServletEnvironment(mockInputRunResults,mockRequest);
+
+		RasServlet servlet = mockServletEnvironment.getServlet();
+		HttpServletRequest req = mockServletEnvironment.getRequest();
+		HttpServletResponse resp = mockServletEnvironment.getResponse();
+		ServletOutputStream outStream = resp.getOutputStream();
+
+		// When...
+		servlet.init();
+		servlet.doGet(req,resp);
+
+		// Then...
+		String expectedJson = generateExpectedJson(mockInputRunResults, null, pageSize);
+		assertThat(resp.getStatus()).isEqualTo(200);
+		System.out.println(expectedJson);
 		assertThat(outStream.toString()).isEqualTo(expectedJson);
 		assertThat(resp.getContentType()).isEqualTo("application/json");
 	}
