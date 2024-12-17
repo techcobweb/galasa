@@ -327,64 +327,17 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
     @Override
     public List<IRunResult> getRunsByGroupName(@NotNull String groupName) throws ResultArchiveStoreException {
 
-        List<IRunResult> runs = new ArrayList<>();
-        try {
-            boolean includeDocuments = true;
-            ViewResponse viewResponse = store.getDocumentsFromDatabaseViewByKey(
-                    RUNS_DB,
-                    RUN_GROUP_VIEW_NAME,
-                    groupName,
-                    includeDocuments);
-
-            if (viewResponse.rows == null) {
-                String errorMessage = ERROR_FAILED_TO_GET_VIEW_DOCUMENTS_FROM_DATABASE.getMessage(RUN_GROUP_VIEW_NAME,
-                        RUNS_DB);
-                throw new ResultArchiveStoreException(errorMessage);
-            }
-
-            for (ViewRow row : viewResponse.rows) {
-                if (row.doc != null) {
-                    JsonObject testStructureJson = gson.toJsonTree(row.doc).getAsJsonObject();
-                    TestStructureCouchdb testStructure = gson.fromJson(testStructureJson, TestStructureCouchdb.class);
-                    runs.add(new CouchdbRunResult(store, testStructure, logFactory));
-                }
-            }
-        } catch (CouchdbException e) {
-            // This error has a custom message, so pass it up
-            throw new ResultArchiveStoreException(e);
-        }
+        List<IRunResult> runs = getRunsByCritera(RUN_GROUP_VIEW_NAME, groupName);
+        
         return runs;
     }
 
     @Override
     public List<IRunResult> getRunsByRunName(@NotNull String runName) throws ResultArchiveStoreException {
-        List<IRunResult> runs = new ArrayList<>();
-        try {
-            boolean includeDocuments = true;
-            ViewResponse viewResponse = store.getDocumentsFromDatabaseViewByKey(
-                    RUNS_DB,
-                    RUN_NAMES_VIEW_NAME,
-                    runName,
-                    includeDocuments);
-
-            if (viewResponse.rows == null) {
-                String errorMessage = ERROR_FAILED_TO_GET_VIEW_DOCUMENTS_FROM_DATABASE.getMessage(RUN_NAMES_VIEW_NAME,
-                        RUNS_DB);
-                throw new ResultArchiveStoreException(errorMessage);
-            }
-
-            for (ViewRow row : viewResponse.rows) {
-                if (row.doc != null) {
-                    JsonObject testStructureJson = gson.toJsonTree(row.doc).getAsJsonObject();
-                    TestStructureCouchdb testStructure = gson.fromJson(testStructureJson, TestStructureCouchdb.class);
-                    runs.add(new CouchdbRunResult(store, testStructure, logFactory));
-                }
-            }
-        } catch (CouchdbException e) {
-            // This error has a custom message, so pass it up
-            throw new ResultArchiveStoreException(e);
-        }
+         
+        List<IRunResult> runs = getRunsByCritera(RUN_NAMES_VIEW_NAME, runName);
         return runs;
+
     }
 
     @Override
@@ -597,5 +550,38 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
         } catch (Exception e) {
             return null; // This runid may not belong to this RAS, so ignore all errors
         }
+    }
+
+    private List<IRunResult> getRunsByCritera(String viewName, String criteriaValue) throws ResultArchiveStoreException{
+
+        List<IRunResult> runs = new ArrayList<>();
+
+        try {
+            boolean includeDocuments = true;
+            ViewResponse viewResponse = store.getDocumentsFromDatabaseViewByKey(
+                    RUNS_DB,
+                    viewName,
+                    criteriaValue,
+                    includeDocuments);
+
+            if (viewResponse.rows == null) {
+                String errorMessage = ERROR_FAILED_TO_GET_VIEW_DOCUMENTS_FROM_DATABASE.getMessage(RUN_NAMES_VIEW_NAME,
+                        RUNS_DB);
+                throw new ResultArchiveStoreException(errorMessage);
+            }
+
+            for (ViewRow row : viewResponse.rows) {
+                if (row.doc != null) {
+                    JsonObject testStructureJson = gson.toJsonTree(row.doc).getAsJsonObject();
+                    TestStructureCouchdb testStructure = gson.fromJson(testStructureJson, TestStructureCouchdb.class);
+                    runs.add(new CouchdbRunResult(store, testStructure, logFactory));
+                }
+            }
+        } catch (CouchdbException e) {
+            // This error has a custom message, so pass it up
+            throw new ResultArchiveStoreException(e);
+        }
+
+        return runs;
     }
 }

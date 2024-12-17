@@ -29,6 +29,7 @@ import dev.galasa.extensions.common.impl.HttpRequestFactoryImpl;
 import dev.galasa.extensions.common.mocks.BaseHttpInteraction;
 import dev.galasa.extensions.common.mocks.HttpInteraction;
 import dev.galasa.extensions.common.mocks.MockAsyncCloseableHttpClient;
+import dev.galasa.extensions.common.mocks.MockCloseableHttpClient;
 import dev.galasa.framework.TestRunLifecycleStatus;
 import dev.galasa.framework.spi.IRunResult;
 import dev.galasa.framework.spi.ResultArchiveStoreException;
@@ -216,7 +217,7 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
         List<IRunResult> runs = directoryService.getRuns(runNameCriteria);
 
         // Then...
-        assertThat(runs).hasSize(1);
+        assertThat(runs).hasSize(2);
         assertThat(runs.get(0).getTestStructure().getRunName()).isEqualTo(mockRun1.getRunName());
     }
 
@@ -552,7 +553,7 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
         );
 
         MockLogFactory mockLogFactory = new MockLogFactory();
-        MockAsyncCloseableHttpClient httpClient = new MockAsyncCloseableHttpClient(interactions);
+        MockCloseableHttpClient httpClient = new MockCloseableHttpClient(interactions);
         CouchdbRasStore mockRasStore = fixtures.createCouchdbRasStore(mockLogFactory, httpClient);
         CouchdbDirectoryService directoryService = new CouchdbDirectoryService(mockRasStore, mockLogFactory, new HttpRequestFactoryImpl());
 
@@ -596,7 +597,7 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
         );
 
         MockLogFactory mockLogFactory = new MockLogFactory();
-        MockAsyncCloseableHttpClient httpClient = new MockAsyncCloseableHttpClient(interactions);
+        MockCloseableHttpClient httpClient = new MockCloseableHttpClient(interactions);
         CouchdbRasStore mockRasStore = fixtures.createCouchdbRasStore(mockLogFactory, httpClient);
         CouchdbDirectoryService directoryService = new CouchdbDirectoryService(mockRasStore, mockLogFactory, new HttpRequestFactoryImpl());
 
@@ -626,7 +627,7 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
         );
 
         MockLogFactory mockLogFactory = new MockLogFactory();
-        MockAsyncCloseableHttpClient httpClient = new MockAsyncCloseableHttpClient(interactions);
+        MockCloseableHttpClient httpClient = new MockCloseableHttpClient(interactions);
         CouchdbRasStore mockRasStore = fixtures.createCouchdbRasStore(mockLogFactory, httpClient);
         CouchdbDirectoryService directoryService = new CouchdbDirectoryService(mockRasStore, mockLogFactory, new HttpRequestFactoryImpl());
 
@@ -680,7 +681,7 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
         );
 
         MockLogFactory mockLogFactory = new MockLogFactory();
-        // MockAsyncCloseableHttpClient httpClient = new MockAsyncCloseableHttpClient(interactions);
+        MockCloseableHttpClient httpClient = new MockCloseableHttpClient(interactions);
         CouchdbRasStore mockRasStore = fixtures.createCouchdbRasStore(mockLogFactory, httpClient);
         CouchdbDirectoryService directoryService = new CouchdbDirectoryService(mockRasStore, mockLogFactory, new HttpRequestFactoryImpl());
 

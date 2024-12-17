@@ -217,7 +217,7 @@ public class CouchdbDeleteRunServiceTest extends BaseCouchdbOperationTest {
     public void testDiscardRunWithFailedArtifactDeletionDoesNotDeleteRunDocumentOk() throws Exception {
         // Given...
         String runId = "ABC123";
-        TestStructureCouchdb mockRun1 = createRunTestStructure(runId, "run1");
+        TestStructureCouchdb mockRun1 = createRunTestStructure(runId, "run1", "none");
 
         IdRev mockIdRev = new IdRev();
         String revision = "this-is-a-revision";
@@ -265,7 +265,7 @@ public class CouchdbDeleteRunServiceTest extends BaseCouchdbOperationTest {
     public void testDiscardRunWithNotFoundDocumentsContinuesToDeleteRunOk() throws Exception {
         // Given...
         String runId = "ABC123";
-        TestStructureCouchdb mockRun1 = createRunTestStructure(runId, "run1");
+        TestStructureCouchdb mockRun1 = createRunTestStructure(runId, "run1", "none");
 
         IdRev mockIdRev = new IdRev();
         String revision = "this-is-a-revision";
