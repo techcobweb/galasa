@@ -7,6 +7,12 @@ name: OBR Main Build
 
 on:
   workflow_call:
+    inputs:
+      galasa-version:
+        # The version of Galasa we are building. eg:0.123.0
+        # Access this value using ${{inputs.galasa-version}}
+        type: string
+        required: true
 
 env:
   REGISTRY: ghcr.io
@@ -252,12 +258,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modules/obr
+
       - name: Download galasabld executables
         id: download-galasabld
         uses: actions/download-artifact@v4
         with:
           name: galasabld
           path: modules/artifacts/galasabld
+
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.WRITE_GITHUB_PACKAGES_USERNAME }}
+          password: ${{ secrets.WRITE_GITHUB_PACKAGES_TOKEN }}
 
       - name: Extract metadata for OBR artifacts and galasabld executable image
         id: metadata-obr-galasabld
@@ -596,10 +615,12 @@ jobs:
         working-directory: modules/obr/obr-generic
         run: |
           set -o pipefail
+          # Note: using the maven plugin version ${{inputs.galasa-version}} which we should have
+          # downloaded in the maven artifacts.
           mvn -f pom.xml process-sources -X \
           -Dgalasa.source.repo=file:${{ github.workspace }}/modules/artifacts \
           -Dgalasa.central.repo=https://repo.maven.apache.org/maven2/ \
-          dev.galasa:galasa-maven-plugin:0.39.0:obrembedded \
+          dev.galasa:galasa-maven-plugin:${{inputs.galasa-version}}:obrembedded \
           --batch-mode --errors --fail-at-end \
           --settings /home/runner/work/gpg/settings.xml 2>&1 | tee build.log
         
@@ -683,7 +704,7 @@ jobs:
 
   trigger-next-workflows:
     name: Trigger next workflows in the build chain
-    needs: [build-obr, build-obr-generic, build-obr-javadocs]
+    needs: [build-obr, build-obr-generic, build-obr-javadocs, build-obr-galasabld-image]
     runs-on: ubuntu-latest
 
     steps:

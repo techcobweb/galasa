@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'biz.aQute.bnd.builder' version '5.3.0' apply false
-    id 'dev.galasa.githash' version "0.39.0" apply false
+    id 'dev.galasa.githash' version '0.39.0' apply false
     id 'jacoco'
     id 'maven-publish'
     id 'signing'
@@ -31,7 +31,7 @@ tasks.withType(Sign) {
 dependencies {
     // We need the swagger generator to generate API documentation from the openapi.yaml file
     // https://mvnrepository.com/artifact/io.swagger.codegen.v3/swagger-codegen-cli
-    compileOnly platform('dev.galasa:dev.galasa.platform:0.39.0')
+    compileOnly platform('dev.galasa:dev.galasa.platform:'+version)
     compileOnly 'io.swagger.codegen.v3:swagger-codegen-cli'
 }
 
@@ -243,25 +243,25 @@ task buildReleaseYamlSubprojects() {
                     }
 
                     def f = new File(manifestFilePath)
-                    f.append("\n\n  - artifact: $projectName")
-                    f.append("\n    version: $version")
+                    f.append("\n  - artifact: $projectName\n")
+                    f.append("    version: $version\n")
                     if (includeInOBR != '') {
-                        f.append("\n    obr:          $includeInOBR")
+                        f.append("    obr:          $includeInOBR\n")
                     }
                     if (includeInMVP != '') {
-                        f.append("\n    mvp:          $includeInMVP")
+                        f.append("    mvp:          $includeInMVP\n")
                     }
                     if (includeInBOM != '') {
-                        f.append("\n    bom:          $includeInBOM")
+                        f.append("    bom:          $includeInBOM\n")
                     }
                     if (includeInJavadoc != '') {
-                        f.append("\n    javadoc:      $includeInJavadoc")
+                        f.append("    javadoc:      $includeInJavadoc\n")
                     }
                     if (includeInIsolated != '') {
-                        f.append("\n    isolated:     $includeInIsolated")
+                        f.append("    isolated:     $includeInIsolated\n")
                     }
                     if (includeInCodeCoverage != '') {
-                        f.append("\n    codecoverage: $includeInCodeCoverage")
+                        f.append("    codecoverage: $includeInCodeCoverage\n")
                     }
 
                 }

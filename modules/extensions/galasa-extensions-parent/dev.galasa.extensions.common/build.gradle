@@ -12,7 +12,7 @@ dependencies {
     implementation ('org.apache.httpcomponents:httpcore-osgi')
     implementation ('com.google.code.gson:gson')
 
-    testFixturesImplementation platform('dev.galasa:dev.galasa.platform:0.39.0')
+    testFixturesImplementation platform('dev.galasa:dev.galasa.platform:'+version)
 
     testFixturesImplementation 'dev.galasa:dev.galasa.wrapping.httpclient-osgi'
     testFixturesImplementation 'org.apache.httpcomponents:httpcore-osgi'
@@ -30,6 +30,6 @@ ext.projectName=project.name
 ext.includeInOBR          = true
 ext.includeInMVP          = false
 ext.includeInBOM          = false
-ext.includeInIsolated     = true
+ext.includeInIsolated     = false
 ext.includeInCodeCoverage = true
 ext.includeInJavadoc      = false

@@ -41,16 +41,70 @@ public class ApiStartup {
     @Reference(cardinality = ReferenceCardinality.MANDATORY)
     private RepositoryAdmin repositoryAdmin;
 
-    private boolean shutdown = false;
-    private boolean shutdownComplete = false;
+    // Note: This flag is shared between two threads, so must be volatile so the JVM knows not to hold the value in a register.
+    private volatile boolean shutdown = false;
+
+    // Note: This flag is shared between two threads, so must be volatile so the JVM knows not to hold the value in a register.
+    private volatile boolean shutdownComplete = false;
 
     public void run(Properties bootstrapProperties, Properties overrideProperties, List<String> extraBundles)
             throws FrameworkException {
         logger.info("API server is initialising");
 
         // *** Add shutdown hook to allow for orderly shutdown
-        Runtime.getRuntime().addShutdownHook(new ShutdownHook());
+        ShutdownHook shutdownHook = new ShutdownHook();
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
 
+        try {  // So we can always allow the Shutdown hook to complete whatever happens.
+            setupBootstrapConfiguration(bootstrapProperties);
+            initialiseFramework(bootstrapProperties, overrideProperties);
+            loadRequestedApiBundles(extraBundles);
+
+            logger.info("API server has started");
+
+            // *** Loop until we are asked to shutdown
+            // See comment below.
+            // long heartbeatExpire = 0;
+            while (!shutdown) {
+
+                // The code used to do this: But it doesn't actually do anything... 
+                // leaving in for now in case the puzzle becomes clear to anyone else.
+                // It looks like it's a coding pattern copied elsewhere also... but other services do update their heartbeat in the DSS.
+                //           
+                // if (System.currentTimeMillis() >= heartbeatExpire) {
+                //     // updateHeartbeat(dss);
+                //     heartbeatExpire = System.currentTimeMillis() + 20000;
+                // }
+
+                try {
+                    // Half second sleep.
+                    Thread.sleep(500);
+                } catch (Exception e) {
+                    throw new FrameworkException("Interrupted sleep", e);
+                }
+            }
+
+            Runtime.getRuntime().removeShutdownHook(shutdownHook);
+
+        } finally {
+            logger.info("API server shutdown is complete");
+            // This allows the shutdown hook to exit.
+            this.shutdownComplete = true ;
+        }
+    }
+
+    private void initialiseFramework(Properties bootstrapProperties, Properties overrideProperties) throws FrameworkException {
+        // *** Initialise the framework
+        IFrameworkInitialisation frameworkInitialisation = null;
+        try {
+            frameworkInitialisation = new ApiServerInitialisation(bootstrapProperties, overrideProperties);
+        } catch (Exception e) {
+            throw new FrameworkException("Unable to initialise the Framework Services", e);
+        }
+        frameworkInitialisation.getFramework();
+    }
+
+    private void setupBootstrapConfiguration(Properties bootstrapProperties) throws FrameworkException {
         try {
             // *** setup the bootstrap configuration
 
@@ -74,17 +128,10 @@ public class ApiStartup {
         } catch (Throwable t) {
             throw new FrameworkException("Unable to initialise the API server", t);
         }
+    }
 
-        // *** Initialise the framework
-        IFrameworkInitialisation frameworkInitialisation = null;
-        try {
-            frameworkInitialisation = new ApiServerInitialisation(bootstrapProperties, overrideProperties);
-        } catch (Exception e) {
-            throw new FrameworkException("Unable to initialise the Framework Services", e);
-        }
-        frameworkInitialisation.getFramework();
 
-        // *** Load all the requested api bundles
+    private void loadRequestedApiBundles(List<String> extraBundles) throws FrameworkException {
         if (extraBundles != null && !extraBundles.isEmpty()) {
             for (String bundle : extraBundles) {
                 BundleManagement.loadBundle(repositoryAdmin, bundleContext, bundle);
@@ -131,27 +178,8 @@ public class ApiStartup {
                 throw new FrameworkException("Problem loading API bundles", t);
             }
         }
-
-        logger.info("API server has started");
-
-        // *** Loop until we are asked to shutdown
-        long heartbeatExpire = 0;
-        while (!shutdown) {
-            if (System.currentTimeMillis() >= heartbeatExpire) {
-                // updateHeartbeat(dss);
-                heartbeatExpire = System.currentTimeMillis() + 20000;
-            }
-
-            try {
-                Thread.sleep(500);
-            } catch (Exception e) {
-                throw new FrameworkException("Interrupted sleep", e);
-            }
-        }
-
-        logger.info("API server shutdown is complete");
-
     }
+
 
     @Activate
     public void activate(BundleContext context) {
@@ -161,18 +189,22 @@ public class ApiStartup {
     private class ShutdownHook extends Thread {
         @Override
         public void run() {
-            ApiStartup.this.logger.info("Shutdown request received");
+            ApiStartup.this.logger.info("Shutdown hook called. Shutdown request received");
+            // Tell the main thread to shut down via this shared variable.
             ApiStartup.this.shutdown = true;
 
             while (!shutdownComplete) {
                 try {
+                    ApiStartup.this.logger.info("Shutdown hook waiting for a short period, to give the main thread a chance to clean up.");
                     Thread.sleep(100);
+                    ApiStartup.this.logger.info("Shutdown hook woke up");
                 } catch (InterruptedException e) {
                     ApiStartup.this.logger.info("Shutdown wait was interrupted", e);
                     Thread.currentThread().interrupt();
-                    return;
+                    break;
                 }
             }
+            ApiStartup.this.logger.info("Shutdown hook finished");
         }
     }
 

@@ -74,6 +74,7 @@ dependencies {
         api 'dev.galasa:dev.galasa:'+version
         api 'dev.galasa:dev.galasa.framework:'+version
         api 'dev.galasa:dev.galasa.framework.api.beans:'+version
+        api 'dev.galasa:dev.galasa.framework.api.openapi:'+version
         api 'dev.galasa:dev.galasa.platform:'+version
         api 'dev.galasa:dev.galasa.plugin.common:'+version
         api 'dev.galasa:dev.galasa.plugin.common.impl:'+version
@@ -88,6 +89,7 @@ dependencies {
         api 'dev.galasa:dev.galasa.wrapping.kafka.clients:'+version
         api 'dev.galasa:dev.galasa.wrapping.protobuf-java:'+version
         api 'dev.galasa:dev.galasa.wrapping.velocity-engine-core:'+version
+        api 'dev.galasa:galasa-boot:'+version
         api 'dev.galasa:galasa-testharness:0.18.0'
 
         api 'io.etcd:jetcd-api:0.8.3'
@@ -204,7 +206,7 @@ dependencies {
         api 'org.apache.logging.log4j:log4j-slf4j-impl:2.24.1'
 
         api 'org.apache.maven:maven-artifact:3.9.6'
-        api 'org.apache.maven:maven-compat:3.6.2'
+        api 'org.apache.maven:maven-compat:3.9.9'
         api 'org.apache.maven:maven-plugin-api:3.6.2'
         api 'org.apache.maven:maven-repository-metadata:3.3.9'
 
@@ -240,6 +242,8 @@ dependencies {
 
         api 'org.mockito:mockito-core:3.1.0'
         api 'org.mockito:mockito-junit-jupiter:5.3.1'
+
+        api 'org.openapitools:openapi-generator-cli:6.6.0'
 
         api 'org.osgi:org.osgi.core:6.0.0'
         api 'org.osgi:org.osgi.service.cm:1.6.0'

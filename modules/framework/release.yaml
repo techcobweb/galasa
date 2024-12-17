@@ -22,14 +22,13 @@ metadata:
 framework:
   bundles:
 
-
   - artifact: dev.galasa
     version: 0.39.0
     obr:          true
     mvp:          true
     bom:          true
     javadoc:      true
-    isolated:     false
+    isolated:     true
     codecoverage: true
 
   - artifact: dev.galasa.framework
@@ -38,7 +37,7 @@ framework:
     mvp:          true
     bom:          true
     javadoc:      false
-    isolated:     false
+    isolated:     true
     codecoverage: true
 
   - artifact: dev.galasa.framework.auth.spi
@@ -119,7 +118,7 @@ framework:
     mvp:          true
     bom:          false
     javadoc:      false
-    isolated:     false
+    isolated:     true
     codecoverage: true
 
   - artifact: galasa-testharness
@@ -131,9 +130,9 @@ framework:
     isolated:     false
     codecoverage: false
 
+
 api:
   bundles:
-
 
   - artifact: dev.galasa.framework.api
     version: 0.39.0

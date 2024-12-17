@@ -31,6 +31,10 @@ external:
   - group: com.sun.xml.bind
     artifact: jaxb-osgi
     obr: true
+    # Added since Isolated selects bundles based on this line,
+    # and not just all bundles appearing in this file,
+    # but might not be needed in Isolated.
+    isolated: true
 
   - group: commons-codec
     artifact: commons-codec
@@ -81,6 +85,8 @@ external:
   - group: dev.galasa
     artifact: dev.galasa.wrapping.com.auth0.jwt
     obr: true
+    mvp: false      # Only used for Authentication - not needed.
+    isolated: false # Only used for Authentication - not needed.
 
   - group: dev.galasa
     artifact: dev.galasa.wrapping.gson
@@ -94,8 +100,8 @@ external:
     version: 0.39.0
     obr: true
     bom: true
-    isolated: true
     mvp: true
+    isolated: true
 
   - group: dev.galasa
     artifact: dev.galasa.wrapping.io.grpc.java
@@ -129,6 +135,8 @@ external:
   - group: dev.galasa
     artifact: dev.galasa.wrapping.kafka.clients
     obr: true
+    mvp: false      # Only used in Kafka extension - not needed.
+    isolated: false # Only used in Kafka extension - not needed.
 
   - group: io.prometheus
     artifact: simpleclient
@@ -218,6 +226,8 @@ external:
   - group: org.apache.derby
     artifact: derbyclient
     obr: true
+    mvp: false      # Added into MVP through pom2.xml
+    isolated: false # Added into Isolated through pom2.xml
 
   - group: org.apache.felix
     artifact: org.apache.felix.configadmin
@@ -269,8 +279,8 @@ external:
     version: 4.4.14
     obr: true
     bom: true
-    isolated: true
     mvp: true
+    isolated: true
 
   - group: org.apache.httpcomponents
     artifact: httpcore
@@ -311,19 +321,29 @@ external:
   - group: org.bouncycastle
     artifact: bcpkix-jdk18on
     obr: true
+    mvp: false      # Only used for Docker controller - not needed.
+    isolated: false # Only used for Docker controller - not needed.
 
   - group: org.bouncycastle
     artifact: bcprov-jdk18on
     obr: true
+    mvp: false      # Only used for Docker controller - not needed.
+    isolated: false # Only used for Docker controller - not needed.
 
   - group: org.bouncycastle
     artifact: bcutil-jdk18on
     obr: true
+    mvp: false      # Only used for Docker controller - not needed.
+    isolated: false # Only used for Docker controller - not needed.
 
   - group: org.osgi
     artifact: org.osgi.service.component.annotations
     version: 1.3.0
     bom: true
+    # Added since Isolated selects bundles based on this line,
+    # and not just all bundles appearing in this file,
+    # but might not be needed in Isolated.
+    isolated: true
 
   - group: org.slf4j
     artifact: slf4j-api
@@ -335,5 +355,5 @@ external:
   - group: org.yaml
     artifact: snakeyaml
     obr: true
-    isolated: true
     mvp: true
+    isolated: true
