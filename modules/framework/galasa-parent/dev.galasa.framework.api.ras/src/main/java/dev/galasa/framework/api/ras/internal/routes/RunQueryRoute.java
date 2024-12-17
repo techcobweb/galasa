@@ -279,7 +279,7 @@ public class RunQueryRoute extends RunsRoute {
 			RasSearchCriteriaRunName runNameCriteria = new RasSearchCriteriaRunName(runName);
 			critList.add(runNameCriteria);
 		}
-		if(group != null && !group.isEmpty()){
+		if (group != null && !group.isEmpty()) {
 			RasSearchCriteriaGroup groupCriteria = new RasSearchCriteriaGroup(group);
 			critList.add(groupCriteria);
 		}
