@@ -20,6 +20,7 @@ public class MockRun implements IRun {
     private String requestorName ;
     private boolean isRunLocal;
     private String gherkinUrl;
+    private Instant heartbeat;
 
 
     public MockRun(
@@ -52,7 +53,18 @@ public class MockRun implements IRun {
         this.isRunLocal = isRunLocal;
         this.gherkinUrl = gherkinUrl;
     }
+
+    // Shared environment not used very often so not adding
+    // to the constructor.
+    private boolean isSharedEnvironment = false;
+    public void setSharedEnvironment(boolean newValue) {
+        this.isSharedEnvironment = newValue ;
+    }
     
+    @Override
+    public boolean isSharedEnvironment() {
+        return isSharedEnvironment;
+    }
 
     @Override
     public String getTestBundleName() {
@@ -105,12 +117,18 @@ public class MockRun implements IRun {
         return this.gherkinUrl;
     }
 
-    // ------------- un-implemented methods follow ----------------
+    // Heartbeat is something we want to mess around with
+    // on the fly so not adding it to the constructor.
+    public void setHeartbeat(Instant newValue ) {
+        this.heartbeat = newValue;
+    }
 
     @Override
     public Instant getHeartbeat() {
-        throw new UnsupportedOperationException("Unimplemented method 'getHeartbeat'");
+        return this.heartbeat ;
     }
+
+    // ------------- un-implemented methods follow ----------------
 
     @Override
     public String getType() {
@@ -157,9 +175,6 @@ public class MockRun implements IRun {
         throw new UnsupportedOperationException("Unimplemented method 'getResult'");
     }
 
-    @Override
-    public boolean isSharedEnvironment() {
-        throw new UnsupportedOperationException("Unimplemented method 'isSharedEnvironment'");
-    }
+
     
 }

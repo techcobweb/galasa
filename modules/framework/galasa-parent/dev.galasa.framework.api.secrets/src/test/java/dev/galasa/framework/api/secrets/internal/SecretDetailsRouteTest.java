@@ -26,7 +26,7 @@ import dev.galasa.framework.api.common.mocks.MockCredentialsService;
 import dev.galasa.framework.api.common.mocks.MockFramework;
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
 import dev.galasa.framework.api.common.mocks.MockHttpServletResponse;
-import dev.galasa.framework.api.common.mocks.MockTimeService;
+import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.api.secrets.internal.routes.SecretDetailsRoute;
 import dev.galasa.framework.api.secrets.mocks.MockSecretsServlet;
 import dev.galasa.framework.spi.creds.CredentialsToken;
