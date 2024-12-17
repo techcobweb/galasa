@@ -160,8 +160,6 @@ public abstract class CouchdbStore {
             throws CouchdbException {
         ViewResponse viewResponse = null;
         
-        
-
         String viewRequestUriStr = storeUri + "/" + dbName + "/_design/docs/_view/" + viewName;
         try {
             URIBuilder uriBuilder = new URIBuilder(viewRequestUriStr);

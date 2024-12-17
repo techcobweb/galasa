@@ -680,7 +680,7 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
         );
 
         MockLogFactory mockLogFactory = new MockLogFactory();
-        MockAsyncCloseableHttpClient httpClient = new MockAsyncCloseableHttpClient(interactions);
+        // MockAsyncCloseableHttpClient httpClient = new MockAsyncCloseableHttpClient(interactions);
         CouchdbRasStore mockRasStore = fixtures.createCouchdbRasStore(mockLogFactory, httpClient);
         CouchdbDirectoryService directoryService = new CouchdbDirectoryService(mockRasStore, mockLogFactory, new HttpRequestFactoryImpl());
 

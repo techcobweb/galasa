@@ -95,7 +95,7 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
 
     private CouchdbRasFileSystemProvider createFileSystemProvider() {
         ResultArchiveStoreFileStore fileStore = new ResultArchiveStoreFileStore();
-        return new CouchdbRasFileSystemProvider(fileStore, store, logFactory);        
+        return new CouchdbRasFileSystemProvider(fileStore, store, logFactory);
     }
 
     public Path getRunArtifactPath(TestStructureCouchdb ts) throws CouchdbRasException {
@@ -105,7 +105,8 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
         }
 
         for (String artifactRecordId : ts.getArtifactRecordIds()) {
-            HttpGet httpGet = requestFactory.getHttpGetRequest(store.getCouchdbUri() + "/galasa_artifacts/" + artifactRecordId);
+            HttpGet httpGet = requestFactory
+                    .getHttpGetRequest(store.getCouchdbUri() + "/galasa_artifacts/" + artifactRecordId);
 
             try (CloseableHttpResponse response = store.getHttpClient().execute(httpGet)) {
                 StatusLine statusLine = response.getStatusLine();
@@ -273,14 +274,13 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
 
     }
 
-
-
     @Override
     public @NotNull List<RasTestClass> getTests() throws ResultArchiveStoreException {
         ArrayList<RasTestClass> tests = new ArrayList<>();
 
         HttpGet httpGet = requestFactory.getHttpGetRequest(
-                store.getCouchdbUri() + "/" + RUNS_DB + "/_design/docs/_view/" + BUNDLE_TESTNAMES_VIEW_NAME + "?group=true");
+                store.getCouchdbUri() + "/" + RUNS_DB + "/_design/docs/_view/" + BUNDLE_TESTNAMES_VIEW_NAME
+                        + "?group=true");
 
         try (CloseableHttpResponse response = store.getHttpClient().execute(httpGet)) {
             StatusLine statusLine = response.getStatusLine();
@@ -327,19 +327,18 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
     @Override
     public List<IRunResult> getRunsByGroupName(@NotNull String groupName) throws ResultArchiveStoreException {
 
-    
         List<IRunResult> runs = new ArrayList<>();
         try {
             boolean includeDocuments = true;
             ViewResponse viewResponse = store.getDocumentsFromDatabaseViewByKey(
-                RUNS_DB,
-                RUN_GROUP_VIEW_NAME,
-                groupName,
-                includeDocuments
-            );
+                    RUNS_DB,
+                    RUN_GROUP_VIEW_NAME,
+                    groupName,
+                    includeDocuments);
 
             if (viewResponse.rows == null) {
-                String errorMessage = ERROR_FAILED_TO_GET_VIEW_DOCUMENTS_FROM_DATABASE.getMessage(RUN_GROUP_VIEW_NAME, RUNS_DB);
+                String errorMessage = ERROR_FAILED_TO_GET_VIEW_DOCUMENTS_FROM_DATABASE.getMessage(RUN_GROUP_VIEW_NAME,
+                        RUNS_DB);
                 throw new ResultArchiveStoreException(errorMessage);
             }
 
@@ -363,14 +362,14 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
         try {
             boolean includeDocuments = true;
             ViewResponse viewResponse = store.getDocumentsFromDatabaseViewByKey(
-                RUNS_DB,
-                RUN_NAMES_VIEW_NAME,
-                runName,
-                includeDocuments
-            );
+                    RUNS_DB,
+                    RUN_NAMES_VIEW_NAME,
+                    runName,
+                    includeDocuments);
 
             if (viewResponse.rows == null) {
-                String errorMessage = ERROR_FAILED_TO_GET_VIEW_DOCUMENTS_FROM_DATABASE.getMessage(RUN_NAMES_VIEW_NAME, RUNS_DB);
+                String errorMessage = ERROR_FAILED_TO_GET_VIEW_DOCUMENTS_FROM_DATABASE.getMessage(RUN_NAMES_VIEW_NAME,
+                        RUNS_DB);
                 throw new ResultArchiveStoreException(errorMessage);
             }
 
@@ -389,7 +388,8 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
     }
 
     @Override
-    public @NotNull RasRunResultPage getRunsPage(int maxResults, RasSortField primarySort, String pageToken, @NotNull IRasSearchCriteria... searchCriterias)
+    public @NotNull RasRunResultPage getRunsPage(int maxResults, RasSortField primarySort, String pageToken,
+            @NotNull IRasSearchCriteria... searchCriterias)
             throws ResultArchiveStoreException {
 
         HttpPost httpPost = requestFactory.getHttpPostRequest(store.getCouchdbUri() + "/" + RUNS_DB + "/_find");
@@ -433,13 +433,15 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
             for (TestStructureCouchdb ts : found.docs) {
                 if (ts.isValid()) {
 
-                    // Don't load the artifacts for the found runs, just set a root location for artifacts
+                    // Don't load the artifacts for the found runs, just set a root location for
+                    // artifacts
                     // and add this run to the results
                     runs.add(new CouchdbRunResult(store, ts, logFactory));
                 }
             }
 
-            // CouchDB sometimes returns a 'nil' string as a bookmark to indicate no bookmark,
+            // CouchDB sometimes returns a 'nil' string as a bookmark to indicate no
+            // bookmark,
             // so turn it into an actual null value
             if (found.bookmark != null && found.bookmark.equals("nil")) {
                 found.bookmark = null;
@@ -503,7 +505,7 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
         JsonArray and = new JsonArray();
         selector.add("$and", and);
 
-        for(IRasSearchCriteria searchCriteria : searchCriterias) {
+        for (IRasSearchCriteria searchCriteria : searchCriterias) {
             if (searchCriteria instanceof RasSearchCriteriaRequestor) {
                 RasSearchCriteriaRequestor sRequestor = (RasSearchCriteriaRequestor) searchCriteria;
 
@@ -536,20 +538,20 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
                 RasSearchCriteriaBundle sBundle = (RasSearchCriteriaBundle) searchCriteria;
 
                 inArray(and, "bundle", sBundle.getBundles());
-            }else if (searchCriteria instanceof RasSearchCriteriaGroup) {
+            } else if (searchCriteria instanceof RasSearchCriteriaGroup) {
                 RasSearchCriteriaGroup sBundle = (RasSearchCriteriaGroup) searchCriteria;
 
                 inArray(and, "group", sBundle.getGroups());
-            }
-             else if (searchCriteria instanceof RasSearchCriteriaResult) {
+            } else if (searchCriteria instanceof RasSearchCriteriaResult) {
                 RasSearchCriteriaResult sResult = (RasSearchCriteriaResult) searchCriteria;
 
                 inArray(and, "result", sResult.getResults());
-            } else if(searchCriteria instanceof RasSearchCriteriaStatus) {
+            } else if (searchCriteria instanceof RasSearchCriteriaStatus) {
                 RasSearchCriteriaStatus sStatus = (RasSearchCriteriaStatus) searchCriteria;
                 inArray(and, "status", sStatus.getStatusesAsStrings());
             } else {
-                throw new ResultArchiveStoreException("Unrecognised search criteria class " + searchCriteria.getClass().getName());
+                throw new ResultArchiveStoreException(
+                        "Unrecognised search criteria class " + searchCriteria.getClass().getName());
             }
         }
         return selector;
@@ -561,7 +563,7 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
         }
 
         JsonArray jIns = new JsonArray();
-        for(String in : inArray) {
+        for (String in : inArray) {
             if (in == null || in.isEmpty()) {
                 continue;
             }
@@ -593,8 +595,7 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
         try {
             return fetchRun(runId);
         } catch (Exception e) {
-            return null;  // This runid may not belong to this RAS, so ignore all errors
+            return null; // This runid may not belong to this RAS, so ignore all errors
         }
     }
 }
-
