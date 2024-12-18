@@ -46,6 +46,7 @@ public class CouchdbValidatorImpl implements CouchdbValidator {
     private static final String TEST_NAMES_VIEW_FUNCTION       = "function (doc) { emit(doc.testName, 1); }";
     private static final String BUNDLE_TESTNAMES_VIEW_FUNCTION = "function (doc) { emit(doc.bundle + '/' + doc.testName, 1); }";
     private static final String RUN_NAMES_VIEW_FUNCTION        = "function (doc) { emit(doc.runName, 1); }";
+    private static final String GROUP_VIEW_FUNCTION            = "function (doc) { if (doc.group !== undefined && doc.group !== null) { emit(doc.group, doc); } }";
     private static final String COUNT_REDUCE                   = "_count";
     
     private final GalasaGson                         gson               = new GalasaGson();
@@ -94,6 +95,7 @@ public class CouchdbValidatorImpl implements CouchdbValidator {
             checkIndex(httpClient, rasUri, 1, "galasa_run", "testName", timeService);
             checkIndex(httpClient, rasUri, 1, "galasa_run", "bundle", timeService);
             checkIndex(httpClient, rasUri, 1, "galasa_run", "result", timeService);
+            checkIndex(httpClient, rasUri, 1, "galasa_run", "group", timeService);
 
             logger.debug("RAS CouchDB at " + rasUri.toString() + " validated");
         } catch (CouchdbException e) {
@@ -210,6 +212,10 @@ public class CouchdbValidatorImpl implements CouchdbValidator {
         }
 
         if (checkForViewUpdates(views, RUN_NAMES_VIEW_NAME, RUN_NAMES_VIEW_FUNCTION)) {
+            updated = true;
+        }
+
+        if (checkForViewUpdates(views, RUN_GROUP_VIEW_NAME, GROUP_VIEW_FUNCTION)) {
             updated = true;
         }
 

@@ -61,6 +61,7 @@ public class CouchdbRasStore extends CouchdbStore implements IResultArchiveStore
     public static final String TEST_NAMES_VIEW_NAME       = "testnames-view";
     public static final String BUNDLE_TESTNAMES_VIEW_NAME = "bundle-testnames-view";
     public static final String RUN_NAMES_VIEW_NAME        = "runnames-view";
+    public static final String RUN_GROUP_VIEW_NAME        = "group-view";
 
     private final Log                          logger            ;
 
