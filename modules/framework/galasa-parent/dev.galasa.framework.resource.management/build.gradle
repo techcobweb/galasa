@@ -11,7 +11,7 @@ dependencies {
     implementation 'io.prometheus:simpleclient_httpserver'
     implementation 'io.prometheus:simpleclient_hotspot'
 
-    testImplementation project(':dev.galasa.framework').sourceSets.test.output
+    testImplementation(testFixtures(project(':dev.galasa.framework')))
 }
 
 
