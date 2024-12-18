@@ -29,14 +29,7 @@ dependencies {
     testFixturesImplementation 'junit:junit'
     testFixturesImplementation 'commons-io:commons-io'
     testFixturesImplementation 'org.apache.felix:org.apache.felix.bundlerepository'
-    testFixturesImplementation 'dev.galasa:dev.galasa.wrapping.gson'
-    testFixturesImplementation 'org.apache.bcel:bcel'
-    testFixturesImplementation 'org.apache.commons:commons-lang3'
     testFixturesImplementation project (':dev.galasa.framework.maven.repository.spi')
-    testFixturesImplementation 'org.apache.logging.log4j:log4j-api'
-    testFixturesImplementation 'org.apache.logging.log4j:log4j-core'
-    testFixturesImplementation 'org.apache.logging.log4j:log4j-slf4j-impl'
-    testFixturesImplementation 'org.yaml:snakeyaml'
     testFixturesImplementation 'commons-logging:commons-logging'
 }
 
