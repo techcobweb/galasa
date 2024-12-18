@@ -142,4 +142,15 @@ public class MockResultArchiveStoreDirectoryService implements IResultArchiveSto
         }
         return matchingRuns;
     }
+
+	@Override
+	public List<IRunResult> getRunsByGroupName(@NotNull String groupName) throws ResultArchiveStoreException {
+		List<IRunResult> matchingRuns = new ArrayList<>();
+        for (IRunResult run : runResults) {
+            if (run.getTestStructure().getGroup().equals(groupName)) {
+                matchingRuns.add(run);
+            }
+        }
+        return matchingRuns;
+	}
 }

@@ -26,6 +26,7 @@ import dev.galasa.framework.spi.ResultArchiveStoreException;
 import dev.galasa.framework.spi.ras.IRasSearchCriteria;
 import dev.galasa.framework.spi.ras.RasRunResultPage;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaBundle;
+import dev.galasa.framework.spi.ras.RasSearchCriteriaGroup;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaQueuedFrom;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaQueuedTo;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaRequestor;
@@ -175,6 +176,7 @@ public class RunQueryRoute extends RunsRoute {
 		List<String> result = queryParams.getResultsFromParameters(getResultNames());
 		List<TestRunLifecycleStatus> status = queryParams.getStatusesFromParameters();
 		String runName = queryParams.getRunName();
+		String group = queryParams.getGroup();
 
 		Instant to = queryParams.getToTime();
 
@@ -182,7 +184,7 @@ public class RunQueryRoute extends RunsRoute {
 		// from will error if no runname is specified as it is a mandatory field
 		Instant from = getQueriedFromTime(queryParams, defaultFromTime);
 
-		List<IRasSearchCriteria> criteria = getCriteria(requestor,testName,bundle,result,status,to, from, runName);
+		List<IRasSearchCriteria> criteria = getCriteria(requestor,testName,bundle,result,status,to, from, runName, group);
 		return criteria ;
 	}
 
@@ -236,7 +238,8 @@ public class RunQueryRoute extends RunsRoute {
 		List<TestRunLifecycleStatus> passedInStatuses,
 		Instant to,
 		Instant from,
-		String runName
+		String runName,
+		String group
 	) throws InternalServletException {
 
 		List<IRasSearchCriteria> critList = new ArrayList<>();
@@ -275,6 +278,10 @@ public class RunQueryRoute extends RunsRoute {
 		if (runName != null && !runName.isEmpty()) {
 			RasSearchCriteriaRunName runNameCriteria = new RasSearchCriteriaRunName(runName);
 			critList.add(runNameCriteria);
+		}
+		if (group != null && !group.isEmpty()) {
+			RasSearchCriteriaGroup groupCriteria = new RasSearchCriteriaGroup(group);
+			critList.add(groupCriteria);
 		}
 		return critList;
 	}
@@ -479,9 +486,9 @@ public class RunQueryRoute extends RunsRoute {
 		int querysize = params.getSize();
 		Instant from = defaultFromTimestamp;
 		if (querysize > 0) {
-			if (!params.isFromTimeOrRunNamePresent()) {
+			if (!params.isFromTimeOrRunNameOrGroupPresent()) {
 				//  RULE: Throw exception because a query exists but no from date has been supplied
-				// EXCEPT: When a runname is present in the query
+				// EXCEPT: When a runname or group is present in the query
 				ServletError error = new ServletError(GAL5010_FROM_DATE_IS_REQUIRED);
 				throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);
 			}

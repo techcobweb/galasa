@@ -1242,6 +1242,14 @@ paths:
           schema:
             type: string
           example: U1578
+        - name: group
+          in: query
+          description: |
+            The name of the group for which details will be returned
+            for all the runs under the name of that group.
+          schema:
+            type: string
+          example: someGroupId
         
         # Temporary feature flag to enable cursor-based pagination
         - name: includeCursor
@@ -2332,6 +2340,8 @@ components:
         testName:
           type: string
         testShortName:
+          type: string
+        group:
           type: string
         requestor:
           type: string

@@ -20,6 +20,7 @@ public class MockRun implements IRun {
     private String requestorName ;
     private boolean isRunLocal;
     private String gherkinUrl;
+    private String group;
 
 
     public MockRun(
@@ -27,20 +28,20 @@ public class MockRun implements IRun {
         String testClassName, String testRunName , 
         String testStream, String testStreamOBR, 
         String testStreamRepoUrl, String requestorName, 
-        boolean isRunLocal 
+        boolean isRunLocal
     ) {
         this( testBundleName, 
             testClassName, testRunName , 
             testStream, testStreamOBR, 
             testStreamRepoUrl, requestorName, 
-            isRunLocal ,null);
+            isRunLocal ,null, null);
     }
     public MockRun(
         String testBundleName, 
         String testClassName, String testRunName , 
         String testStream, String testStreamOBR, 
         String testStreamRepoUrl, String requestorName, 
-        boolean isRunLocal , String gherkinUrl
+        boolean isRunLocal , String gherkinUrl, String group
     ) {
         this.testBundleName = testBundleName;
         this.testClassName = testClassName ;
@@ -51,8 +52,8 @@ public class MockRun implements IRun {
         this.requestorName = requestorName;
         this.isRunLocal = isRunLocal;
         this.gherkinUrl = gherkinUrl;
-    }
-    
+        this.group = group;
+    }    
 
     @Override
     public String getTestBundleName() {
@@ -94,6 +95,11 @@ public class MockRun implements IRun {
         return this.testStreamOBR;
     }
 
+    @Override
+    public String getGroup() {
+        return this.group;
+    }
+
 
     @Override
     public boolean isLocal() {
@@ -127,10 +133,6 @@ public class MockRun implements IRun {
         throw new UnsupportedOperationException("Unimplemented method 'getStatus'");
     }
 
-    @Override
-    public String getGroup() {
-        throw new UnsupportedOperationException("Unimplemented method 'getGroup'");
-    }
 
     @Override
     public boolean isTrace() {

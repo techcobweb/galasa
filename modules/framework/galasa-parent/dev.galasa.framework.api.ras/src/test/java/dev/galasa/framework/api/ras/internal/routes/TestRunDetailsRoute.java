@@ -13,6 +13,8 @@ import dev.galasa.framework.api.ras.internal.mocks.MockArchiveStore;
 import dev.galasa.framework.api.ras.internal.mocks.MockRasServletEnvironment;
 import dev.galasa.framework.api.ras.internal.mocks.MockResultArchiveStoreDirectoryService;
 import dev.galasa.framework.api.ras.internal.mocks.MockRunResult;
+import dev.galasa.api.ras.RasRunResult;
+import dev.galasa.api.ras.RasTestStructure;
 import dev.galasa.framework.api.common.HttpMethod;
 import dev.galasa.framework.api.common.mocks.MockFramework;
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
@@ -37,16 +39,21 @@ import javax.servlet.http.HttpServletResponse;
 public class TestRunDetailsRoute extends RasServletTest {
 
     public String generateExpectedJson (String runId, String runName ){
-		return  "{\n"+
-        "  \"runId\": \""+ runId +"\",\n"+
-        "  \"artifacts\": [],\n"+
-        "  \"testStructure\": {\n"+
-        "    \"runName\": \""+runName+"\",\n"+
-        "    \"requestor\": \"galasa\",\n"+
-        "    \"result\": \"Passed\",\n"+
-        "    \"methods\": []\n"+
-        "  }\n"+
-      "}";
+
+		RasTestStructure testStructure = new RasTestStructure(runName, null, null, null, "galasa", null, "Passed", null, null, null, Collections.emptyList(), "none");
+		RasRunResult rasRunResult = new RasRunResult(runId, Collections.emptyList(), testStructure);
+
+		testStructure.setRunName(runName);
+		testStructure.setRequestor("galasa");
+		testStructure.setResult("Passed");
+		testStructure.setGroup("none");
+		testStructure.setMethods(Collections.emptyList());
+
+		rasRunResult.setRunId(runId);
+		rasRunResult.setArtifacts(Collections.emptyList());
+		rasRunResult.setTestStructure(testStructure);
+
+		return gson.toJson(rasRunResult);
     }
 
 	public String generateStatusUpdateJson(String status, String result) {

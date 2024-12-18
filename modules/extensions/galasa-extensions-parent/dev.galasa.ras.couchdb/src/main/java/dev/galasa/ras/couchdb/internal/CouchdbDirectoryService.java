@@ -40,6 +40,7 @@ import dev.galasa.framework.spi.ResultArchiveStoreException;
 import dev.galasa.framework.spi.ras.IRasSearchCriteria;
 import dev.galasa.framework.spi.ras.RasRunResultPage;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaBundle;
+import dev.galasa.framework.spi.ras.RasSearchCriteriaGroup;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaQueuedFrom;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaQueuedTo;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaRequestor;
@@ -94,7 +95,7 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
 
     private CouchdbRasFileSystemProvider createFileSystemProvider() {
         ResultArchiveStoreFileStore fileStore = new ResultArchiveStoreFileStore();
-        return new CouchdbRasFileSystemProvider(fileStore, store, logFactory);        
+        return new CouchdbRasFileSystemProvider(fileStore, store, logFactory);
     }
 
     public Path getRunArtifactPath(TestStructureCouchdb ts) throws CouchdbRasException {
@@ -104,7 +105,8 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
         }
 
         for (String artifactRecordId : ts.getArtifactRecordIds()) {
-            HttpGet httpGet = requestFactory.getHttpGetRequest(store.getCouchdbUri() + "/galasa_artifacts/" + artifactRecordId);
+            HttpGet httpGet = requestFactory
+                    .getHttpGetRequest(store.getCouchdbUri() + "/galasa_artifacts/" + artifactRecordId);
 
             try (CloseableHttpResponse response = store.getHttpClient().execute(httpGet)) {
                 StatusLine statusLine = response.getStatusLine();
@@ -272,14 +274,13 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
 
     }
 
-
-
     @Override
     public @NotNull List<RasTestClass> getTests() throws ResultArchiveStoreException {
         ArrayList<RasTestClass> tests = new ArrayList<>();
 
         HttpGet httpGet = requestFactory.getHttpGetRequest(
-                store.getCouchdbUri() + "/" + RUNS_DB + "/_design/docs/_view/" + BUNDLE_TESTNAMES_VIEW_NAME + "?group=true");
+                store.getCouchdbUri() + "/" + RUNS_DB + "/_design/docs/_view/" + BUNDLE_TESTNAMES_VIEW_NAME
+                        + "?group=true");
 
         try (CloseableHttpResponse response = store.getHttpClient().execute(httpGet)) {
             StatusLine statusLine = response.getStatusLine();
@@ -324,38 +325,24 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
     }
 
     @Override
-    public List<IRunResult> getRunsByRunName(@NotNull String runName) throws ResultArchiveStoreException {
-        List<IRunResult> runs = new ArrayList<>();
-        try {
-            boolean includeDocuments = true;
-            ViewResponse viewResponse = store.getDocumentsFromDatabaseViewByKey(
-                RUNS_DB,
-                RUN_NAMES_VIEW_NAME,
-                runName,
-                includeDocuments
-            );
+    public List<IRunResult> getRunsByGroupName(@NotNull String groupName) throws ResultArchiveStoreException {
 
-            if (viewResponse.rows == null) {
-                String errorMessage = ERROR_FAILED_TO_GET_VIEW_DOCUMENTS_FROM_DATABASE.getMessage(RUN_NAMES_VIEW_NAME, RUNS_DB);
-                throw new ResultArchiveStoreException(errorMessage);
-            }
-
-            for (ViewRow row : viewResponse.rows) {
-                if (row.doc != null) {
-                    JsonObject testStructureJson = gson.toJsonTree(row.doc).getAsJsonObject();
-                    TestStructureCouchdb testStructure = gson.fromJson(testStructureJson, TestStructureCouchdb.class);
-                    runs.add(new CouchdbRunResult(store, testStructure, logFactory));
-                }
-            }
-        } catch (CouchdbException e) {
-            // This error has a custom message, so pass it up
-            throw new ResultArchiveStoreException(e);
-        }
+        List<IRunResult> runs = getRunsFromViewByKey(RUN_GROUP_VIEW_NAME, groupName);
+        
         return runs;
     }
 
     @Override
-    public @NotNull RasRunResultPage getRunsPage(int maxResults, RasSortField primarySort, String pageToken, @NotNull IRasSearchCriteria... searchCriterias)
+    public List<IRunResult> getRunsByRunName(@NotNull String runName) throws ResultArchiveStoreException {
+         
+        List<IRunResult> runs = getRunsFromViewByKey(RUN_NAMES_VIEW_NAME, runName);
+        return runs;
+
+    }
+
+    @Override
+    public @NotNull RasRunResultPage getRunsPage(int maxResults, RasSortField primarySort, String pageToken,
+            @NotNull IRasSearchCriteria... searchCriterias)
             throws ResultArchiveStoreException {
 
         HttpPost httpPost = requestFactory.getHttpPostRequest(store.getCouchdbUri() + "/" + RUNS_DB + "/_find");
@@ -405,7 +392,8 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
                 }
             }
 
-            // CouchDB sometimes returns a 'nil' string as a bookmark to indicate no bookmark,
+            // CouchDB sometimes returns a 'nil' string as a bookmark to indicate no
+            // bookmark,
             // so turn it into an actual null value
             if (found.bookmark != null && found.bookmark.equals("nil")) {
                 found.bookmark = null;
@@ -469,7 +457,7 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
         JsonArray and = new JsonArray();
         selector.add("$and", and);
 
-        for(IRasSearchCriteria searchCriteria : searchCriterias) {
+        for (IRasSearchCriteria searchCriteria : searchCriterias) {
             if (searchCriteria instanceof RasSearchCriteriaRequestor) {
                 RasSearchCriteriaRequestor sRequestor = (RasSearchCriteriaRequestor) searchCriteria;
 
@@ -502,15 +490,20 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
                 RasSearchCriteriaBundle sBundle = (RasSearchCriteriaBundle) searchCriteria;
 
                 inArray(and, "bundle", sBundle.getBundles());
+            } else if (searchCriteria instanceof RasSearchCriteriaGroup) {
+                RasSearchCriteriaGroup sBundle = (RasSearchCriteriaGroup) searchCriteria;
+
+                inArray(and, "group", sBundle.getGroups());
             } else if (searchCriteria instanceof RasSearchCriteriaResult) {
                 RasSearchCriteriaResult sResult = (RasSearchCriteriaResult) searchCriteria;
 
                 inArray(and, "result", sResult.getResults());
-            } else if(searchCriteria instanceof RasSearchCriteriaStatus) {
+            } else if (searchCriteria instanceof RasSearchCriteriaStatus) {
                 RasSearchCriteriaStatus sStatus = (RasSearchCriteriaStatus) searchCriteria;
                 inArray(and, "status", sStatus.getStatusesAsStrings());
             } else {
-                throw new ResultArchiveStoreException("Unrecognised search criteria class " + searchCriteria.getClass().getName());
+                throw new ResultArchiveStoreException(
+                        "Unrecognised search criteria class " + searchCriteria.getClass().getName());
             }
         }
         return selector;
@@ -522,7 +515,7 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
         }
 
         JsonArray jIns = new JsonArray();
-        for(String in : inArray) {
+        for (String in : inArray) {
             if (in == null || in.isEmpty()) {
                 continue;
             }
@@ -554,8 +547,40 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
         try {
             return fetchRun(runId);
         } catch (Exception e) {
-            return null;  // This runid may not belong to this RAS, so ignore all errors
+            return null; // This runid may not belong to this RAS, so ignore all errors
         }
     }
-}
 
+    private List<IRunResult> getRunsFromViewByKey(String viewName, String criteriaValue) throws ResultArchiveStoreException{
+
+        List<IRunResult> runs = new ArrayList<>();
+
+        try {
+            boolean includeDocuments = true;
+            ViewResponse viewResponse = store.getDocumentsFromDatabaseViewByKey(
+                    RUNS_DB,
+                    viewName,
+                    criteriaValue,
+                    includeDocuments);
+
+            if (viewResponse.rows == null) {
+                String errorMessage = ERROR_FAILED_TO_GET_VIEW_DOCUMENTS_FROM_DATABASE.getMessage(viewName,
+                        RUNS_DB);
+                throw new ResultArchiveStoreException(errorMessage);
+            }
+
+            for (ViewRow row : viewResponse.rows) {
+                if (row.doc != null) {
+                    JsonObject testStructureJson = gson.toJsonTree(row.doc).getAsJsonObject();
+                    TestStructureCouchdb testStructure = gson.fromJson(testStructureJson, TestStructureCouchdb.class);
+                    runs.add(new CouchdbRunResult(store, testStructure, logFactory));
+                }
+            }
+        } catch (CouchdbException e) {
+            // This error has a custom message, so pass it up
+            throw new ResultArchiveStoreException(e);
+        }
+
+        return runs;
+    }
+}
