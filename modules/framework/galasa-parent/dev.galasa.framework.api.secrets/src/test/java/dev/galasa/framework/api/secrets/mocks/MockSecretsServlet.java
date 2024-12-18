@@ -9,7 +9,7 @@ import dev.galasa.framework.api.common.EnvironmentVariables;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.mocks.MockEnvironment;
 import dev.galasa.framework.api.common.mocks.MockFramework;
-import dev.galasa.framework.api.common.mocks.MockTimeService;
+import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.api.secrets.SecretsServlet;
 import dev.galasa.framework.spi.utils.ITimeService;
 

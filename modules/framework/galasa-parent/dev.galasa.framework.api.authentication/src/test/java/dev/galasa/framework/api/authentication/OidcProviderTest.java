@@ -39,7 +39,7 @@ import dev.galasa.framework.api.authentication.internal.beans.JsonWebKey;
 import dev.galasa.framework.api.common.mocks.MockHttpClient;
 import dev.galasa.framework.api.common.mocks.MockHttpResponse;
 import dev.galasa.framework.api.common.mocks.MockHttpSession;
-import dev.galasa.framework.api.common.mocks.MockTimeService;
+import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 public class OidcProviderTest {

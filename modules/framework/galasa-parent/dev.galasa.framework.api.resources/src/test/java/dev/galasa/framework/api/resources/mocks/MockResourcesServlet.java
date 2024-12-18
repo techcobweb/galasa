@@ -8,7 +8,7 @@ package dev.galasa.framework.api.resources.mocks;
 import dev.galasa.framework.IFileSystem;
 import dev.galasa.framework.api.common.mocks.IServletUnderTest;
 import dev.galasa.framework.api.common.mocks.MockEnvironment;
-import dev.galasa.framework.api.common.mocks.MockTimeService;
+import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.api.resources.ResourcesServlet;
 import dev.galasa.framework.spi.IFramework;
 

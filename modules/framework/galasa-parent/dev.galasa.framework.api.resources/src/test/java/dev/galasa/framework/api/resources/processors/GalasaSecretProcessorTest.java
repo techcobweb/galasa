@@ -22,7 +22,7 @@ import com.google.gson.JsonObject;
 import dev.galasa.ICredentials;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.mocks.MockCredentialsService;
-import dev.galasa.framework.api.common.mocks.MockTimeService;
+import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.api.resources.ResourcesServletTest;
 import dev.galasa.framework.spi.creds.CredentialsToken;
 import dev.galasa.framework.spi.creds.CredentialsUsername;

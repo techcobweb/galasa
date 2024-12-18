@@ -46,6 +46,7 @@ import dev.galasa.framework.auth.spi.mocks.MockDexGrpcClient;
 import dev.galasa.framework.auth.spi.mocks.MockFrontEndClient;
 import dev.galasa.framework.auth.spi.mocks.MockInternalAuthToken;
 import dev.galasa.framework.auth.spi.mocks.MockUser;
+import dev.galasa.framework.mocks.MockTimeService;
 
 public class AuthTokensRouteTest extends BaseServletTest {
 
