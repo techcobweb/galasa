@@ -113,6 +113,7 @@ jobs:
       - name: Download platform from last successful workflow
         if: ${{ steps.download-platform.outcome == 'failure' }}
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: platform
           path: modules/artifacts
@@ -122,6 +123,7 @@ jobs:
       - name: Download gradle artifacts from last successful workflow
         if: ${{ steps.download-gradle.outcome == 'failure' }}
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: gradle
           path: modules/artifacts
