@@ -53,7 +53,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ./tools/get-changed-modules-pull-request.sh --pr-number ${{ github.event.number }}
+          ./github/scripts/get-changed-modules-pull-request.sh --pr-number ${{ github.event.number }}
 
   find-artifacts:
     name: Get Workflow Run IDs with artifacts to download for each module
@@ -80,7 +80,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ./tools/get-last-successful-workflow-run-for-artifacts.sh --repo ${{ github.repository }} \
+          ./github/scripts/get-last-successful-workflow-run-for-artifacts.sh --repo ${{ github.repository }} \
           --platform ${{ needs.get-changed-modules.outputs.platform_changed }} \
           --buildutils ${{ needs.get-changed-modules.outputs.buildutils_changed }} \
           --wrapping ${{ needs.get-changed-modules.outputs.wrapping_changed }} \
