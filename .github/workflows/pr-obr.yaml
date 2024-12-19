@@ -189,7 +189,6 @@ jobs:
       - name: Download galasabld artifacts from last successful workflow
         if: ${{ steps.download-galasabld.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: galasabld
           path: modules/artifacts/galasabld
@@ -199,7 +198,6 @@ jobs:
       - name: Download platform from last successful workflow
         if: ${{ steps.download-platform.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: platform
           path: modules/artifacts
@@ -209,7 +207,6 @@ jobs:
       - name: Download wrapping artifacts from last successful workflow
         if: ${{ steps.download-wrapping.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
             name: wrapping
             path: modules/artifacts
@@ -219,7 +216,6 @@ jobs:
       - name: Download gradle artifacts from last successful workflow
         if: ${{ steps.download-gradle.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
             name: gradle
             path: modules/artifacts
@@ -229,7 +225,6 @@ jobs:
       - name: Download maven artifacts from last successful workflow
         if: ${{ steps.download-maven.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
             name: maven
             path: modules/artifacts
@@ -239,7 +234,6 @@ jobs:
       - name: Download framework artifacts from last successful workflow
         if: ${{ steps.download-framework.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
             name: framework
             path: modules/artifacts
@@ -249,7 +243,6 @@ jobs:
       - name: Download extensions artifacts from last successful workflow
         if: ${{ steps.download-extensions.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: extensions
           path: modules/artifacts
@@ -259,7 +252,6 @@ jobs:
       - name: Download managers artifacts from last successful workflow
         if: ${{ steps.download-managers.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
             name: managers
             path: modules/artifacts
@@ -494,7 +486,6 @@ jobs:
       - name: Download galasabld artifacts from last successful workflow
         if: ${{ steps.download-galasabld.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: galasabld
           path: modules/artifacts/galasabld
@@ -505,7 +496,6 @@ jobs:
       - name: Download platform from last successful workflow
         if: ${{ steps.download-platform.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: platform
           path: modules/artifacts
@@ -515,7 +505,6 @@ jobs:
       - name: Download wrapping artifacts from last successful workflow
         if: ${{ steps.download-wrapping.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
             name: wrapping
             path: modules/artifacts
@@ -525,7 +514,6 @@ jobs:
       - name: Download gradle artifacts from last successful workflow
         if: ${{ steps.download-gradle.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
             name: gradle
             path: modules/artifacts
@@ -535,7 +523,6 @@ jobs:
       - name: Download maven artifacts from last successful workflow
         if: ${{ steps.download-maven.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
             name: maven
             path: modules/artifacts
@@ -545,7 +532,6 @@ jobs:
       - name: Download framework artifacts from last successful workflow
         if: ${{ steps.download-framework.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
             name: framework
             path: modules/artifacts
@@ -555,7 +541,6 @@ jobs:
       - name: Download extensions artifacts from last successful workflow
         if: ${{ steps.download-extensions.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: extensions
           path: modules/artifacts
@@ -565,7 +550,6 @@ jobs:
       - name: Download managers artifacts from last successful workflow
         if: ${{ steps.download-managers.outcome == 'failure' }}
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
             name: managers
             path: modules/artifacts

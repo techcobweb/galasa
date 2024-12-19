@@ -58,7 +58,6 @@ jobs:
   find-artifacts:
     name: Get Workflow Run IDs with artifacts to download for each module
     runs-on: ubuntu-latest
-    needs: [get-changed-modules]
 
     outputs: 
       platform_artifacts_id: ${{ steps.find-artifacts.outputs.platform_artifacts_id }}
@@ -80,15 +79,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ./.github/scripts/get-last-successful-workflow-run-for-artifacts.sh --repo ${{ github.repository }} \
-          --platform ${{ needs.get-changed-modules.outputs.platform_changed }} \
-          --buildutils ${{ needs.get-changed-modules.outputs.buildutils_changed }} \
-          --wrapping ${{ needs.get-changed-modules.outputs.wrapping_changed }} \
-          --gradle ${{ needs.get-changed-modules.outputs.gradle_changed }} \
-          --maven ${{ needs.get-changed-modules.outputs.maven_changed }} \
-          --framework ${{ needs.get-changed-modules.outputs.framework_changed }} \
-          --extensions ${{ needs.get-changed-modules.outputs.extensions_changed }} \
-          --managers ${{ needs.get-changed-modules.outputs.managers_changed }}
+          ./.github/scripts/get-last-successful-workflow-run-for-artifacts.sh --repo ${{ github.repository }}
 
   pr-build-platform:
     name: Build the 'platform' module
