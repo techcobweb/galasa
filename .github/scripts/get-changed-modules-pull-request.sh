@@ -64,18 +64,6 @@ Options are:
 EOF
 }
 
-module_names=(\
-    "buildutils" \
-    "platform" \
-    "wrapping" \
-    "gradle" \
-    "maven" \
-    "framework" \
-    "extensions" \
-    "managers" \
-    "obr" \
-)
-
 #-----------------------------------------------------------------------------------------                   
 # Process parameters
 #-----------------------------------------------------------------------------------------
@@ -144,7 +132,7 @@ function get_changed_modules_and_set_in_environment() {
             echo "GRADLE_CHANGED=true" >> $GITHUB_OUTPUT
             echo "MAVEN_CHANGED=true" >> $GITHUB_OUTPUT
             echo "FRAMEWORK_CHANGED=true" >> $GITHUB_OUTPUT
-            # echo "EXTENSIONS_CHANGED=true" >> $GITHUB_OUTPUT # Not done yet
+            echo "EXTENSIONS_CHANGED=true" >> $GITHUB_OUTPUT
             echo "MANAGERS_CHANGED=true" >> $GITHUB_OUTPUT
             echo "OBR_CHANGED=true" >> $GITHUB_OUTPUT
             continue

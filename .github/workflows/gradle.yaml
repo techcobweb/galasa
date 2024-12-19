@@ -38,6 +38,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modules/gradle
 
       - name: Setup JDK 
         uses: actions/setup-java@v4

@@ -16,7 +16,7 @@ jobs:
     steps:
 
       - name: Checkout code
-        uses: actions/checkout@v4 
+        uses: actions/checkout@v4
 
       - name: Turn script into an executable
         working-directory: ./tools
@@ -47,6 +47,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/scripts
 
       - name: Get the modules changed in this Pull Request
         id: get-changed-modules
@@ -73,6 +76,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/scripts
 
       - name: Get last successful workflow run with artifacts for each module
         id: find-artifacts

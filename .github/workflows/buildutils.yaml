@@ -22,6 +22,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modules/buildutils
 
       - name: Setup up Go
         uses: actions/setup-go@v5
@@ -85,6 +88,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modules/buildutils
         
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -133,6 +139,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modules/buildutils
 
       - name: Setup up Go
         uses: actions/setup-go@v5
@@ -195,6 +204,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modules/buildutils
 
       - name: Setup up Go
         uses: actions/setup-go@v5

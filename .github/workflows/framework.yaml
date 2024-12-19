@@ -41,6 +41,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modules/framework
       
       - name: Setup JDK 
         uses: actions/setup-java@v4
@@ -129,6 +132,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modules/framework
       
       - name: Setup JDK 
         uses: actions/setup-java@v4
