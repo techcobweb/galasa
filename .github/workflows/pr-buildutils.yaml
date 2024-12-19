@@ -36,6 +36,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modules/buildutils
 
       - name: Setup up Go
         uses: actions/setup-go@v5
@@ -67,6 +70,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modules/buildutils
   
       - name: Setup up Go
         uses: actions/setup-go@v5
