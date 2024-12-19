@@ -60,8 +60,17 @@ function usage {
     info "Syntax: get-last-successful-workflow-run-for-artifacts.sh [OPTIONS]"
     cat << EOF
 Options are:
--h | --help : Display this help text
---repo          The repository for this GitHub Actions workflow
+-h | --help  : Display this help text
+--repo       : The repository for this GitHub Actions workflow
+--platform   : true or false if the module has changed
+--buildutils : true or false if the module has changed
+--wrapping   : true or false if the module has changed
+--gradle     : true or false if the module has changed
+--maven      : true or false if the module has changed
+--framework  : true or false if the module has changed
+--extensions : true or false if the module has changed
+--managers   : true or false if the module has changed
+
 EOF
 }
 
@@ -69,19 +78,49 @@ EOF
 # Process parameters
 #-----------------------------------------------------------------------------------------
 repo=""
+platform=""
+buildutils=""
+wrapping=""
+gradle=""
+maven=""
+framework=""
+extensions=""
+managers=""
 while [ "$1" != "" ]; do
     case $1 in
-        -h | --help )       usage
-                            exit
-                            ;;
-
-        --repo )            repo="$2"
-                            shift
-                            ;;
-
-        * )                 error "Unexpected argument $1"
-                            usage
-                            exit 1
+        -h | --help )             usage
+                                  exit
+                                  ;;
+        --repo )                  repo="$2"
+                                  shift
+                                  ;;
+        --platform )              platform="$2"
+                                  shift
+                                  ;;
+        --buildutils )            buildutils="$2"
+                                  shift
+                                  ;;
+        --wrapping )              wrapping="$2"
+                                  shift
+                                  ;;
+        --gradle )                gradle="$2"
+                                  shift
+                                  ;;
+        --maven )                 maven="$2"
+                                  shift
+                                  ;;
+        --framework )             framework="$2"
+                                  shift
+                                  ;;
+        --extensions )            extensions="$2"
+                                  shift
+                                  ;;
+        --managers )              managers="$2"
+                                  shift
+                                  ;;
+        * )                       error "Unexpected argument $1"
+                                  usage
+                                  exit 1
     esac
     shift
 done
@@ -119,13 +158,28 @@ function get_last_successful_workflow_id() {
 
 }
 
-get_last_successful_workflow_id openapi2beans "Buildutils is unchanged"
-get_last_successful_workflow_id galasabld "Buildutils is unchanged"
-get_last_successful_workflow_id platform "Platform is unchanged"
-get_last_successful_workflow_id wrapping "Wrapping is unchanged"
-get_last_successful_workflow_id gradle "Gradle is unchanged"
-get_last_successful_workflow_id maven "Maven is unchanged"
-get_last_successful_workflow_id framework "Framework is unchanged"
-get_last_successful_workflow_id extensions "Extensions is unchanged"
-get_last_successful_workflow_id managers "Managers is unchanged"
-get_last_successful_workflow_id obr "OBR is unchanged"
+if [ "$platform" = "true" ]; then
+    get_last_successful_workflow_id platform "Platform is unchanged"
+fi
+if [ "$buildutils" = "true" ]; then
+    get_last_successful_workflow_id openapi2beans "Buildutils is unchanged"
+    get_last_successful_workflow_id galasabld "Buildutils is unchanged"
+fi
+if [ "$wrapping" = "true" ]; then
+    get_last_successful_workflow_id wrapping "Wrapping is unchanged"
+fi
+if [ "$gradle" = "true" ]; then
+    get_last_successful_workflow_id gradle "Gradle is unchanged"
+fi
+if [ "$maven" = "true" ]; then
+    get_last_successful_workflow_id maven "Maven is unchanged"
+fi
+if [ "$framework" = "true" ]; then
+    get_last_successful_workflow_id framework "Framework is unchanged"
+fi
+if [ "$extensions" = "true" ]; then
+    get_last_successful_workflow_id extensions "Extensions is unchanged"
+fi
+if [ "$managers" = "true" ]; then
+    get_last_successful_workflow_id managers "Managers is unchanged"
+fi

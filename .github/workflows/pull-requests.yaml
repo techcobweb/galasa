@@ -58,6 +58,7 @@ jobs:
   find-artifacts:
     name: Get Workflow Run IDs with artifacts to download for each module
     runs-on: ubuntu-latest
+    needs: [get-changed-modules]
 
     outputs: 
       platform_artifacts_id: ${{ steps.find-artifacts.outputs.platform_artifacts_id }}
@@ -69,7 +70,6 @@ jobs:
       framework_artifacts_id: ${{ steps.find-artifacts.outputs.framework_artifacts_id }}
       extensions_artifacts_id: ${{ steps.find-artifacts.outputs.extensions_artifacts_id }}
       managers_artifacts_id: ${{ steps.find-artifacts.outputs.managers_artifacts_id }}
-      obr_artifacts_id: ${{ steps.find-artifacts.outputs.obr_artifacts_id }}
 
     steps:
       - name: Checkout Code
@@ -80,7 +80,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ./tools/get-last-successful-workflow-run-for-artifacts.sh --repo ${{ github.repository }}
+          ./tools/get-last-successful-workflow-run-for-artifacts.sh --repo ${{ github.repository }} \
+          --platform ${{ needs.get-changed-modules.outputs.platform_changed }} \
+          --buildutils ${{ needs.get-changed-modules.outputs.buildutils_changed }} \
+          --wrapping ${{ needs.get-changed-modules.outputs.wrapping_changed }} \
+          --gradle ${{ needs.get-changed-modules.outputs.gradle_changed }} \
+          --maven ${{ needs.get-changed-modules.outputs.maven_changed }} \
+          --framework ${{ needs.get-changed-modules.outputs.framework_changed }} \
+          --extensions ${{ needs.get-changed-modules.outputs.extensions_changed }} \
+          --managers ${{ needs.get-changed-modules.outputs.managers_changed }}
 
   pr-build-platform:
     name: Build the 'platform' module
