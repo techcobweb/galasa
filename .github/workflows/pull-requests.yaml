@@ -53,7 +53,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ./tools/get-changed-modules-pull-request.sh --pr-number ${{ github.event.number }}
+          ./.github/scripts/get-changed-modules-pull-request.sh --pr-number ${{ github.event.number }}
 
   find-artifacts:
     name: Get Workflow Run IDs with artifacts to download for each module
@@ -69,7 +69,6 @@ jobs:
       framework_artifacts_id: ${{ steps.find-artifacts.outputs.framework_artifacts_id }}
       extensions_artifacts_id: ${{ steps.find-artifacts.outputs.extensions_artifacts_id }}
       managers_artifacts_id: ${{ steps.find-artifacts.outputs.managers_artifacts_id }}
-      obr_artifacts_id: ${{ steps.find-artifacts.outputs.obr_artifacts_id }}
 
     steps:
       - name: Checkout Code
@@ -80,7 +79,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ./tools/get-last-successful-workflow-run-for-artifacts.sh --repo ${{ github.repository }}
+          ./.github/scripts/get-last-successful-workflow-run-for-artifacts.sh --repo ${{ github.repository }}
 
   pr-build-platform:
     name: Build the 'platform' module

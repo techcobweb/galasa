@@ -89,7 +89,6 @@ jobs:
 
       - name: Download platform from this workflow
         id: download-platform
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: platform
@@ -97,7 +96,6 @@ jobs:
 
       - name: Download wrapping artifacts from this workflow
         id: download-wrapping
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: wrapping
@@ -105,7 +103,6 @@ jobs:
 
       - name: Download gradle artifacts from this workflow
         id: download-gradle
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: gradle
@@ -113,7 +110,6 @@ jobs:
 
       - name: Download maven artifacts from this workflow
         id: download-maven
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: maven
@@ -121,7 +117,6 @@ jobs:
 
       - name: Download framework artifacts from this workflow
         id: download-framework
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: framework
@@ -129,7 +124,6 @@ jobs:
 
       - name: Download extensions artifacts from this workflow
         id: download-extensions
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: extensions
@@ -137,7 +131,6 @@ jobs:
 
       - name: Download managers artifacts from this workflow
         id: download-managers
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: managers
@@ -357,7 +350,6 @@ jobs:
 
       - name: Download platform from this workflow
         id: download-platform
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: platform
@@ -365,7 +357,6 @@ jobs:
 
       - name: Download wrapping artifacts from this workflow
         id: download-wrapping
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: wrapping
@@ -373,7 +364,6 @@ jobs:
 
       - name: Download gradle artifacts from this workflow
         id: download-gradle
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: gradle
@@ -381,7 +371,6 @@ jobs:
 
       - name: Download maven artifacts from this workflow
         id: download-maven
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: maven
@@ -389,7 +378,6 @@ jobs:
 
       - name: Download framework artifacts from this workflow
         id: download-framework
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: framework
@@ -397,7 +385,6 @@ jobs:
 
       - name: Download extensions artifacts from this workflow
         id: download-extensions
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: extensions
@@ -405,7 +392,6 @@ jobs:
 
       - name: Download managers artifacts from this workflow
         id: download-managers
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: managers
@@ -549,7 +535,6 @@ jobs:
 
       - name: Download platform from this workflow
         id: download-platform
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: platform
@@ -557,7 +542,6 @@ jobs:
 
       - name: Download wrapping artifacts from this workflow
         id: download-wrapping
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: wrapping
@@ -565,7 +549,6 @@ jobs:
 
       - name: Download gradle artifacts from this workflow
         id: download-gradle
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: gradle
@@ -573,7 +556,6 @@ jobs:
 
       - name: Download maven artifacts from this workflow
         id: download-maven
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: maven
@@ -581,7 +563,6 @@ jobs:
 
       - name: Download framework artifacts from this workflow
         id: download-framework
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: framework
@@ -589,7 +570,6 @@ jobs:
 
       - name: Download extensions artifacts from this workflow
         id: download-extensions
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: extensions
@@ -597,7 +577,6 @@ jobs:
 
       - name: Download managers artifacts from this workflow
         id: download-managers
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: managers
@@ -605,7 +584,6 @@ jobs:
 
       - name: Download obr artifacts
         id: download-obr
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: obr

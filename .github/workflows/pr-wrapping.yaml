@@ -102,7 +102,7 @@ jobs:
       - name: Building Wrapping source code
         working-directory: modules/wrapping
         run: |
-          mvn deploy -X \
+          mvn deploy \
           -Dgpg.skip=true \
           -Dgalasa.source.repo=file://${{ github.workspace }}/modules/artifacts \
           -Dgalasa.central.repo=https://repo.maven.apache.org/maven2/ \
