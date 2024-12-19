@@ -18,13 +18,14 @@ public class RasTestStructure {
    private String requestor;
    private String status;
    private String result;
+   private String group;
    private Instant queued;
    private Instant startTime;
    private Instant endTime;
    private List<RasTestMethod> methods;
    
    public RasTestStructure(String runName, String bundle, String testName, String testShortName, String requestor,
-         String status, String result, Instant queued, Instant startTime, Instant endTime, List<RasTestMethod> methods) {
+         String status, String result, Instant queued, Instant startTime, Instant endTime, List<RasTestMethod> methods, String group) {
       this.runName = runName;
       this.bundle = bundle;
       this.testName = testName;
@@ -36,6 +37,7 @@ public class RasTestStructure {
       this.startTime = startTime;
       this.endTime = endTime;
       this.methods = methods;
+      this.group = group;
    }
 
    public String getRunName() {
@@ -76,6 +78,14 @@ public class RasTestStructure {
 
    public void setRequestor(String requestor) {
       this.requestor = requestor;
+   }
+
+   public String getGroup() {
+      return group;
+   }
+
+   public void setGroup(String group) {
+      this.group = group;
    }
 
    public String getStatus() {

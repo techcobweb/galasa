@@ -241,4 +241,19 @@ public class DirectoryRASDirectoryService implements IResultArchiveStoreDirector
             return null; // Ignore errors as this run id may not belong to this RAS  
         }
     }
+
+    @Override
+    public List<IRunResult> getRunsByGroupName(@NotNull String groupName) throws ResultArchiveStoreException {
+        
+        List<DirectoryRASRunResult> allRuns = getAllRuns();
+
+        List<IRunResult> matchingRuns = new ArrayList<>();
+        for (DirectoryRASRunResult run : allRuns) {
+            if (groupName.equals(run.getTestStructure().getGroup())) {
+                matchingRuns.add(run);
+            }
+        }
+        return matchingRuns;
+
+    }
 }

@@ -9,13 +9,13 @@ package dev.galasa.framework.auth.spi.mocks;
 import java.time.Instant;
 import java.util.*;
 
+import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.spi.auth.IAuthStoreService;
 import dev.galasa.framework.spi.auth.IFrontEndClient;
 import dev.galasa.framework.spi.auth.IInternalAuthToken;
 import dev.galasa.framework.spi.auth.IInternalUser;
 import dev.galasa.framework.spi.auth.IUser;
 import dev.galasa.framework.spi.utils.ITimeService;
-import dev.galasa.framework.api.common.mocks.MockTimeService;
 import dev.galasa.framework.spi.auth.AuthStoreException;
 
 import static org.assertj.core.api.Assertions.*;

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.logging.Log;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
@@ -169,6 +170,7 @@ public abstract class CouchdbStore {
     public ViewResponse getDocumentsFromDatabaseViewByKey(String dbName, String viewName, String queryKey, boolean includeDocs)
             throws CouchdbException {
         ViewResponse viewResponse = null;
+        
         String viewRequestUriStr = storeUri + "/" + dbName + "/_design/docs/_view/" + viewName;
         try {
             URIBuilder uriBuilder = new URIBuilder(viewRequestUriStr);

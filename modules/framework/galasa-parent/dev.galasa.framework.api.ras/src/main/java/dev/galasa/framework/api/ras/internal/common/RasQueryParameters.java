@@ -86,6 +86,10 @@ public class RasQueryParameters {
         return generalQueryParams.getSingleString("requestor", null);
     }
 
+    public String getGroup() throws InternalServletException {
+        return generalQueryParams.getSingleString("group", null);
+    }
+
     public String getTestName() throws InternalServletException {
         return generalQueryParams.getSingleString("testname", null);
     }
@@ -131,8 +135,8 @@ public class RasQueryParameters {
         return generalQueryParams.getMultipleString("runId", new ArrayList<String>());
     }
 
-    public boolean isFromTimeOrRunNamePresent() throws InternalServletException {
-        return generalQueryParams.checkAtLeastOneQueryParameterPresent("from", "runname");
+    public boolean isFromTimeOrRunNameOrGroupPresent() throws InternalServletException {
+        return generalQueryParams.checkAtLeastOneQueryParameterPresent("from", "runname", "group");
     }
 
     public int getSize(){

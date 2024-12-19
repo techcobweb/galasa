@@ -11,11 +11,12 @@ import dev.galasa.ras.couchdb.internal.pojos.TestStructureCouchdb;
 
 public abstract class BaseCouchdbOperationTest {
 
-    protected TestStructureCouchdb createRunTestStructure(String runId, String runName) {
+    protected TestStructureCouchdb createRunTestStructure(String runId, String runName, String groupName) {
         TestStructureCouchdb mockTestStructure = new TestStructureCouchdb();
         mockTestStructure._id = runId;
         mockTestStructure._rev = "this-is-a-revision";
         mockTestStructure.setRunName(runName);
+        mockTestStructure.setGroup(groupName);
         mockTestStructure.setArtifactRecordIds(new ArrayList<>());
         mockTestStructure.setLogRecordIds(new ArrayList<>());
         return mockTestStructure;

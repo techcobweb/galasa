@@ -25,6 +25,7 @@ dependencies {
     testFixturesImplementation 'dev.galasa:dev.galasa.wrapping.io.grpc.java'
     testFixturesImplementation 'org.assertj:assertj-core:3.16.1'
     testFixturesImplementation(project(':dev.galasa.framework'))
+    testFixturesImplementation(testFixtures(project(':dev.galasa.framework')))
     testFixturesImplementation(project(':dev.galasa.framework.api.beans'))
     testFixturesImplementation(testFixtures(project(':dev.galasa.framework.api.common')))
     testFixturesImplementation 'javax.validation:validation-api'

@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
  */
 public class TestStructure {
 
-    private String           runName;
+    private String           runName = "invalid";
     private String           bundle;
     private String           testName;
     private String           testShortName;
@@ -29,6 +29,7 @@ public class TestStructure {
 
     private String           status;
     private String           result;
+    private String           group = "none";
 
     private Instant          queued;
 
@@ -198,10 +199,15 @@ public class TestStructure {
     }
 
     public String getRunName() {
-        if (this.runName == null) {
-            return "invalid";
-        }
         return this.runName;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    public String getGroup() {
+        return this.group;
     }
     
     public boolean isValid() {

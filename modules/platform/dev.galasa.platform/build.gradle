@@ -106,7 +106,7 @@ dependencies {
         api 'dev.galasa:dev.galasa.wrapping.protobuf-java:'+version
         api 'dev.galasa:dev.galasa.wrapping.velocity-engine-core:'+version
         api 'dev.galasa:galasa-boot:'+version
-        api 'dev.galasa:galasa-testharness:0.18.0'
+        api 'dev.galasa:galasa-testharness:'+version
 
         api 'io.etcd:jetcd-api:0.8.3'
         api 'io.etcd:jetcd-common:0.8.3'

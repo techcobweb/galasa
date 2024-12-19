@@ -29,6 +29,7 @@ import dev.galasa.extensions.common.impl.HttpRequestFactoryImpl;
 import dev.galasa.extensions.common.mocks.BaseHttpInteraction;
 import dev.galasa.extensions.common.mocks.HttpInteraction;
 import dev.galasa.extensions.common.mocks.MockAsyncCloseableHttpClient;
+import dev.galasa.extensions.common.mocks.MockCloseableHttpClient;
 import dev.galasa.framework.TestRunLifecycleStatus;
 import dev.galasa.framework.spi.IRunResult;
 import dev.galasa.framework.spi.ResultArchiveStoreException;
@@ -87,9 +88,9 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
         }
     }
 
-    class GetRunsByNameFromCouchdbViewInteraction extends BaseHttpInteraction {
+    class GetRunsFromCouchdbViewInteraction extends BaseHttpInteraction {
 
-        public GetRunsByNameFromCouchdbViewInteraction(String expectedUri, int statusCode, ViewResponse viewResponse) {
+        public GetRunsFromCouchdbViewInteraction(String expectedUri, int statusCode, ViewResponse viewResponse) {
             super(expectedUri, statusCode);
             setResponsePayload(viewResponse);
         }
@@ -110,8 +111,8 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
     @Test
     public void testGetRunsByQueuedFromOnePageReturnsRunsOk() throws Exception {
         // Given...
-        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1");
-        TestStructureCouchdb mockRun2 = createRunTestStructure("run2-id", "run2");
+        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1", "none");
+        TestStructureCouchdb mockRun2 = createRunTestStructure("run2-id", "run2", "none");
 
         Instant queuedFromTime = Instant.EPOCH;
         RasSearchCriteriaQueuedFrom queuedFrom = new RasSearchCriteriaQueuedFrom(queuedFromTime);
@@ -145,9 +146,9 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
     @Test
     public void testGetRunsMultiplePagesReturnsRunsOk() throws Exception {
         // Given...
-        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1");
-        TestStructureCouchdb mockRun2 = createRunTestStructure("run2-id", "run2");
-        TestStructureCouchdb mockRun3 = createRunTestStructure("run3-id", "run3");
+        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1", "none");
+        TestStructureCouchdb mockRun2 = createRunTestStructure("run2-id", "run2", "none");
+        TestStructureCouchdb mockRun3 = createRunTestStructure("run3-id", "run3", "none");
 
         Instant queuedFromTime = Instant.EPOCH;
         RasSearchCriteriaQueuedFrom queuedFrom = new RasSearchCriteriaQueuedFrom(queuedFromTime);
@@ -188,10 +189,10 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
     public void testGetRunsWithInvalidRunIgnoresRunOk() throws Exception {
         // Given...
         String runName1 = "run1";
-        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", runName1);
+        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", runName1, "none");
 
         // No run name is set, so this is not a valid run
-        TestStructureCouchdb invalidRun = createRunTestStructure("invalid-run", null);
+        TestStructureCouchdb invalidRun = createRunTestStructure("invalid-run", null, "none");
 
         FoundRuns findRunsResponse = new FoundRuns();
         findRunsResponse.docs = List.of(mockRun1, invalidRun);
@@ -216,7 +217,7 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
         List<IRunResult> runs = directoryService.getRuns(runNameCriteria);
 
         // Then...
-        assertThat(runs).hasSize(1);
+        assertThat(runs).hasSize(2);
         assertThat(runs.get(0).getTestStructure().getRunName()).isEqualTo(mockRun1.getRunName());
     }
 
@@ -273,8 +274,8 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
     @Test
     public void testGetRunsMultipleCriteriaReturnsRunsOk() throws Exception {
         // Given...
-        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1");
-        TestStructureCouchdb mockRun2 = createRunTestStructure("run2-id", "run2");
+        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1", "none");
+        TestStructureCouchdb mockRun2 = createRunTestStructure("run2-id", "run2", "none");
 
         Instant queuedFromTime = Instant.MAX;
         Instant queuedToTime = Instant.MAX;
@@ -349,8 +350,8 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
     @Test
     public void testGetRunsPageByQueuedFromReturnsRunsOk() throws Exception {
         // Given...
-        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1");
-        TestStructureCouchdb mockRun2 = createRunTestStructure("run2-id", "run2");
+        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1", "none");
+        TestStructureCouchdb mockRun2 = createRunTestStructure("run2-id", "run2", "none");
 
         Instant queuedFromTime = Instant.EPOCH;
         RasSearchCriteriaQueuedFrom queuedFrom = new RasSearchCriteriaQueuedFrom(queuedFromTime);
@@ -388,8 +389,8 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
     @Test
     public void testGetRunsPageByQueuedFromWithSortReturnsRunsOk() throws Exception {
         // Given...
-        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1");
-        TestStructureCouchdb mockRun2 = createRunTestStructure("run2-id", "run2");
+        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1", "none");
+        TestStructureCouchdb mockRun2 = createRunTestStructure("run2-id", "run2", "none");
 
         Instant queuedFromTime = Instant.EPOCH;
         RasSearchCriteriaQueuedFrom queuedFrom = new RasSearchCriteriaQueuedFrom(queuedFromTime);
@@ -438,8 +439,8 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
     @Test
     public void testGetRunsPageByQueuedFromWithSortAndPageTokenReturnsRunsOk() throws Exception {
         // Given...
-        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1");
-        TestStructureCouchdb mockRun2 = createRunTestStructure("run2-id", "run2");
+        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1", "none");
+        TestStructureCouchdb mockRun2 = createRunTestStructure("run2-id", "run2", "none");
 
         Instant queuedFromTime = Instant.EPOCH;
         RasSearchCriteriaQueuedFrom queuedFrom = new RasSearchCriteriaQueuedFrom(queuedFromTime);
@@ -492,7 +493,7 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
     @Test
     public void testGetRunsPageWithNilBookmarkReturnsPageWithNoNextCursor() throws Exception {
         // Given...
-        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1");
+        TestStructureCouchdb mockRun1 = createRunTestStructure("run1-id", "run1", "none");
 
         Instant queuedFromTime = Instant.EPOCH;
         RasSearchCriteriaQueuedFrom queuedFrom = new RasSearchCriteriaQueuedFrom(queuedFromTime);
@@ -531,7 +532,7 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
         String run1Id = "run1-id";
         String run1Name = "ABC123";
         String urlEncodedRun1Name = URLEncoder.encode('"' + run1Name + '"', StandardCharsets.UTF_8);
-        TestStructureCouchdb mockRun1 = createRunTestStructure(run1Id, run1Name);
+        TestStructureCouchdb mockRun1 = createRunTestStructure(run1Id, run1Name, "none");
 
         ViewResponse mockViewResponse = new ViewResponse();
         ViewRow run1Row = new ViewRow();
@@ -548,11 +549,11 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
 
         List<HttpInteraction> interactions = List.of(
             // Get the run document
-            new GetRunsByNameFromCouchdbViewInteraction(runNameViewUri + "?key=" + urlEncodedRun1Name + "&include_docs=true", HttpStatus.SC_OK, mockViewResponse)
+            new GetRunsFromCouchdbViewInteraction(runNameViewUri + "?key=" + urlEncodedRun1Name + "&include_docs=true", HttpStatus.SC_OK, mockViewResponse)
         );
 
         MockLogFactory mockLogFactory = new MockLogFactory();
-        MockAsyncCloseableHttpClient httpClient = new MockAsyncCloseableHttpClient(interactions);
+        MockCloseableHttpClient httpClient = new MockCloseableHttpClient(interactions);
         CouchdbRasStore mockRasStore = fixtures.createCouchdbRasStore(mockLogFactory, httpClient);
         CouchdbDirectoryService directoryService = new CouchdbDirectoryService(mockRasStore, mockLogFactory, new HttpRequestFactoryImpl());
 
@@ -592,11 +593,11 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
 
         List<HttpInteraction> interactions = List.of(
             // Get the run document
-            new GetRunsByNameFromCouchdbViewInteraction(runNameViewUri + "?key=" + urlEncodedRun1Name + "&include_docs=true", HttpStatus.SC_OK, mockViewResponse)
+            new GetRunsFromCouchdbViewInteraction(runNameViewUri + "?key=" + urlEncodedRun1Name + "&include_docs=true", HttpStatus.SC_OK, mockViewResponse)
         );
 
         MockLogFactory mockLogFactory = new MockLogFactory();
-        MockAsyncCloseableHttpClient httpClient = new MockAsyncCloseableHttpClient(interactions);
+        MockCloseableHttpClient httpClient = new MockCloseableHttpClient(interactions);
         CouchdbRasStore mockRasStore = fixtures.createCouchdbRasStore(mockLogFactory, httpClient);
         CouchdbDirectoryService directoryService = new CouchdbDirectoryService(mockRasStore, mockLogFactory, new HttpRequestFactoryImpl());
 
@@ -622,11 +623,11 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
 
         List<HttpInteraction> interactions = List.of(
             // Get the run document
-            new GetRunsByNameFromCouchdbViewInteraction(runNameViewUri + "?key=" + urlEncodedRun1Name + "&include_docs=true", HttpStatus.SC_OK, mockViewResponse)
+            new GetRunsFromCouchdbViewInteraction(runNameViewUri + "?key=" + urlEncodedRun1Name + "&include_docs=true", HttpStatus.SC_OK, mockViewResponse)
         );
 
         MockLogFactory mockLogFactory = new MockLogFactory();
-        MockAsyncCloseableHttpClient httpClient = new MockAsyncCloseableHttpClient(interactions);
+        MockCloseableHttpClient httpClient = new MockCloseableHttpClient(interactions);
         CouchdbRasStore mockRasStore = fixtures.createCouchdbRasStore(mockLogFactory, httpClient);
         CouchdbDirectoryService directoryService = new CouchdbDirectoryService(mockRasStore, mockLogFactory, new HttpRequestFactoryImpl());
 
@@ -644,5 +645,56 @@ public class CouchdbDirectoryServiceTest extends BaseCouchdbOperationTest {
             CouchdbRasStore.RUNS_DB,
             "Invalid JSON response returned from CouchDB"
         );
+    }
+
+    //------------------------------------------
+    //
+    // Tests for getting runs by group
+    //
+    //------------------------------------------
+
+    @Test
+    public void testGetRunsByGroupReturnsRunOk() throws Exception {
+        // Given...
+        String run1Id = "run1-id";
+        String run1Name = "ABC123";
+        String groupName = "testGroup";
+        String urlEncodedGroupName = URLEncoder.encode('"' + groupName + '"', StandardCharsets.UTF_8);
+        TestStructureCouchdb mockRun1 = createRunTestStructure(run1Id, run1Name, groupName);
+
+        ViewResponse mockViewResponse = new ViewResponse();
+        ViewRow run1Row = new ViewRow();
+        run1Row.id = run1Id;
+        run1Row.key = run1Name;
+        run1Row.doc = mockRun1;
+
+        List<ViewRow> mockRows = new ArrayList<>();
+        mockRows.add(run1Row);
+        mockViewResponse.rows = mockRows;
+
+        String baseUri = "http://my.uri";
+        String groupNameViewUri = baseUri + "/" + CouchdbRasStore.RUNS_DB + "/_design/docs/_view/" + CouchdbRasStore.RUN_GROUP_VIEW_NAME;
+
+        List<HttpInteraction> interactions = List.of(
+            // Get the run document
+            new GetRunsFromCouchdbViewInteraction(groupNameViewUri + "?key=" + urlEncodedGroupName + "&include_docs=true", HttpStatus.SC_OK, mockViewResponse)
+        );
+
+        MockLogFactory mockLogFactory = new MockLogFactory();
+        MockCloseableHttpClient httpClient = new MockCloseableHttpClient(interactions);
+        CouchdbRasStore mockRasStore = fixtures.createCouchdbRasStore(mockLogFactory, httpClient);
+        CouchdbDirectoryService directoryService = new CouchdbDirectoryService(mockRasStore, mockLogFactory, new HttpRequestFactoryImpl());
+
+        // When...
+        List<IRunResult> runs = directoryService.getRunsByGroupName(groupName);
+
+        // Then...
+        // The assertions in the interactions should not have failed
+        assertThat(runs).hasSize(1);
+
+        IRunResult run = runs.get(0);
+        assertThat(run.getRunId()).isEqualTo("cdb-" + run1Id);
+        assertThat((TestStructureCouchdb)run.getTestStructure()).usingRecursiveComparison().isEqualTo(mockRun1);
+        assertThat((String)run.getTestStructure().getGroup()).isEqualTo(groupName);
     }
 }
