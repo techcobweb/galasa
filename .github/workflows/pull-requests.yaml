@@ -77,7 +77,7 @@ jobs:
             --branch ${{ github.base_ref }} \
             --status success \
             --limit 1 \
-            --json databaseId | jq '.[0].databaseId')" >> $GITHUB_ENV
+            --json databaseId | jq '.[0].databaseId')" >> $GITHUB_OUTPUT
 
   pr-build-platform:
     name: Build the 'platform' module
