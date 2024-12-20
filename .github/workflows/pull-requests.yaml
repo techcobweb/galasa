@@ -59,7 +59,7 @@ jobs:
           ./.github/scripts/get-changed-modules-pull-request.sh --pr-number ${{ github.event.number }}
 
   find-artifacts:
-    name: Get Workflow Run IDs with artifacts to download for each module
+    name: Get Workflow Run ID to download artifacts from
     runs-on: ubuntu-latest
 
     outputs: 
