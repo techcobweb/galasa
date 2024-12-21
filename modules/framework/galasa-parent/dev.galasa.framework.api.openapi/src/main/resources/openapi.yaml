@@ -1413,6 +1413,10 @@ paths:
       description: |
         Updates the status of a test run in order to either reset or cancel it.
 
+        To cencel the run, put a value such that the status is "finished" and the result is "cancelled".
+
+        To reset the run, put a value such that the status is "queued" and the result is null or ""
+
         Requests to this endpoint require a valid bearer token in JWT format to be provided
         in the 'Authorization' header (e.g. 'Authorization: Bearer <bearer-token>').
       operationId: putRasRunStatusById
@@ -1917,6 +1921,46 @@ paths:
                 type: string
         '500':
           $ref: '#/components/responses/InternalServerError'
+##################################################################################
+# RBAC
+##################################################################################
+  /rbac/roles:
+    parameters:
+      - $ref: '#/components/parameters/ClientApiVersion'
+    get:
+      operationId: getRBACRoles
+      security: []
+      summary: Gets role information to which a user could be configured to perfrom.
+      tags:
+        - Role Based Access Control API
+      responses:
+        '200':
+          description: The Galasa Role definition
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/RBACRole'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /rbac/actions:
+    parameters:
+      - $ref: '#/components/parameters/ClientApiVersion'
+    get:
+      operationId: getRBACActions
+      security: []
+      summary: Gets information about actions which a role can be permitted to perfrom.
+      tags:
+        - Role Based Access Control API
+      responses:
+        '200':
+          description: The Galasa Action definition
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/RBACAction'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
 ##################################################################################
 # Components
@@ -2305,6 +2349,9 @@ components:
         login-id:
           type: string
           description: The ID representing the user's username. Returned from queries about users.
+        role: 
+          type: string
+          description: The role that the user has in the system. This is not a readable name, but a numeric.
         clients:
           type: array
           description: The list of client activities, containing client names and last login times.
@@ -2313,6 +2360,66 @@ components:
         url:
           type: string
           description: The API URL for accessing the user data.
+        synthetic:
+          $ref: '#/components/schemas/UserSynthetics'
+    UserSynthetics:
+      type: object
+      properties:
+        role:
+          $ref: '#/components/schemas/RBACRole'
+    RBACRole:
+      type: object
+      properties:
+        apiVersion:
+          type: string
+        kind:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/RBACRoleMetadata'
+        data:
+          $ref: '#/components/schemas/RBACRoleData'
+    RBACRoleMetadata:
+      type: object
+      properties:
+        id: 
+          type: string
+        name:
+          type: string
+        description:
+          type: string          
+        url: 
+          type: string
+
+    RBACRoleData:
+      type: object
+      properties:  
+        actions: 
+          type: array
+          items:
+            type: string
+    
+    RBACAction:
+      type: object
+      properties:
+        apiVersion: 
+          type: string
+        kind: 
+          type: string
+        metadata:
+          $ref: '#/components/schemas/RBACActionMetadata'
+
+    RBACActionMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string  
+        description:
+          type: string 
+        url: 
+          type: string
+
     FrontEndClient:
       type: object
       properties:
