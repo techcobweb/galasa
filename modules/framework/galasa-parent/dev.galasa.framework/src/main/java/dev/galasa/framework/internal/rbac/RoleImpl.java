@@ -1,8 +1,14 @@
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package dev.galasa.framework.internal.rbac;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import dev.galasa.framework.spi.rbac.Action;
 import dev.galasa.framework.spi.rbac.Role;
 
 public class RoleImpl implements Role {
@@ -10,12 +16,16 @@ public class RoleImpl implements Role {
     private String name ;
     private String id ;
     private String description;
-    private Map<String,Action> actions;
+    private List<String> actionIdsSorted;
 
-    public RoleImpl( String name, String id , String description, Map<String,Action> actions) {
+    public RoleImpl( String name, String id , String description, List<String> actionIds ) {
         this.name = name ;
         this.id = id ;
-        this.actions = actions;
+
+        // Take a copy of the action Ids and sort it.
+        this.actionIdsSorted = new ArrayList<String>(actionIds);
+        Collections.sort(this.actionIdsSorted, (a,b)-> a.compareTo(b) );
+
         this.description = description;
     }
 
@@ -30,13 +40,13 @@ public class RoleImpl implements Role {
     }
 
     @Override
-    public Map<String,Action> getActionsMapById() {
-        return this.actions;
+    public String getDescription() {
+        return this.description;
     }
 
     @Override
-    public String getDescription() {
-        return this.description;
+    public List<String> getActionIds() {
+        return this.actionIdsSorted;
     }
     
 }

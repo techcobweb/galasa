@@ -1,6 +1,11 @@
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package dev.galasa.framework.spi.rbac;
 
-import java.util.Map;
+import java.util.List;
 
 public interface Role {
     
@@ -8,7 +13,7 @@ public interface Role {
 
     String getId();
 
-    Map<String,Action> getActionsMapById();
+    List<String> getActionIds();
 
     String getDescription();
 

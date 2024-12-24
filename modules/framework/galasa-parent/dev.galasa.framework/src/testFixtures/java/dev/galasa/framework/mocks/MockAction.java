@@ -1,19 +1,20 @@
 /*
- * Copyright contributors to the Galasa project
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-package dev.galasa.framework.internal.rbac;
+* Copyright contributors to the Galasa project
+*
+* SPDX-License-Identifier: EPL-2.0
+*/
+package dev.galasa.framework.mocks;
 
 import dev.galasa.framework.spi.rbac.Action;
 
-public class ActionImpl implements Action {
+public class MockAction implements Action {
+    
 
     private String name ;
     private String id ;
     private String description ;
 
-    public ActionImpl( String id , String name , String description ) {
+    public MockAction( String id , String name , String description ) {
         this.id = id ;
         this.name = name ;
         this.description = description ;

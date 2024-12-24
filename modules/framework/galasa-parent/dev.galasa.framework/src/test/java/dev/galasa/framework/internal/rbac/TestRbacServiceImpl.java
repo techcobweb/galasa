@@ -1,20 +1,21 @@
 package dev.galasa.framework.internal.rbac;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.*;
 
 import dev.galasa.framework.spi.rbac.Action;
-import dev.galasa.framework.spi.rbac.RbacService;
+import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.rbac.Role;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class TestRbacServiceImpl {
+public class TestRBACServiceImpl {
     
     @Test
-    public void testRolesMapByIdContainsAdminRole() {
-        RbacService service = new RbacServiceImpl();
+    public void testRolesMapByIdContainsAdminRole() throws Exception {
+        RBACService service = new RBACServiceImpl();
         Map<String,Role> roleMap = service.getRolesMapById();
 
         Role roleGot = roleMap.get("2");
@@ -22,101 +23,122 @@ public class TestRbacServiceImpl {
         assertThat(roleGot.getName()).isEqualTo("admin");
         assertThat(roleGot.getDescription()).contains("Administrator access");
 
-        assertThat(roleGot.getActionsMapById().size()).isEqualTo(3);
-        assertThat(roleGot.getActionsMapById().get("0")).isNotNull();
-        assertThat(roleGot.getActionsMapById().get("1")).isNotNull();
-        assertThat(roleGot.getActionsMapById().get("2")).isNotNull();
+        assertThat(roleGot.getActionIds())
+            .hasSize(3)
+            .contains("USER_ROLE_UPDATE_ANY")
+            .contains("SECRETS_GET")
+            .contains("GENERAL_API_ACCESS");
     }
 
     @Test
-    public void testRolesMapByIdContainsDefaultRole() {
-        RbacService service = new RbacServiceImpl();
+    public void testRolesMapByIdContainsTesterRole() throws Exception {
+        RBACService service = new RBACServiceImpl();
         Map<String,Role> roleMap = service.getRolesMapById();
 
         Role roleGot = roleMap.get("1");
         assertThat(roleGot).isNotNull();
-        assertThat(roleGot.getName()).isEqualTo("default");
+        assertThat(roleGot.getName()).isEqualTo("tester");
 
-        assertThat(roleGot.getActionsMapById().size()).isEqualTo(2);
-        assertThat(roleGot.getActionsMapById().get("0")).isNotNull();
-        assertThat(roleGot.getActionsMapById().get("2")).isNotNull();
+        assertThat(roleGot.getActionIds())
+            .hasSize(2)
+            .contains("USER_ROLE_UPDATE_ANY")
+            .contains("GENERAL_API_ACCESS");
     }
 
     @Test
-    public void testRolesMapByIdContainsDeactivateddRole() {
-        RbacService service = new RbacServiceImpl();
+    public void testRolesMapByIdContainsDeactivateddRole() throws Exception {
+        RBACService service = new RBACServiceImpl();
         Map<String,Role> roleMap = service.getRolesMapById();
 
         Role roleGot = roleMap.get("0");
         assertThat(roleGot).isNotNull();
         assertThat(roleGot.getName()).isEqualTo("deactivated");
 
-        assertThat(roleGot.getActionsMapById().size()).isEqualTo(0);
+        assertThat(roleGot.getActionIds())
+        .hasSize(0);
     }
 
     @Test 
-    public void testActionsMapByIdContainsActionUserRoleUpdateAny() {
-        RbacService service = new RbacServiceImpl();
+    public void testActionsMapByIdContainsActionUserRoleUpdateAny() throws Exception {
+        RBACService service = new RBACServiceImpl();
         Map<String,Action> actionMap = service.getActionsMapById();
 
-        Action action = actionMap.get("0");
-        assertThat(action.getName()).isEqualTo("USER_ROLE_UPDATE_ANY");
+        Action action = actionMap.get("USER_ROLE_UPDATE_ANY");
+        assertThat(action.getId()).isEqualTo("USER_ROLE_UPDATE_ANY");
     }
 
 
     @Test 
-    public void testActionsMapByIdContainsActionSecretsGet() {
-        RbacService service = new RbacServiceImpl();
+    public void testActionsMapByIdContainsActionSecretsGet() throws Exception {
+        RBACService service = new RBACServiceImpl();
         Map<String,Action> actionMap = service.getActionsMapById();
 
-        Action action = actionMap.get("1");
-        assertThat(action.getName()).isEqualTo("SECRETS_GET");
+        Action action = actionMap.get("SECRETS_GET");
+        assertThat(action.getId()).isEqualTo("SECRETS_GET");
     }
 
     @Test 
-    public void testActionsMapByIdContainsActionGeneralApiAccess() {
-        RbacService service = new RbacServiceImpl();
+    public void testActionsMapByIdContainsActionGeneralApiAccess() throws Exception {
+        RBACService service = new RBACServiceImpl();
         Map<String,Action> actionMap = service.getActionsMapById();
 
-        Action action = actionMap.get("2");
-        assertThat(action.getName()).isEqualTo("GENERAL_API_ACCESS");
+        Action action = actionMap.get("GENERAL_API_ACCESS");
+        assertThat(action.getId()).isEqualTo("GENERAL_API_ACCESS");
     }
 
     @Test
-    public void testActionsMapByNameContainsSecretsGet() {
-        RbacService service = new RbacServiceImpl();
-        Map<String,Action> actionMapByName = service.getActionsMapByName();
+    public void testActionsMapByNameContainsSecretsGet() throws Exception {
+        RBACService service = new RBACServiceImpl();
+        Map<String,Action> actionMapById = service.getActionsMapById();
 
-        Action action = actionMapByName.get("SECRETS_GET");
+        Action action = actionMapById.get("SECRETS_GET");
 
-        assertThat(action.getName()).isEqualTo("SECRETS_GET");
+        assertThat(action.getId()).isEqualTo("SECRETS_GET");
     }
 
     @Test
-    public void testServiceCanLookupAdminRoleById() {
-        RbacService service = new RbacServiceImpl();
+    public void testServiceCanLookupAdminRoleById() throws Exception {
+        RBACService service = new RBACServiceImpl();
         Role roleGotBack = service.getRoleById("2");
         assertThat(roleGotBack.getName()).isEqualTo("admin");
     }
 
     @Test
-    public void testServiceCanLookupGetSecretsActionById() {
-        RbacService service = new RbacServiceImpl();
-        Action actionGotBack = service.getActionById("1");
-        assertThat(actionGotBack.getName()).isEqualTo("SECRETS_GET");
+    public void testServiceCanLookupGetSecretsActionById() throws Exception {
+        RBACService service = new RBACServiceImpl();
+        Action actionGotBack = service.getActionById("SECRETS_GET");
+        assertThat(actionGotBack.getId()).isEqualTo("SECRETS_GET");
     }
 
     @Test
-    public void testServiceCanLookupGetSecretsActionByName() {
-        RbacService service = new RbacServiceImpl();
-        Action actionGotBack = service.getActionByName("SECRETS_GET");
-        assertThat(actionGotBack.getName()).isEqualTo("SECRETS_GET");
+    public void testServiceCanLookupGetSecretsActionByName() throws Exception {
+        RBACService service = new RBACServiceImpl();
+        Action actionGotBack = service.getActionById("SECRETS_GET");
+        assertThat(actionGotBack.getId()).isEqualTo("SECRETS_GET");
     }
 
     @Test
-    public void testGetSecretsActionHasDescription() {
-        RbacService service = new RbacServiceImpl();
-        Action actionGotBack = service.getActionByName("SECRETS_GET");
+    public void testGetSecretsActionHasDescription() throws Exception {
+        RBACService service = new RBACServiceImpl();
+        Action actionGotBack = service.getActionById("SECRETS_GET");
         assertThat(actionGotBack.getDescription()).contains("Able to get secret values");
+    }
+
+    @Test
+    public void testActionsAreSorted() throws Exception {
+        RBACService service = new RBACServiceImpl();
+        Iterator<Action> walker = service.getActionsSortedByName().iterator();
+        assertThat(walker.hasNext()).isTrue();
+        // Only check the first one. Should be enough...
+        assertThat(walker.next().getId()).isEqualTo("GENERAL_API_ACCESS");
+    }
+
+    @Test
+    public void testRolesAreSorted() throws Exception {
+        RBACService service = new RBACServiceImpl();
+        Iterator<Role> walker = service.getRolesSortedByName().iterator();
+        assertThat(walker.hasNext()).isTrue();
+        // Only check the first one (alphabetically). Should be enough...
+        assertThat(walker.next().getName()).isEqualTo("admin");
     }
 }
