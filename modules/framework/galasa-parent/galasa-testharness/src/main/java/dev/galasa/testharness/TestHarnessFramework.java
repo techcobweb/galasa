@@ -161,7 +161,6 @@ public class TestHarnessFramework implements IFramework {
 
     @Override
     public @NotNull RBACService getRBACService() throws RBACException {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getRBACService'");
     }
 
