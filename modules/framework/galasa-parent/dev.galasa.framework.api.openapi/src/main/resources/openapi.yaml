@@ -1929,7 +1929,6 @@ paths:
       - $ref: '#/components/parameters/ClientApiVersion'
     get:
       operationId: getRBACRoles
-      security: []
       summary: Gets role information to which a user could be configured to perfrom.
       tags:
         - Role Based Access Control API
@@ -1937,9 +1936,13 @@ paths:
         '200':
           description: The Galasa Role definition
           content:
-            text/plain:
+            application/json:
               schema:
                 $ref: '#/components/schemas/RBACRolesSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: "#/components/responses/Unauthorized"
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -1947,23 +1950,27 @@ paths:
     parameters:
       - $ref: '#/components/parameters/ClientApiVersion'
       - name: role-id
+        description: The id of the role. This will typically be numeric.
         in: path
         schema:
           type: string
         required: true
     get:
       operationId: getRBACRole
-      security: []
-      summary: Gets role information to which a user could be configured to perfrom.
+      summary: Gets information about a specific role on the system, to which a user could be configured as.
       tags:
         - Role Based Access Control API
       responses:
         '200':
           description: The Galasa Role definition
           content:
-            text/plain:
+            application/json:
               schema:
                 $ref: '#/components/schemas/RBACRole'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: "#/components/responses/Unauthorized"
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -1973,7 +1980,6 @@ paths:
       - $ref: '#/components/parameters/ClientApiVersion'
     get:
       operationId: getRBACActions
-      security: []
       summary: Gets information about actions which a role can be permitted to perfrom.
       tags:
         - Role Based Access Control API
@@ -1981,23 +1987,27 @@ paths:
         '200':
           description: The Galasa Action definition
           content:
-            text/plain:
+            application/json:
               schema:
                 $ref: '#/components/schemas/RBACActionsSummary'
         '500':
           $ref: '#/components/responses/InternalServerError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: "#/components/responses/Unauthorized"
 
   /rbac/actions/{action-id}:
     parameters:
       - $ref: '#/components/parameters/ClientApiVersion'
       - name: action-id
+        description: The id of an action. This is typically readable in English, upper-case, with underscores as word separators.
         in: path
         schema:
           type: string
         required: true
     get:
       operationId: getRBACAction
-      security: []
       summary: Gets information about an action.
       tags:
         - Role Based Access Control API
@@ -2005,11 +2015,15 @@ paths:
         '200':
           description: The Galasa Action definition
           content:
-            text/plain:
+            application/json:
               schema:
                 $ref: '#/components/schemas/RBACAction'
         '500':
           $ref: '#/components/responses/InternalServerError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: "#/components/responses/Unauthorized"
 
 ##################################################################################
 # Components
