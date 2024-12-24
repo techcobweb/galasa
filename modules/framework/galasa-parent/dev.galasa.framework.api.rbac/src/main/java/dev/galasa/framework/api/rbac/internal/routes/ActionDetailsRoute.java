@@ -27,7 +27,7 @@ import dev.galasa.framework.spi.utils.ITimeService;
 
 public class ActionDetailsRoute extends AbstractRBACRoute {
 
-    // Regex to match /secrets and /secrets/ only
+    // Regex to match /rbac/actions/{action-id} and /rbac/actions/{action-id}/ only
     private static final String PATH_PATTERN = "\\/actions\\/([A-Z0-9\\-_]+)\\/?";
 
     private ActionTransform actionsTransform;

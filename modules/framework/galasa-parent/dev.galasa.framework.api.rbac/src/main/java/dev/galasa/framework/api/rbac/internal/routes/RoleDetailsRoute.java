@@ -27,7 +27,7 @@ import dev.galasa.framework.spi.utils.ITimeService;
 
 public class RoleDetailsRoute extends AbstractRBACRoute {
 
-    // Regex to match /roles/{role-id}
+    // Regex to match /rbac/roles/{role-id}
     // where {role-id} can consist of the following characters:
     // - Alphanumeric characters (a-zA-Z0-9)
     // - Underscores (_)

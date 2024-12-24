@@ -1413,7 +1413,7 @@ paths:
       description: |
         Updates the status of a test run in order to either reset or cancel it.
 
-        To cencel the run, put a value such that the status is "finished" and the result is "cancelled".
+        To cancel the run, put a value such that the status is "finished" and the result is "cancelled".
 
         To reset the run, put a value such that the status is "queued" and the result is null or ""
 
