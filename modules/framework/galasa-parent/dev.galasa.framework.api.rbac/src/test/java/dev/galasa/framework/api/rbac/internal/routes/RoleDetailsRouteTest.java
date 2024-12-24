@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import dev.galasa.framework.api.common.BaseServletTest;
+import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.mocks.MockEnvironment;
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
@@ -91,5 +92,29 @@ public class RoleDetailsRouteTest {
 
         assertThat(servletResponse.getStatus()).isEqualTo(200);
         assertThat(output).isEqualTo(gson.toJson(role1Obj));
+    }
+
+
+    @Test
+    public void testInvalidIdGetsRejectedOK() {
+        Action action1 = new MockAction("action1Id","action1Name","action1Description");
+        Action action2 = new MockAction("action2Id","action2Name","action2Description");
+
+        List<Action> actions = List.of(action1,action2);
+
+        Role role1 = new MockRole("myRole1Name","myRole1Id","Description of myRole1Name", List.of(action1.getId(), action2.getId()));
+        List<Role> roles = List.of(role1);
+
+        MockRBACService rbacService = new MockRBACService(roles , actions);
+        MockTimeService timeService = new MockTimeService(Instant.EPOCH);
+
+        ResponseBuilder respBuilder = new ResponseBuilder();
+        MockEnvironment env = new MockEnvironment();
+
+        RoleDetailsRoute route = new RoleDetailsRoute(respBuilder, rbacService, env, timeService);
+
+        InternalServletException ex = catchThrowableOfType( ()-> { route.getRoleIdFromPath("/roles/but/not/valid"); }, InternalServletException.class ); 
+        assertThat(ex.getError()).isNotNull();
+        assertThat(ex.getError().getMessage()).contains("5121");
     }
 }

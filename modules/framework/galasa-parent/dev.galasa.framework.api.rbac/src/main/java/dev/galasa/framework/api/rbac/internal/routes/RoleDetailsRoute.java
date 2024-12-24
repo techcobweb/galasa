@@ -75,13 +75,13 @@ public class RoleDetailsRoute extends AbstractRBACRoute {
     }
 
 
-    private String getRoleIdFromPath(String pathInfo) throws InternalServletException {
+    protected String getRoleIdFromPath(String pathInfo) throws InternalServletException {
         Matcher matcher = this.getPathRegex().matcher(pathInfo);
         matcher.matches();
         String roleId;
-        if (matcher.groupCount()>0) {
+        try{
             roleId =  matcher.group(1);
-        } else {
+        } catch( Exception ex) {
             ServletError error = new ServletError(ServletErrorMessage.GAL5121_INVALID_ROLE_ID_PROVIDED);
             throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);
         }

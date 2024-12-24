@@ -74,8 +74,10 @@ public class ActionDetailsRoute extends AbstractRBACRoute {
     private String getActionNameFromPath(String pathInfo) throws InternalServletException {
         Matcher matcher = this.getPathRegex().matcher(pathInfo);
         matcher.matches();
-        String actionName =  matcher.group(1);
-        if (actionName == null) {
+        String actionName;
+        try {
+            actionName =  matcher.group(1);
+        } catch(Exception ex) {
             ServletError error = new ServletError(ServletErrorMessage.GAL5120_INVALID_ACTION_NAME_PROVIDED);
             throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);
         }
