@@ -14,7 +14,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import dev.galasa.framework.api.beans.generated.RBACRole;
-import dev.galasa.framework.api.beans.generated.RBACRoleMetadata;
 import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
