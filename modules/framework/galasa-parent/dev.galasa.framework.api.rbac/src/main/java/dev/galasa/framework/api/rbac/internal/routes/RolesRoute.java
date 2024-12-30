@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import dev.galasa.framework.api.beans.generated.RBACRole;
 import dev.galasa.framework.api.beans.generated.RBACRoleMetadata;
 import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.QueryParameters;
@@ -49,11 +50,11 @@ public class RolesRoute extends AbstractRBACRoute {
     ) throws FrameworkException {
         logger.info("handleGetRequest() entered. Getting roles");
 
-        Collection<Role> roles = getRBACService().getRolesMapById().values();
+        Collection<Role> roles = getRBACService().getRolesSortedByName();
 
         String baseUrl = request.getRequestURL().toString();
 
-        List<RBACRoleMetadata> roleBeans = roleTransform.createRolesSummary(roles, baseUrl);
+        List<RBACRole> roleBeans = roleTransform.createRolesBeans(roles, baseUrl);
     
         HttpServletResponse httpResponse = getResponseBuilder().buildResponse(request, response, "application/json",
             gson.toJson(roleBeans), HttpServletResponse.SC_OK);
