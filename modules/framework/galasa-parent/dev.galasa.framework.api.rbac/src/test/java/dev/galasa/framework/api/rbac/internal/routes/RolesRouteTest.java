@@ -71,13 +71,28 @@ public class RolesRouteTest {
         JsonArray expectedJson = new JsonArray();
 
         {
+            JsonObject roleObj = new JsonObject();
+            roleObj.addProperty("kind", "GalasaRole");
+            roleObj.addProperty("apiVersion","galasa-dev/v1alpha1");
+
             JsonObject role1MetadataObj = new JsonObject();
             role1MetadataObj.addProperty("url","http://mock.galasa.server/myRole1Id");
             role1MetadataObj.addProperty("name","myRole1Name");
             role1MetadataObj.addProperty("id","myRole1Id");
             role1MetadataObj.addProperty("description","Description of myRole1Name");
 
-            expectedJson.add(role1MetadataObj);
+            roleObj.add( "metadata", role1MetadataObj);
+
+            JsonArray actionsList = new JsonArray();
+            actionsList.add("action1Id");
+            actionsList.add("action2Id");
+
+            JsonObject dataObj = new JsonObject();
+            dataObj.add("actions",actionsList);
+
+            roleObj.add("data",dataObj);
+
+            expectedJson.add(roleObj);
         }
 
         assertThat(servletResponse.getStatus()).isEqualTo(200);

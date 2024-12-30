@@ -51,8 +51,8 @@ public class RoleTransform {
         return metadata;
     }
 
-    public List<RBACRoleMetadata> createRolesSummary(Collection<Role> roles, String baseUrl) {
-        List<RBACRoleMetadata> rolesSummaryBeans = new ArrayList<RBACRoleMetadata>();
+    public List<RBACRole> createRolesBeans(Collection<Role> roles, String baseUrl) {
+        List<RBACRole> rolesBeans = new ArrayList<RBACRole>();
         for( Role role : roles ) {
 
             String url ;
@@ -62,10 +62,10 @@ public class RoleTransform {
                 url = baseUrl+"/"+role.getId();
             }
 
-            RBACRoleMetadata roleMetadataBean = createRoleMetadata(role, url);
-            rolesSummaryBeans.add(roleMetadataBean);
+            RBACRole roleBean = createRoleBean(role, url);
+            rolesBeans.add(roleBean);
         }
-        return rolesSummaryBeans;
+        return rolesBeans;
     }
     
 }

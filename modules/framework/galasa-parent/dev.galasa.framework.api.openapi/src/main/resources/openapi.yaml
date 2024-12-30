@@ -1938,7 +1938,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RBACRolesSummary'
+                type: array
+                description: A list of the roles in the system.
+                items: 
+                  $ref: '#/components/schemas/RBACRole'
         '404':
           $ref: '#/components/responses/NotFound'
         '401':
@@ -2430,11 +2433,7 @@ components:
       properties:
         role:
           $ref: '#/components/schemas/RBACRole'
-    RBACRolesSummary:
-      type: array
-      description: A summary of the roles available on the system
-      items:
-        $ref: '#/components/schemas/RBACRoleMetadata'
+
     RBACRole:
       type: object
       properties:
