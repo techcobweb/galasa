@@ -12,8 +12,8 @@ on:
         description: 'True if this module has been changed and should be rebuilt'
         required: true
         type: string
-      platform-artifact-id:
-        description: 'The Workflow Run ID of the last workflow containing artifacts for the platform'
+      artifact-id:
+        description: 'The Workflow Run ID of the last workflow containing artifacts to download'
         required: true
         type: string
 
@@ -46,6 +46,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'semeru'
+          cache: 'maven'
 
       - name: Download platform from this workflow
         id: download-platform
@@ -63,45 +64,8 @@ jobs:
           name: platform
           path: modules/artifacts
           github-token: ${{ github.token }}
-          run-id: ${{ inputs.platform-artifact-id }}
+          run-id: ${{ inputs.artifact-id }}
 
-      # Copy secrets into files to use in workflow
-      - name: Make secrets directory
-        run : |
-          mkdir /home/runner/work/secrets
-      - name: Copy settings.xml
-        env:
-          MAVEN_SETTINGS_XML: ${{ secrets.MAVEN_SETTINGS_XML }}
-        run : |
-          echo $MAVEN_SETTINGS_XML > /home/runner/work/secrets/settings.xml
-      - name: Copy GPG passphrase
-        env:
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run : |
-          echo $GPG_PASSPHRASE > /home/runner/work/secrets/passphrase.file
-      - name: Copy GPG key
-        env:
-          GPG_KEY_BASE64: ${{ secrets.GPG_KEY }}
-        run : |
-          echo $GPG_KEY_BASE64 |  base64 --decode > /home/runner/work/secrets/galasa.gpg
-          
-      # Set up Maven GPG directory
-      - name: Make GPG home directory
-        run: |
-          mkdir /home/runner/work/gpg
-      
-      - name: Change directory permissions
-        run: |
-          chmod '700' /home/runner/work/gpg
-
-      - name: Import GPG
-        run: |
-          gpg --homedir /home/runner/work/gpg --pinentry-mode loopback --passphrase-file /home/runner/work/secrets/passphrase.file --import /home/runner/work/secrets/galasa.gpg
-      
-      - name: Copy custom settings.xml
-        run: |
-          cp /home/runner/work/secrets/settings.xml /home/runner/work/gpg/settings.xml
-      
       - name: Building Wrapping source code
         working-directory: modules/wrapping
         run: |
@@ -111,7 +75,7 @@ jobs:
           -Dgalasa.central.repo=https://repo.maven.apache.org/maven2/ \
           -Dgalasa.release.repo=file:${{ github.workspace }}/modules/wrapping/repo \
           --batch-mode --errors --fail-at-end \
-          --settings /home/runner/work/gpg/settings.xml
+          --settings settings.xml
 
       - name: Upload wrapping artifacts
         uses: actions/upload-artifact@v4
