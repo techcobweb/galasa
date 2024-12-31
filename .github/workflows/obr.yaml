@@ -49,7 +49,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'semeru'
-          cache: 'maven'
+          # cache: 'maven'
 
       - name: Make secrets directory
         run : |
@@ -317,7 +317,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'semeru'
-          cache: 'maven'
+          # cache: 'maven'
       
       - name: Make secrets directory
         run : |
@@ -509,7 +509,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'semeru'
-          cache: 'maven'
+          # cache: 'maven'
 
       - name: Make secrets directory
         run : |
