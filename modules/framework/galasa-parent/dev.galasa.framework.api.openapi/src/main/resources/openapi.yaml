@@ -1929,7 +1929,12 @@ paths:
       - $ref: '#/components/parameters/ClientApiVersion'
     get:
       operationId: getRBACRoles
-      summary: Gets role information to which a user could be configured to perfrom.
+      summary: Gets the list of roles in the system
+      description: |-
+        Gets role information which can be assigned to a user, to give the user
+        permission to perform a list of actions.
+        Each role has a list of actions.
+        The 'id' field is used to refer to the role.
       tags:
         - Role Based Access Control API
       responses:
@@ -1942,6 +1947,21 @@ paths:
                 description: A list of the roles in the system.
                 items: 
                   $ref: '#/components/schemas/RBACRole'
+                example:
+
+                  - kind: GalasaRole
+                    apiVersion: galasa-dev/v1alpha1
+                    metadata:
+                        url: http://myhost.com:8080/rbac/roles/2
+                        name: admin
+                        id: "2"
+                        description: "Administrator access"
+                    data: 
+                      actions:
+                        - GENERAL_API_ACCESS
+                        - SECRETS_GET
+                        - USER_ROLE_UPDATE_ANY
+
         '404':
           $ref: '#/components/responses/NotFound'
         '401':
@@ -1958,6 +1978,9 @@ paths:
         schema:
           type: string
         required: true
+        examples:
+          adminRoleExample:
+            value: "2"
     get:
       operationId: getRBACRole
       summary: Gets information about a specific role on the system, to which a user could be configured as.
@@ -1970,6 +1993,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RBACRole'
+              example:
+
+                - kind: GalasaRole
+                  apiVersion: galasa-dev/v1alpha1
+                  metadata:
+                      url: http://myhost.com:8080/rbac/roles/2
+                      name: admin
+                      id: "2"
+                      description: "Administrator access"
+                  data: 
+                    actions:
+                      - GENERAL_API_ACCESS
+                      - SECRETS_GET
+                      - USER_ROLE_UPDATE_ANY
         '404':
           $ref: '#/components/responses/NotFound'
         '401':
