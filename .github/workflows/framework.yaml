@@ -25,7 +25,6 @@ env:
   BRANCH: ${{ github.ref_name }}
     
 jobs:
-
   log-github-ref:
     name: Log the GitHub ref this workflow is running on (Branch or tag that received dispatch)
     runs-on: ubuntu-latest
@@ -34,9 +33,21 @@ jobs:
         run: |
           echo "This workflow is running on GitHub ref ${{ env.BRANCH }}"
 
+  check-required-secrets-configured:
+    name: Check required secrets configured
+    uses: ./.github/workflows/check-required-secrets-configured.yaml
+    secrets: inherit
+    with:
+      gpg_key: 'true'
+      gpg_keyid: 'true'
+      gpg_passphrase: 'true'
+      write_github_packages_username: 'true'
+      write_github_packages_token: 'true'
+
   build-framework:
     name: Build Framework using openapi2beans and gradle
     runs-on: ubuntu-latest
+    needs: check-required-secrets-configured
 
     steps:
       - name: Checkout Code
@@ -165,7 +176,7 @@ jobs:
         id: metadata
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ghcr.io/${{ env.NAMESPACE }}/restapidoc-site
+          images: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/restapidoc-site
                 
       - name: Build and push restapidoc-site image
         uses: docker/build-push-action@v5
@@ -177,22 +188,27 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}  
       
       - name: Recycle application in ArgoCD
+        # Skip this job for forks
+        if: ${{ github.repository_owner == 'galasa-dev' }}
         env: 
             ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_TOKEN }}
         run: |
           docker run --env ARGOCD_AUTH_TOKEN=${{ env.ARGOCD_AUTH_TOKEN }} --rm ghcr.io/${{ env.NAMESPACE }}/argocdcli:main app actions run ${{ env.BRANCH }}-maven-repos restart --kind Deployment --resource-name restapidocsite-${{ env.BRANCH }} --server argocd.galasa.dev
 
       - name: Wait for app health in ArgoCD
+        # Skip this job for forks
+        if: ${{ github.repository_owner == 'galasa-dev' }}
         env: 
           ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_TOKEN }}
         run: |
           docker run --env ARGOCD_AUTH_TOKEN=${{ env.ARGOCD_AUTH_TOKEN }} --rm ghcr.io/${{ env.NAMESPACE }}/argocdcli:main app wait ${{ env.BRANCH }}-maven-repos --resource apps:Deployment:restapidocsite-${{ env.BRANCH }} --health --server argocd.galasa.dev
 
   report-failure:
+    # Skip this job for forks
+    if: ${{ failure() && github.repository_owner == 'galasa-dev' }}
     name: Report failure in workflow
     runs-on: ubuntu-latest
     needs: [log-github-ref, build-framework, build-rest-api-documentation]
-    if: failure()
 
     steps:
       - name: Report failure in workflow to Slack

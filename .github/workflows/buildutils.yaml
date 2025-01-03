@@ -14,10 +14,18 @@ env:
   BRANCH: ${{ github.ref_name }}
 
 jobs:
+  check-required-secrets-configured:
+    name: Check required secrets configured
+    uses: ./.github/workflows/check-required-secrets-configured.yaml
+    secrets: inherit
+    with:
+      write_github_packages_username: 'true'
+      write_github_packages_token: 'true'
 
   build-push-galasabld:
     name: Build and push galasabld artifacts
     runs-on: ubuntu-latest
+    needs: check-required-secrets-configured
 
     steps:
       - name: Checkout code
@@ -113,7 +121,7 @@ jobs:
           load: true
           tags: galasabld-ibm:${{ env.BRANCH }}
           build-args: |
-            dockerRepository=ghcr.io
+            dockerRepository=${{ env.REGISTRY }}
             branch=${{ env.BRANCH }}
         
       - name: Test galasabld-ibm image
@@ -129,12 +137,13 @@ jobs:
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
           build-args: |
-            dockerRepository=ghcr.io
+            dockerRepository=${{ env.REGISTRY }}
             branch=${{ env.BRANCH }}
 
   build-push-openapi2beans:
     name: Build and push openapi2beans artifacts
     runs-on: ubuntu-latest
+    needs: check-required-secrets-configured
     
     steps:
       - name: Checkout code
@@ -200,6 +209,7 @@ jobs:
   build-push-buildutils-executables:
     name: Build and push buildutils repository executables
     runs-on: ubuntu-latest
+    needs: check-required-secrets-configured
 
     steps:
       - name: Checkout code
@@ -246,22 +256,27 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
 
       - name: Recycle application in ArgoCD
+        # Skip this job for forks
+        if: ${{ github.repository_owner == 'galasa-dev' }}
         env: 
             ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_TOKEN }}
         run: |
           docker run --env ARGOCD_AUTH_TOKEN=${{ env.ARGOCD_AUTH_TOKEN }} --rm ghcr.io/${{ env.NAMESPACE }}/argocdcli:main app actions run ${{ env.BRANCH }}-bld restart --kind Deployment --resource-name bld-${{ env.BRANCH }} --server argocd.galasa.dev
 
       - name: Wait for app health in ArgoCD
+        # Skip this job for forks
+        if: ${{ github.repository_owner == 'galasa-dev' }}
         env: 
           ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_TOKEN }}
         run: |
           docker run --env ARGOCD_AUTH_TOKEN=${{ env.ARGOCD_AUTH_TOKEN }} --rm ghcr.io/${{ env.NAMESPACE }}/argocdcli:main app wait ${{ env.BRANCH }}-bld --resource apps:Deployment:bld-${{ env.BRANCH }} --health --server argocd.galasa.dev
 
   report-failure:
+    # Skip this job for forks
+    if: ${{ failure() && github.repository_owner == 'galasa-dev' }}
     name: Report failure in workflow
     runs-on: ubuntu-latest
     needs: [build-push-galasabld, build-push-galasabld-ibm, build-push-openapi2beans, build-push-buildutils-executables]
-    if: failure()
 
     steps:
       - name: Report failure in workflow to Slack
