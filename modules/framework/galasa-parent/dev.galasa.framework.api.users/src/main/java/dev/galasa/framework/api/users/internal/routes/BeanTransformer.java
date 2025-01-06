@@ -62,6 +62,8 @@ public class BeanTransformer {
         clientsOut = clientsOutList.toArray(clientsOut);
         userOut.setclients(clientsOut);
 
+        userOut.setrole(userIn.getRoleId());
+
         return userOut ;
     }
 
