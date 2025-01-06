@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package dev.galasa.maven.plugin;
+package dev.galasa.maven.plugin.galasa;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -147,7 +147,7 @@ public class BuildBundleTestCatalog extends AbstractMojo {
                 // *** Have to do reflection here, becuase of the different classpaths
                 if (annotationBuilderInterface.isAssignableFrom(klass)) {
                     try {
-                        Object instance = klass.newInstance();
+                        Object instance = klass.getDeclaredConstructor().newInstance();
                         catalogTestBuilders.put(instance,
                                 klass.getMethod("appendTestCatalog", JsonObject.class, JsonObject.class, Class.class));
                         catalogSenvBuilders.put(instance,
