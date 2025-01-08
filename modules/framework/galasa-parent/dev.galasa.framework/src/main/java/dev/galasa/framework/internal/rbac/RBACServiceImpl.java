@@ -106,5 +106,10 @@ public class RBACServiceImpl implements RBACService {
     public List<Action> getActionsSortedByName() throws RBACException {
         return actionsSortedByName;
     }
+
+    @Override
+    public String getDefaultRoleId() throws RBACException {
+        return roleDefault.getId();
+    }
     
 }

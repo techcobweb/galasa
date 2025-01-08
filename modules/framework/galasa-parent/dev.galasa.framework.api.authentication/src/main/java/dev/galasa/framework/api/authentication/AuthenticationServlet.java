@@ -30,6 +30,8 @@ import dev.galasa.framework.auth.spi.AuthServiceFactory;
 import dev.galasa.framework.auth.spi.IAuthService;
 import dev.galasa.framework.auth.spi.IAuthServiceFactory;
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.RBACException;
+import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.ITimeService;
 import dev.galasa.framework.spi.utils.SystemTimeService;
 
@@ -43,6 +45,8 @@ public class AuthenticationServlet extends BaseServlet {
 
     @Reference
     protected IFramework framework;
+
+    protected RBACService rbacService;
 
     private static final long serialVersionUID = 1L;
 
@@ -69,13 +73,24 @@ public class AuthenticationServlet extends BaseServlet {
         }
 
         IAuthService authService = factory.getAuthService();
+        rbacService = getRBACService(framework);
         addRoute(new AuthRoute(getResponseBuilder(), oidcProvider, authService, env));
         addRoute(new AuthClientsRoute(getResponseBuilder(), authService));
         addRoute(new AuthCallbackRoute(getResponseBuilder(), externalApiServerUrl));
-        addRoute(new AuthTokensRoute(getResponseBuilder(), oidcProvider, authService, timeService, env));
+        addRoute(new AuthTokensRoute(getResponseBuilder(), oidcProvider, authService, timeService, rbacService, env ));
         addRoute(new AuthTokensDetailsRoute(getResponseBuilder(), authService));
 
         logger.info("Galasa Authentication API initialised");
+    }
+
+    private RBACService getRBACService(IFramework framework) throws ServletException {
+        RBACService rbacService;
+        try {
+            rbacService= framework.getRBACService();
+        } catch( RBACException ex) {
+            throw new ServletException(ex);
+        }
+        return rbacService;
     }
 
     protected void setAuthServiceFactory(IAuthServiceFactory factory) {

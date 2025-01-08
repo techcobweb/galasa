@@ -32,6 +32,7 @@ import dev.galasa.framework.api.common.mocks.MockHttpResponse;
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
 import dev.galasa.framework.api.common.mocks.MockHttpServletResponse;
 import dev.galasa.framework.api.common.mocks.MockHttpSession;
+import dev.galasa.framework.mocks.MockRBACService;
 import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.auth.spi.IDexGrpcClient;
 import dev.galasa.framework.auth.spi.mocks.MockAuthStoreService;
@@ -587,7 +588,9 @@ public class AuthRouteTest extends BaseServletTest {
         IDexGrpcClient mockDexGrpcClient = new MockDexGrpcClient("http://issuer");
         MockEnvironment mockEnv = new MockEnvironment();
 
-        MockAuthenticationServlet servlet = new MockAuthenticationServlet(mockEnv, mockOidcProvider, mockDexGrpcClient, new MockFramework());
+        MockRBACService mockRBACService = FilledMockRBACService.createTestRBACKService();
+        MockFramework mockFramework = new MockFramework(mockRBACService);
+        MockAuthenticationServlet servlet = new MockAuthenticationServlet(mockEnv, mockOidcProvider, mockDexGrpcClient, mockFramework, mockRBACService);
 
         // When...
         Throwable thrown = catchThrowable(() -> {
