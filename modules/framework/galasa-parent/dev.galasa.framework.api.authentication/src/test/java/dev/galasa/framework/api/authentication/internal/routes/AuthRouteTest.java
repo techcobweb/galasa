@@ -31,9 +31,9 @@ import dev.galasa.framework.api.common.mocks.MockEnvironment;
 import dev.galasa.framework.api.common.mocks.MockHttpResponse;
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
 import dev.galasa.framework.api.common.mocks.MockHttpServletResponse;
-import dev.galasa.framework.api.common.mocks.MockHttpSession;
 import dev.galasa.framework.mocks.FilledMockRBACService;
 import dev.galasa.framework.mocks.MockRBACService;
+import dev.galasa.framework.mocks.MockIDynamicStatusStoreService;
 import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.auth.spi.IDexGrpcClient;
 import dev.galasa.framework.auth.spi.mocks.MockAuthStoreService;
@@ -416,20 +416,25 @@ public class AuthRouteTest extends BaseServletTest {
     public void testAuthGetRequestWithClientIdAndCallbackUrlRedirectsToConnector() throws Exception {
         // Given...
         String redirectLocation = "http://my.connector/auth";
+        String clientIp = "123.456.789.010";
         String clientId = "my-client";
         String clientCallbackUrl = "http://my.app";
 
         MockOidcProvider mockOidcProvider = new MockOidcProvider(redirectLocation);
 
+        MockIDynamicStatusStoreService mockDss = new MockIDynamicStatusStoreService();
+        MockFramework mockFramework = new MockFramework(mockDss);
+
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(mockOidcProvider);
+        servlet.setFramework(mockFramework);
 
         Map<String, String[]> queryParams = Map.of(
                 "client_id", new String[] { clientId }, "callback_url", new String[] { clientCallbackUrl }
         );
 
-        MockHttpSession mockSession = new MockHttpSession();
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest(queryParams, null);
+        mockRequest.setRemoteAddr(clientIp);
 
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest(queryParams, null, mockSession);
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
 
         // When...
@@ -439,12 +444,14 @@ public class AuthRouteTest extends BaseServletTest {
         // Then...
         assertThat(servletResponse.getStatus()).isEqualTo(302);
         assertThat(servletResponse.getHeader("Location")).isEqualTo(redirectLocation);
-        assertThat((String)mockSession.getAttribute("callbackUrl")).isEqualTo(clientCallbackUrl);
+        assertThat(mockDss.data).containsValue(clientCallbackUrl);
     }
 
     @Test
     public void testAuthGetRequestWithEmptyReturnedLocationHeaderReturnsError() throws Exception {
         // Given...
+        String clientIp = "123.456.789.010";
+
         // No "Location" returned from the issuer, will not be able to redirect anywhere to authenticate
         Map<String, List<String>> headers = new HashMap<>();
         BiPredicate<String, String> defaultFilter = (a, b) -> true;
@@ -458,9 +465,9 @@ public class AuthRouteTest extends BaseServletTest {
                 "client_id", new String[] { "my-client" }, "callback_url", new String[] { "http://my.app" }
         );
 
-        MockHttpSession mockSession = new MockHttpSession();
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest(queryParams, null);
+        mockRequest.setRemoteAddr(clientIp);
 
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest(queryParams, null, mockSession);
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         ServletOutputStream outStream = servletResponse.getOutputStream();
 
