@@ -1,4 +1,4 @@
-package dev.galasa.framework.api.rbac.internal.routes;
+package dev.galasa.framework.api.rbac;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -7,7 +7,6 @@ package dev.galasa.framework.api.authentication.mocks;
 
 import dev.galasa.framework.api.authentication.AuthenticationServlet;
 import dev.galasa.framework.api.authentication.IOidcProvider;
-import dev.galasa.framework.api.authentication.internal.routes.FilledMockRBACService;
 import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.EnvironmentVariables;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -18,7 +17,7 @@ import dev.galasa.framework.auth.spi.IDexGrpcClient;
 import dev.galasa.framework.auth.spi.internal.AuthService;
 import dev.galasa.framework.auth.spi.mocks.MockAuthServiceFactory;
 import dev.galasa.framework.auth.spi.mocks.MockDexGrpcClient;
-import dev.galasa.framework.mocks.MockRBACService;
+import dev.galasa.framework.mocks.FilledMockRBACService;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.rbac.RBACService;
 
@@ -45,7 +44,7 @@ public class MockAuthenticationServlet extends AuthenticationServlet {
     }
 
     public MockAuthenticationServlet(IOidcProvider oidcProvider, IDexGrpcClient dexGrpcClient, IFramework framework) {
-        this(getEnvironmentWithRequiredEnvVariablesSet(), oidcProvider, dexGrpcClient, framework, FilledMockRBACService.createTestRBACKService() );
+        this(getEnvironmentWithRequiredEnvVariablesSet(), oidcProvider, dexGrpcClient, framework, FilledMockRBACService.createTestRBACService() );
     }
 
     public MockAuthenticationServlet(Environment env, IOidcProvider oidcProvider, IDexGrpcClient dexGrpcClient, IFramework framework, RBACService rbacService) {

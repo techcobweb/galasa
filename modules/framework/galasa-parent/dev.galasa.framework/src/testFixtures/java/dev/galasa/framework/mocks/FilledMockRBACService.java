@@ -3,19 +3,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package dev.galasa.framework.api.authentication.internal.routes;
+package dev.galasa.framework.mocks;
 
 import java.util.List;
 import java.util.ArrayList;
 import dev.galasa.framework.spi.rbac.Action;
 import dev.galasa.framework.spi.rbac.Role;
-import dev.galasa.framework.mocks.MockAction;
-import dev.galasa.framework.mocks.MockRBACService;
-import dev.galasa.framework.mocks.MockRole;
 
 public class FilledMockRBACService {
     
-    public static MockRBACService createTestRBACKService() {
+    public static MockRBACService createTestRBACService() {
         
         // CAN_DO_SOMETHING action
         MockAction action1 = new MockAction("CAN_DO_SOMETHING", "Can do something name" , "Can do something description");

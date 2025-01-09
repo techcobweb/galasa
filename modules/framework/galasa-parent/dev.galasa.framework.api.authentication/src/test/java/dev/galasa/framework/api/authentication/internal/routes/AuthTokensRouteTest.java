@@ -51,6 +51,7 @@ import dev.galasa.framework.auth.spi.mocks.MockDexGrpcClient;
 import dev.galasa.framework.auth.spi.mocks.MockFrontEndClient;
 import dev.galasa.framework.auth.spi.mocks.MockInternalAuthToken;
 import dev.galasa.framework.auth.spi.mocks.MockUser;
+import dev.galasa.framework.mocks.FilledMockRBACService;
 import dev.galasa.framework.mocks.MockRBACService;
 import dev.galasa.framework.mocks.MockTimeService;
 
@@ -1098,7 +1099,7 @@ public class AuthTokensRouteTest extends BaseServletTest {
     }
 
     MockRBACService createTestRBACKService() {
-        MockRBACService service = FilledMockRBACService.createTestRBACKService();
+        MockRBACService service = FilledMockRBACService.createTestRBACService();
         return service;
     }
 }
