@@ -86,7 +86,7 @@ public class BeanTransformer {
                 roleId = rbacService.getDefaultRoleId();
             } catch( RBACException ex) {
                 ServletError err = new ServletError(GAL5086_FAILED_TO_GET_DEFAULT_ROLE);
-                throw new InternalServletException(err, 500, ex);
+                throw new InternalServletException(err, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex);
             }
         }
         return roleId;
