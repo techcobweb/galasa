@@ -31,7 +31,14 @@ dependencies {
     testFixturesImplementation 'javax.validation:validation-api'
 }
 
-protobuf {
+protobuf {  
+  // For some reason, the combination of the java test fixtures plugin causes a need to have
+  // the following directories exist before vscode will build the project locally.
+  // So lets add them at the same time we generate the protobuf code...
+  // They can be empty, they just have to exist to satisfy vscode's demands.
+  mkdir "$buildDir/generated/source/proto/testFixtures/java"
+  mkdir "$buildDir/generated/source/proto/testFixtures/grpc"
+
   protoc {
     artifact = "com.google.protobuf:protoc:3.25.5"
   }
@@ -46,6 +53,7 @@ protobuf {
     }
   }
 }
+
 
 // Note: These values are consumed by the parent build process
 // They indicate which packages of functionality this OSGi bundle should be delivered inside,

@@ -113,30 +113,30 @@ public class MockAuthStoreService implements IAuthStoreService {
     @Override
     public Collection<IUser> getAllUsers() throws AuthStoreException {
         
-        return users.values();
+        return usersByLoginId.values();
 
     }
 
     @Override
     public void deleteUser(IUser user) throws AuthStoreException {
 
-        if(users.containsKey(user.getLoginId())){
-            users.remove(user.getLoginId());
+        if(usersByLoginId.containsKey(user.getLoginId())){
+            usersByLoginId.remove(user.getLoginId());
         }
 
     }
 
   
-    private Map<String,IUser> users = new HashMap<String,IUser>();
+    private Map<String,IUser> usersByLoginId = new HashMap<String,IUser>();
 
     public void addUser(IUser user) {
         String loginId = user.getLoginId();
-        users.put(loginId,user);
+        usersByLoginId.put(loginId,user);
     }
 
     @Override
     public IUser getUserByLoginId(String loginId) throws AuthStoreException {
-        return users.get(loginId);
+        return usersByLoginId.get(loginId);
     }
 
     @Override
@@ -144,13 +144,10 @@ public class MockAuthStoreService implements IAuthStoreService {
 
         IUser userOut = null;
 
-        if(!users.isEmpty()){
-            for(IUser user : users.values()){
-
-                if(user.getUserNumber().equals(userNumber)){
-                    userOut = user;
-                }
-    
+        for( IUser possibleUserMatch : usersByLoginId.values()) {
+            if (possibleUserMatch.getUserNumber().equals(userNumber)) {
+                userOut = possibleUserMatch;
+                break;
             }
         }
 
@@ -161,9 +158,9 @@ public class MockAuthStoreService implements IAuthStoreService {
     @Override
     public IUser updateUser(IUser userToUpdate) throws AuthStoreException {
         String loginId = userToUpdate.getLoginId();
-        IUser userGot = users.get(loginId);
+        IUser userGot = usersByLoginId.get(loginId);
         assertThat(userGot).isNotNull();
-        users.put(loginId,userToUpdate);
+        usersByLoginId.put(loginId,userToUpdate);
 
         return userToUpdate;
     }
@@ -179,7 +176,7 @@ public class MockAuthStoreService implements IAuthStoreService {
         user.userNumber = DEFAULT_USER_NUMBER;
         user.roleId = DEFAULT_USER_ROLE_ID;
 
-        users.put(loginId, user);
+        usersByLoginId.put(loginId, user);
     }
 
     @Override

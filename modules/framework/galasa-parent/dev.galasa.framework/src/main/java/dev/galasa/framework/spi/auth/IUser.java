@@ -13,6 +13,8 @@ public interface IUser {
 
     String getRoleId();
 
+    void setRoleId(String newRoleId);
+
     String getVersion();
 
     String getLoginId();

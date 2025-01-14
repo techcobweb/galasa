@@ -107,28 +107,35 @@ public class BaseServlet extends HttpServlet {
 
         QueryParameters queryParameters = new QueryParameters(req.getParameterMap());
 
-        boolean pathMatched = false;
-        for (Map.Entry<Pattern, IRoute> entry : routes.entrySet()) {
+        IRoute route = selectRoute(url);
 
-            Pattern routePattern = entry.getKey();
-            IRoute route = entry.getValue();
-
-            Matcher matcher = routePattern.matcher(url);
-
-            if (matcher.matches()) {
-                pathMatched = true;
-                logger.info("BaseServlet: Found a route that matches.");
-                handleRoute(route, url, queryParameters, req, res);
-                break;
-            }
-        }
-
-        if (!pathMatched) {
+        if (route == null) {
             // No matching route was found, throw a 404 error.
             logger.info("BaseServlet: No matching route found.");
             ServletError error = new ServletError(GAL5404_UNRESOLVED_ENDPOINT_ERROR, url);
             throw new InternalServletException(error, HttpServletResponse.SC_NOT_FOUND);
+        } else {
+            handleRoute(route, url, queryParameters, req, res);
         }
+    }
+
+    private IRoute selectRoute(String url) {
+        IRoute routeMatched = null ;
+
+        Iterator<Map.Entry<Pattern, IRoute>> walker = routes.entrySet().iterator();
+        while( routeMatched == null && walker.hasNext() ) {
+            Map.Entry<Pattern, IRoute> entry = walker.next();
+
+            Pattern routePattern = entry.getKey();
+            IRoute possibleMatchedRoute = entry.getValue();
+
+            Matcher matcher = routePattern.matcher(url);
+
+            if (matcher.matches()) {
+                routeMatched = possibleMatchedRoute;
+            }
+        }
+        return routeMatched;
     }
 
     private void handleRoute(
@@ -140,15 +147,31 @@ public class BaseServlet extends HttpServlet {
     ) throws ServletException, IOException, FrameworkException {
         String requestMethodStr = req.getMethod();
         HttpMethod requestMethod = HttpMethod.getFromString(requestMethodStr);
-        if (requestMethod == GET) {
-            route.handleGetRequest(pathInfo, queryParameters, req, res);
-        } else if (requestMethod == POST) {
-            route.handlePostRequest(pathInfo, queryParameters, req, res);
-        } else if (requestMethod == PUT) {
-            route.handlePutRequest(pathInfo, queryParameters, req, res);
-        } else if (requestMethod == DELETE) {
-            route.handleDeleteRequest(pathInfo, queryParameters, req, res);
+
+        boolean isBadMethod = false ;
+        if (requestMethod == null ) {
+            isBadMethod = true ;
         } else {
+
+            switch(requestMethod) {
+                case GET: 
+                    route.handleGetRequest(pathInfo, queryParameters, req, res);
+                    break;
+                case POST :
+                    route.handlePostRequest(pathInfo, queryParameters, req, res);
+                    break;
+                case PUT:
+                    route.handlePutRequest(pathInfo, queryParameters, req, res);
+                    break;
+                case DELETE:
+                    route.handleDeleteRequest(pathInfo, queryParameters, req, res);
+                    break;
+                default:
+                    isBadMethod = true ;
+            }
+        }
+
+        if( isBadMethod ) {
             // The request was sent with an unsupported method, so throw an error
             ServletError error = new ServletError(GAL5405_METHOD_NOT_ALLOWED, pathInfo, requestMethodStr);
             throw new InternalServletException(error, HttpServletResponse.SC_METHOD_NOT_ALLOWED);     

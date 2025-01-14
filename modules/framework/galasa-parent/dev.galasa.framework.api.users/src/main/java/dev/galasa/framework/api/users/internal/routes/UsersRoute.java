@@ -16,38 +16,29 @@ import java.util.Collection;
 import java.util.List;
 
 import dev.galasa.framework.api.beans.generated.UserData;
-import dev.galasa.framework.api.common.BaseRoute;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.Environment;
-import dev.galasa.framework.api.common.EnvironmentVariables;
 import dev.galasa.framework.api.users.UsersServlet;
 import dev.galasa.framework.auth.spi.IAuthService;
 import dev.galasa.framework.api.common.JwtWrapper;
 
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.auth.AuthStoreException;
-import dev.galasa.framework.spi.auth.IAuthStoreService;
 import dev.galasa.framework.spi.auth.IUser;
 import dev.galasa.framework.spi.rbac.RBACService;
 
-public class UsersRoute extends BaseRoute {
+public class UsersRoute extends AbstractUsersRoute {
 
     // Regex to match endpoint /users and /users/
     private static final String path = "\\/?";
 
-    private Environment env;
-    private IAuthStoreService authStoreService;
     private BeanTransformer beanTransformer ;
 
     public UsersRoute(ResponseBuilder responseBuilder, Environment env,
             IAuthService authService, RBACService rbacService) {
-        super(responseBuilder, path);
-        this.env = env;
-        this.authStoreService = authService.getAuthStoreService();
-
-        String baseServletUrl = env.getenv(EnvironmentVariables.GALASA_EXTERNAL_API_URL);
+        super(responseBuilder,path, authService, env , rbacService );
 
         this.beanTransformer = new BeanTransformer(baseServletUrl, rbacService);
     }
@@ -59,8 +50,8 @@ public class UsersRoute extends BaseRoute {
 
         logger.info("UserRoute: handleGetRequest() entered.");
 
-        List<UserData> usersList = new ArrayList<>();
-        String payloadContent = "[]";
+        List<UserData> usersList = new ArrayList<UserData>();
+        String payloadContent ;
 
         String loginId = queryParams.getSingleString(UsersServlet.QUERY_PARAM_LOGIN_ID, null);
 
@@ -72,9 +63,7 @@ public class UsersRoute extends BaseRoute {
             usersList = beanTransformer.convertAllUsersToUserBean(users);
         }
 
-        if (!usersList.isEmpty()) {
-            payloadContent = gson.toJson(usersList);
-        }
+        payloadContent = gson.toJson(usersList);
 
         return getResponseBuilder().buildResponse(
                 request, response, "application/json", payloadContent, HttpServletResponse.SC_OK);
@@ -101,7 +90,5 @@ public class UsersRoute extends BaseRoute {
     
         return usersList;
     }
-
-    
 
 }

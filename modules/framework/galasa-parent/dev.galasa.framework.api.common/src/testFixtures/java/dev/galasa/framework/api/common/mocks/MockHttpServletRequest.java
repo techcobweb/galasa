@@ -468,4 +468,8 @@ public class MockHttpServletRequest implements HttpServletRequest {
     public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
         throw new UnsupportedOperationException("Unimplemented method 'upgrade'");
     }
+
+    public void setPayload(String payload) {
+        this.payload = payload;
+    }
 }
