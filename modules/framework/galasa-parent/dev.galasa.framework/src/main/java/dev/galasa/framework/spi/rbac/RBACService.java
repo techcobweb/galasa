@@ -32,4 +32,6 @@ public interface RBACService {
 
     Action getActionById( String id ) throws RBACException;
 
+    Role getRoleByName(String roleNameWanted) throws RBACException;
+
 }

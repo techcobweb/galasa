@@ -5,6 +5,7 @@
  */
 package dev.galasa.framework.api.rbac.internal.routes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -48,9 +49,21 @@ public class RolesRoute extends AbstractRBACRoute {
         HttpServletRequest request,
         HttpServletResponse response
     ) throws FrameworkException {
+
         logger.info("handleGetRequest() entered. Getting roles");
 
-        Collection<Role> roles = getRBACService().getRolesSortedByName();
+        Collection<Role> roles ;
+
+        String roleNameWanted = queryParams.getSingleString("name", null);
+        if (roleNameWanted==null || roleNameWanted.trim().equals("")) {
+            // The caller wants all the roles.
+            roles = getRBACService().getRolesSortedByName();
+        } else {
+            // The caller wants a specific role.
+            Role role = getRBACService().getRoleByName(roleNameWanted);
+            roles = new ArrayList<Role>();
+            roles.add(role);
+        }
 
         String baseUrl = request.getRequestURL().toString();
 
