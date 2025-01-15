@@ -152,12 +152,20 @@ function set_up_bootstrap {
     assert_previous_command_worked "Failed to set up local galasa environment"
 
     echo >> ${GALASA_HOME}/bootstrap.properties
-    # echo "framework.config.store=etcd:http://galasa-galasa-prod.cicsk8s.hursley.ibm.com:32189" >> ${GALASA_HOME}/bootstrap.properties
-    echo "framework.resultarchive.store=couchdb:http://127.0.0.1:5984" >> ${GALASA_HOME}/bootstrap.properties
-    echo "framework.config.store=etcd:http://127.0.0.1:2379" >> ${GALASA_HOME}/bootstrap.properties
-    echo "framework.auth.store=couchdb:http://127.0.0.1:5984" >> ${GALASA_HOME}/bootstrap.properties
-    echo "framework.extra.bundles=dev.galasa.ras.couchdb,dev.galasa.cps.etcd" >> ${GALASA_HOME}/bootstrap.properties
-    echo "api.extra.bundles=dev.galasa.auth.couchdb" >> ${GALASA_HOME}/bootstrap.properties
+
+    cat << EOF >> ${GALASA_HOME}/bootstrap.properties
+
+framework.resultarchive.store=couchdb:http://127.0.0.1:5984
+framework.config.store=etcd:http://127.0.0.1:2379
+framework.auth.store=couchdb:http://127.0.0.1:5984
+api.extra.bundles=dev.galasa.auth.couchdb
+framework.extra.bundles=dev.galasa.ras.couchdb,dev.galasa.cps.etcd
+
+framework.dynamicstatus.store=etcd:http://127.0.0.1:2379
+framework.credentials.store=etcd:http://127.0.0.1:2379
+
+EOF
+
 }
 
 function setup_galasa_dev() {
