@@ -336,7 +336,7 @@ paths:
       - $ref: '#/components/parameters/ClientApiVersion'
     get: 
       operationId: getUserByNumber
-      summary: Gets a user based on it's numeric id.
+      summary: Gets a user based on its numeric id.
       tags: 
         - Users API
       parameters:
@@ -438,7 +438,7 @@ paths:
                 runiderror:
                   value:
                     error_code: 5083
-                    error_message: "GAL5083E: Error updaating user"
+                    error_message: "GAL5083E: Error updating user"
                   summary: An Error occurred when trying to update a user using the given user number.
         '401':
           $ref: "#/components/responses/Unauthorized"
