@@ -121,6 +121,11 @@ public class TestUserImpl {
             return this.roleId;
         }
 
+        @Override
+        public void setRoleId(String newRoleId) {
+            this.roleId = newRoleId ;
+        }
+
     }
 
     @Test
@@ -276,4 +281,27 @@ public class TestUserImpl {
         assertThat(loginId).isNull();
     }
 
+    @Test
+    public void testCreateUserFromDocRoleIUserTransfersRoleOK() {
+        // Given...
+        IUser userIn = new MockIUser("user1-login-id", null, "user1-role-id");
+
+        // When...
+        UserImpl userOut = new UserImpl(userIn);
+
+        // Then...
+        assertThat(userOut.getRoleId()).isEqualTo("user1-role-id");
+    }
+
+    @Test
+    public void testCreateUserFromDocNullRoleIUserTransfersNullOK() {
+        // Given...
+        IUser userIn = new MockIUser("user1-login-id", null, null);
+
+        // When...
+        UserImpl userOut = new UserImpl(userIn);
+
+        // Then...
+        assertThat(userOut.getRoleId()).isEqualTo(null);
+    }
 }

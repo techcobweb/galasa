@@ -262,8 +262,7 @@ public class CouchdbAuthStore extends CouchdbStore implements IAuthStore {
     @Override
     public IUser updateUser(IUser user) throws AuthStoreException {
         // Take a clone of the user we are passed, so we can guarantee we are using our
-        // bean which
-        // serialises to the correct format.
+        // bean which serialises to the correct format.
         UserImpl userImpl = new UserImpl(user);
         updateUser(httpClient, storeUri, userImpl);
         return userImpl;

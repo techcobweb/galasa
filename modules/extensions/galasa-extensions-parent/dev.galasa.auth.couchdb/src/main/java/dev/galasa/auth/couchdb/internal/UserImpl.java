@@ -39,13 +39,18 @@ public class UserImpl implements IUser {
         // We don't trust that the users' clients which are passed in are going to serialise
         // to the correct json format. So convert them into our bean which will.
         List<FrontEndClient> trustedClients = new ArrayList<FrontEndClient>();
-        for( IFrontEndClient untrustedClient : user.getClients()) {
-            trustedClients.add( new FrontEndClient(untrustedClient));
+
+        Collection<IFrontEndClient> clientsIn = user.getClients();
+        if( clientsIn != null) {
+            for( IFrontEndClient untrustedClient : clientsIn) {
+                trustedClients.add( new FrontEndClient(untrustedClient));
+            }
         }
 
         this.userDocBean = new UserDoc( user.getLoginId() , trustedClients);
         this.userDocBean.setVersion( user.getVersion() );
         this.userDocBean.setUserNumber( user.getUserNumber() );
+        this.userDocBean.setRoleId( user.getRoleId() );
     }
 
     public String toJson( GalasaGson gson) {
