@@ -2006,6 +2006,16 @@ paths:
   /rbac/roles:
     parameters:
       - $ref: '#/components/parameters/ClientApiVersion'
+      - name: name
+        in: query
+        description: |
+          Filters the query so that only roles with the specific name are returned.
+        required: false
+        schema:
+          type: string
+        examples:
+          single:
+            value: admin
     get:
       operationId: getRBACRoles
       summary: Gets the list of roles in the system
