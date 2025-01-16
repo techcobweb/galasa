@@ -42,6 +42,9 @@ public class RolesRoute extends AbstractRBACRoute {
         super(responseBuilder, PATH_PATTERN, env, timeService, rbacService);
     }
 
+    public static final String QUERY_PARAMETER_NAME_NAME = "name";
+    private static final List<String> supportedQueryParameters = List.of(QUERY_PARAMETER_NAME_NAME);
+
     @Override
     public HttpServletResponse handleGetRequest(
         String pathInfo,
@@ -52,9 +55,13 @@ public class RolesRoute extends AbstractRBACRoute {
 
         logger.info("handleGetRequest() entered. Getting roles");
 
+        // TODO: This check should really be in the servlet, checking all routes, but that's a big change, so just leaving it here for now.
+        queryParams.checkForUnsupportedQueryParameters(supportedQueryParameters);
+
         Collection<Role> roles ;
 
-        String roleNameWanted = queryParams.getSingleString("name", null);
+        String roleNameWanted = queryParams.getSingleString(QUERY_PARAMETER_NAME_NAME, null);
+
         if (roleNameWanted==null || roleNameWanted.trim().equals("")) {
             // The caller wants all the roles.
             roles = getRBACService().getRolesSortedByName();
@@ -62,7 +69,9 @@ public class RolesRoute extends AbstractRBACRoute {
             // The caller wants a specific role.
             Role role = getRBACService().getRoleByName(roleNameWanted);
             roles = new ArrayList<Role>();
-            roles.add(role);
+            if (role!=null) {
+                roles.add(role);
+            }
         }
 
         String baseUrl = request.getRequestURL().toString();

@@ -199,8 +199,9 @@ function launch_api_server {
     --bootstrap ${GALASA_BOOTSTRAP} \
     --overrides file://${GALASA_HOME}/overrides.properties \
     --obr mvn:dev.galasa/dev.galasa.uber.obr/${OBR_VERSION}/obr \
-    --trace \
     --api"
+
+    #  Add this flag back in if we want more trace: --trace \
 
     info "Command is ${cmd}"
 

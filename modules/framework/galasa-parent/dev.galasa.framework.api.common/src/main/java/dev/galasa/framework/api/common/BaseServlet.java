@@ -10,8 +10,6 @@ import org.apache.commons.logging.LogFactory;
 
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.utils.GalasaGson;
-
-import static dev.galasa.framework.api.common.HttpMethod.*;
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 
 import java.io.IOException;

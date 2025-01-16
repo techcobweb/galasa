@@ -48,6 +48,7 @@ public enum ServletErrorMessage {
     GAL5405_METHOD_NOT_ALLOWED                        (5405,"E: Error occurred when trying to access the endpoint ''{0}''. The method ''{1}'' is not allowed."),
     GAL5406_UNSUPPORTED_CONTENT_TYPE_REQUESTED        (5406, "E: Unsupported ''Accept'' header value set. Supported response types are: [{0}]. Ensure the ''Accept'' header in your request contains a valid value and try again"),
     GAL5411_NO_REQUEST_BODY                           (5411,"E: Error occurred when trying to access the endpoint ''{0}''. The request body is empty."),
+    GAL5412_UNSUPPORTED_QUERY_PARAMETERS              (5412,"E: One or more query parameters sent to the Galasa service are not supported ({0}). Supported query parameters are: {1}"),
 
     //CPS Namespaces...
     GAL5015_INTERNAL_CPS_ERROR                        (5015,"E: Error occurred when trying to access the Configuration Property Store. Report the problem to your Galasa Ecosystem owner."),

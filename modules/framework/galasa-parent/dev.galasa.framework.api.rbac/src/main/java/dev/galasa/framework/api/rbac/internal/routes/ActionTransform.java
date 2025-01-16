@@ -40,17 +40,29 @@ public class ActionTransform {
     public List<RBACActionMetadata> creteaActionsSummary(Collection<Action> actions, String baseUrl ) {
         List<RBACActionMetadata> actionBeans = new ArrayList<RBACActionMetadata>();
         for( Action action : actions ) {
-            String url;
-            if (baseUrl.endsWith("/")) {
-                url = baseUrl+action.getId();
-            } else {
-                url = baseUrl+"/"+action.getId();
-            }
+            String url = calculateActionUrl(baseUrl, action.getId());
 
             RBACActionMetadata actionBean = createActionMetadataBean(action, url);
             actionBeans.add(actionBean);
         }
         return actionBeans;
+    }
+
+    /**
+     * Given a base URL and an action ID, construct the URL a user would have to use to address a single action resource.
+     * Handling trailing slashes and all.
+     * @param baseUrl
+     * @param actionId
+     * @return The URL a user would have to use to address a single action resource.
+     */
+    private String calculateActionUrl(String baseUrl, String actionId) {
+        String url;
+        if (baseUrl.endsWith("/")) {
+            url = baseUrl+actionId;
+        } else {
+            url = baseUrl+"/"+actionId;
+        }
+        return url;
     }
     
 }
