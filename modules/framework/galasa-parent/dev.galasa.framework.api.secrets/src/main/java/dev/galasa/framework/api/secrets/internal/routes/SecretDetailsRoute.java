@@ -38,6 +38,7 @@ import dev.galasa.framework.spi.creds.CredentialsUsername;
 import dev.galasa.framework.spi.creds.CredentialsUsernamePassword;
 import dev.galasa.framework.spi.creds.CredentialsUsernameToken;
 import dev.galasa.framework.spi.creds.ICredentialsService;
+import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.ITimeService;
 
 public class SecretDetailsRoute extends AbstractSecretsRoute {
@@ -57,9 +58,10 @@ public class SecretDetailsRoute extends AbstractSecretsRoute {
         ResponseBuilder responseBuilder,
         ICredentialsService credentialsService,
         Environment env,
-        ITimeService timeService
+        ITimeService timeService,
+        RBACService rbacService
     ) {
-        super(responseBuilder, PATH_PATTERN, env, timeService);
+        super(responseBuilder, PATH_PATTERN, env, timeService, rbacService);
         this.credentialsService = credentialsService;
     }
 

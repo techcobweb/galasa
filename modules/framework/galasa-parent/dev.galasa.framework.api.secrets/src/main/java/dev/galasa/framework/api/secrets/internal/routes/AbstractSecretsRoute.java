@@ -27,10 +27,10 @@ import dev.galasa.framework.api.beans.generated.SecretRequest;
 import dev.galasa.framework.api.beans.generated.SecretRequestpassword;
 import dev.galasa.framework.api.beans.generated.SecretRequesttoken;
 import dev.galasa.framework.api.beans.generated.SecretRequestusername;
-import dev.galasa.framework.api.common.BaseRoute;
 import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.JwtWrapper;
+import dev.galasa.framework.api.common.ProtectedRoute;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.api.common.resources.GalasaResourceValidator;
@@ -39,13 +39,13 @@ import dev.galasa.framework.spi.creds.CredentialsToken;
 import dev.galasa.framework.spi.creds.CredentialsUsername;
 import dev.galasa.framework.spi.creds.CredentialsUsernamePassword;
 import dev.galasa.framework.spi.creds.CredentialsUsernameToken;
+import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.ITimeService;
 
-public abstract class AbstractSecretsRoute extends BaseRoute {
+public abstract class AbstractSecretsRoute extends ProtectedRoute {
 
     private static final String DEFAULT_RESPONSE_ENCODING = "base64";
 
-    private Environment env;
     protected ITimeService timeService;
 
     private static final Map<Class<? extends ICredentials>, GalasaSecretType> credentialsToSecretTypes = Map.of(
@@ -55,9 +55,14 @@ public abstract class AbstractSecretsRoute extends BaseRoute {
         CredentialsUsernameToken.class, GalasaSecretType.USERNAME_TOKEN
     );
 
-    public AbstractSecretsRoute(ResponseBuilder responseBuilder, String path, Environment env, ITimeService timeService) {
-        super(responseBuilder, path);
-        this.env = env;
+    public AbstractSecretsRoute(
+        ResponseBuilder responseBuilder,
+        String path,
+        Environment env,
+        ITimeService timeService,
+        RBACService rbacService
+    ) {
+        super(responseBuilder, path, rbacService, env);
         this.timeService = timeService;
     }
 

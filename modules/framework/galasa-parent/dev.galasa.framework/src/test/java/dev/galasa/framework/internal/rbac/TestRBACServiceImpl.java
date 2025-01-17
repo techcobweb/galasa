@@ -29,10 +29,11 @@ public class TestRBACServiceImpl {
         assertThat(roleGot.getDescription()).contains("Administrator access");
 
         assertThat(roleGot.getActionIds())
-            .hasSize(3)
+            .hasSize(4)
             .contains("USER_ROLE_UPDATE_ANY")
             .contains("SECRETS_GET")
-            .contains("GENERAL_API_ACCESS");
+            .contains("GENERAL_API_ACCESS")
+            .contains("CPS_PROPERTIES_SET");
     }
 
     @Test
@@ -91,6 +92,15 @@ public class TestRBACServiceImpl {
         assertThat(action.getId()).isEqualTo("GENERAL_API_ACCESS");
     }
 
+    @Test 
+    public void testActionsMapByIdContainsActionCpsPropertiesSet() throws Exception {
+        RBACService service = new RBACServiceImpl();
+        Map<String,Action> actionMap = service.getActionsMapById();
+
+        Action action = actionMap.get("CPS_PROPERTIES_SET");
+        assertThat(action.getId()).isEqualTo("CPS_PROPERTIES_SET");
+    }
+
     @Test
     public void testActionsMapByNameContainsSecretsGet() throws Exception {
         RBACService service = new RBACServiceImpl();
@@ -129,13 +139,22 @@ public class TestRBACServiceImpl {
         assertThat(actionGotBack.getDescription()).contains("Able to get secret values");
     }
 
+    @Test 
+    public void testSetCpsPropertiesActionHasDescription() throws Exception {
+        RBACService service = new RBACServiceImpl();
+        Map<String,Action> actionMap = service.getActionsMapById();
+
+        Action action = actionMap.get("CPS_PROPERTIES_SET");
+        assertThat(action.getDescription()).isEqualTo("Able to set CPS properties");
+    }
+
     @Test
     public void testActionsAreSorted() throws Exception {
         RBACService service = new RBACServiceImpl();
         Iterator<Action> walker = service.getActionsSortedByName().iterator();
         assertThat(walker.hasNext()).isTrue();
         // Only check the first one. Should be enough...
-        assertThat(walker.next().getId()).isEqualTo("GENERAL_API_ACCESS");
+        assertThat(walker.next().getId()).isEqualTo("CPS_PROPERTIES_SET");
     }
 
     @Test

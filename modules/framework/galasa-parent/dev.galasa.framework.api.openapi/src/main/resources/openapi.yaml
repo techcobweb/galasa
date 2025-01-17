@@ -2050,6 +2050,7 @@ paths:
                         - GENERAL_API_ACCESS
                         - SECRETS_GET
                         - USER_ROLE_UPDATE_ANY
+                        - CPS_PROPERTIES_SET
 
         '404':
           $ref: '#/components/responses/NotFound'
@@ -2098,6 +2099,7 @@ paths:
                       - GENERAL_API_ACCESS
                       - SECRETS_GET
                       - USER_ROLE_UPDATE_ANY
+                      - CPS_PROPERTIES_SET
         '404':
           $ref: '#/components/responses/NotFound'
         '401':

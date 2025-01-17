@@ -30,6 +30,7 @@ import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.api.secrets.internal.SecretRequestValidator;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.creds.ICredentialsService;
+import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.ITimeService;
 
 public class SecretsRoute extends AbstractSecretsRoute {
@@ -46,8 +47,10 @@ public class SecretsRoute extends AbstractSecretsRoute {
         ResponseBuilder responseBuilder,
         ICredentialsService credentialsService,
         Environment env,
-        ITimeService timeService) {
-        super(responseBuilder, PATH_PATTERN, env, timeService);
+        ITimeService timeService,
+        RBACService rbacService
+    ) {
+        super(responseBuilder, PATH_PATTERN, env, timeService, rbacService);
         this.credentialsService = credentialsService;
     }
 

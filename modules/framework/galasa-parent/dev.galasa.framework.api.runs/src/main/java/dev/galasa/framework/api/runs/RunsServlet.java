@@ -19,6 +19,7 @@ import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.SystemEnvironment;
 import dev.galasa.framework.api.runs.routes.GroupRunsRoute;
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.RBACException;
 
 /*
 * Proxy servlet for /runs/* endpoints
@@ -41,6 +42,11 @@ public class RunsServlet extends BaseServlet {
 		logger.info("Schedule Runs Servlet initialising");
 
 		super.init();
-		addRoute(new GroupRunsRoute(getResponseBuilder(), framework, env));
+		try {
+			addRoute(new GroupRunsRoute(getResponseBuilder(), framework, env));
+		} catch (RBACException e) {
+			throw new ServletException("Failed to initialise schedule runs servlet");
+		}
+		logger.info("Schedule Runs Servlet initialised");
 	}
 }

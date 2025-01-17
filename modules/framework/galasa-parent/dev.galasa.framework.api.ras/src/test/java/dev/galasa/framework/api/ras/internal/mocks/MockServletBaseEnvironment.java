@@ -10,6 +10,7 @@ import dev.galasa.framework.spi.IRunResult;
 
 import java.io.PrintWriter;
 
+import dev.galasa.framework.api.common.BaseServletTest;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.mocks.IServletUnderTest;
 import dev.galasa.framework.api.common.mocks.MockEnvironment;
@@ -29,12 +30,14 @@ import javax.servlet.http.HttpServletResponse;
 
 public abstract class MockServletBaseEnvironment {
 
+    private static final Map<String, String> REQUIRED_HEADERS = new HashMap<>(Map.of("Authorization", "Bearer " + BaseServletTest.DUMMY_JWT));
+
     MockFramework mockFramework;
     MockFileSystem mockFileSystem;
     MockArchiveStore archiveStore;
     IServletUnderTest servlet;
 
-    HttpServletRequest req;
+    MockHttpServletRequest req;
     List<IResultArchiveStoreDirectoryService> directoryServices;
     List<IRunResult> mockInputRunResults;
     ServletOutputStream outStream;
@@ -57,7 +60,7 @@ public abstract class MockServletBaseEnvironment {
         this.directoryServices = setDirectoryService(rasStore);
         this.setArchiveStore(new MockArchiveStore(this.directoryServices));
         this.mockFramework = new MockFramework(this.archiveStore);
-        this.req = mockRequest;
+        setRequest(mockRequest);
         this.outStream = new MockServletOutputStream();
         this.writer = new PrintWriter(this.outStream);
         this.resp = new MockHttpServletResponse(this.writer, this.outStream);
@@ -70,7 +73,7 @@ public abstract class MockServletBaseEnvironment {
         this.directoryServices = setDirectoryService(rasStore);
         this.setArchiveStore(new MockArchiveStore(this.directoryServices));
         this.mockFramework = mockFramework;
-        this.req = mockRequest;
+        setRequest(mockRequest);
         this.outStream = new MockServletOutputStream();
         this.writer = new PrintWriter(this.outStream);
         this.resp = new MockHttpServletResponse(this.writer, this.outStream);
@@ -86,6 +89,11 @@ public abstract class MockServletBaseEnvironment {
 
     public HttpServletRequest getRequest() {
         return this.req;
+    }
+
+    public void setRequest(MockHttpServletRequest mockRequest) {
+        this.req = mockRequest;
+        this.req.setHeaders(REQUIRED_HEADERS);
     }
 
     public RasServlet getRasServlet() {

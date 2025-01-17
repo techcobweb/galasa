@@ -211,34 +211,9 @@ public class TestPropertyUpdateRoute extends CpsServletTest{
      * TESTS  -- GET requests
      */
     @Test
-    public void TestPropertyRouteGETNoFrameworkReturnsError() throws Exception{
-		// Given...
-		setServlet("/namespace1/properties/property1",null ,new HashMap<String,String[]>());
-		MockCpsServlet servlet = getServlet();
-		HttpServletRequest req = getRequest();
-		HttpServletResponse resp = getResponse();
-		ServletOutputStream outStream = resp.getOutputStream();	
-				
-		// When...
-		servlet.init();
-		servlet.doGet(req,resp);
-
-		// Then...
-		// We expect an error back, because the API server couldn't find any Etcd store to Route
-		assertThat(resp.getStatus()).isEqualTo(404);
-		assertThat(resp.getContentType()).isEqualTo("application/json");
-
-		checkErrorStructure(
-			outStream.toString(),
-			5016,
-			"GAL5016E: Error occurred when trying to access namespace 'namespace1'. The namespace provided is invalid."
-		);
-    }
-
-    @Test
     public void TestPropertyRouteGETBadNamespaceReturnsError() throws Exception{
 		// Given...
-		setServlet("/error/properties/property1",null ,new HashMap<String,String[]>());
+		setServlet("/error/properties/property1","error" ,new HashMap<String,String[]>());
 		MockCpsServlet servlet = getServlet();
 		HttpServletRequest req = getRequest();
 		HttpServletResponse resp = getResponse();
@@ -722,31 +697,6 @@ public class TestPropertyUpdateRoute extends CpsServletTest{
      * TESTS  -- DELETE requests
      */
 
-    @Test
-    public void TestPropertyRouteDELETENoFrameworkReturnsError() throws Exception{
-        // Given...
-		setServlet("/namespace1/properties/property.1", null, null, "DELETE");
-		MockCpsServlet servlet = getServlet();
-		HttpServletRequest req = getRequest();
-		HttpServletResponse resp = getResponse();
-		ServletOutputStream outStream = resp.getOutputStream();	
-        
-		// When...
-		servlet.init();
-		servlet.doDelete(req,resp);
-        
-		// Then...
-		// We expect an error back, because the API server couldn't find any Etcd store to Route
-		assertThat(resp.getStatus()).isEqualTo(500);
-		assertThat(resp.getContentType()).isEqualTo("application/json");
-        
-		checkErrorStructure(
-			outStream.toString(),
-			5000,
-			"GAL5000E: Error occurred when trying to access the endpoint. Report the problem to your Galasa Ecosystem owner."
-        );
-    }
-        
 	@Test
     public void TestPropertyRouteDELETEWithHiddenNamespaceReturnsError() throws Exception {
         // Given...
@@ -777,7 +727,7 @@ public class TestPropertyUpdateRoute extends CpsServletTest{
     @Test
     public void TestPropertyRouteDELETEBadNamespaceReturnsError() throws Exception{
         // Given...
-		setServlet("/error/properties/property.1", null, null, "DELETE");
+		setServlet("/error/properties/property.1", "error", null, "DELETE");
 		MockCpsServlet servlet = getServlet();
 		HttpServletRequest req = getRequest();
 		HttpServletResponse resp = getResponse();

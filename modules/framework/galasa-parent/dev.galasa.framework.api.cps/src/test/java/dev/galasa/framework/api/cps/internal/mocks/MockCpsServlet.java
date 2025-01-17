@@ -7,6 +7,7 @@ package dev.galasa.framework.api.cps.internal.mocks;
 
 import dev.galasa.framework.IFileSystem;
 import dev.galasa.framework.api.common.mocks.IServletUnderTest;
+import dev.galasa.framework.api.common.mocks.MockFramework;
 import dev.galasa.framework.api.cps.internal.CpsServlet;
 import dev.galasa.framework.spi.IFramework;
 
@@ -16,6 +17,10 @@ import dev.galasa.framework.spi.IFramework;
  * so a subclass can do the injection instead of the injection framework.
  */
 public class MockCpsServlet extends CpsServlet implements IServletUnderTest {
+
+	public MockCpsServlet() {
+		setFramework(new MockFramework());
+	}
 
 	@Override
 	public void setFramework(IFramework framework) {

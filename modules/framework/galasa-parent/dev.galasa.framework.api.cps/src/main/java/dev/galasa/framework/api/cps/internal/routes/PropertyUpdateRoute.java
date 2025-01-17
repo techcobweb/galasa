@@ -15,6 +15,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -24,6 +25,7 @@ import dev.galasa.framework.api.common.resources.CPSNamespace;
 import dev.galasa.framework.api.common.resources.CPSProperty;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.RBACException;
 
 /**
  * A route used by all the Property-related Requests.
@@ -32,11 +34,11 @@ public class PropertyUpdateRoute extends CPSRoute {
 
     protected static final String path = "\\/([a-z][a-z0-9]+)/properties/([a-zA-Z][a-zA-Z0-9\\.\\-\\_@]+)" ;
 
-    public PropertyUpdateRoute(ResponseBuilder responseBuilder, IFramework framework ) {
+    public PropertyUpdateRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
 		/* Regex to match endpoints: 
 		*  -> /cps/<namespace>/properties/<propertyName>
 		*/
-		super(responseBuilder, path, framework);
+		super(responseBuilder, path, framework, env);
 	}
 
     /*

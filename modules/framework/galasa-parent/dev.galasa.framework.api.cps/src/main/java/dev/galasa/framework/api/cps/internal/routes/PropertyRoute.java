@@ -15,6 +15,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -25,6 +26,7 @@ import dev.galasa.framework.api.common.resources.CPSProperty;
 import dev.galasa.framework.api.common.resources.GalasaPropertyName;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.RBACException;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 
@@ -32,8 +34,8 @@ public class PropertyRoute extends CPSRoute{
 
     protected static final String path = "\\/([a-z][a-z0-9]+)/properties([?]?|[^/])+$";
 
-    public PropertyRoute(ResponseBuilder responseBuilder, IFramework framework) {
-        super(responseBuilder, path , framework);
+    public PropertyRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
+        super(responseBuilder, path , framework, env);
     }
 
     /*

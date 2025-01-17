@@ -19,6 +19,8 @@ import dev.galasa.framework.api.secrets.internal.routes.SecretsRoute;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.creds.CredentialsException;
 import dev.galasa.framework.spi.creds.ICredentialsService;
+import dev.galasa.framework.spi.rbac.RBACException;
+import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.ITimeService;
 import dev.galasa.framework.spi.utils.SystemTimeService;
 
@@ -32,25 +34,26 @@ import javax.servlet.ServletException;
 "osgi.http.whiteboard.servlet.pattern=/secrets/*" }, name = "Galasa Secrets microservice")
 public class SecretsServlet extends BaseServlet {
 
-	@Reference
-	protected IFramework framework;
+    @Reference
+    protected IFramework framework;
 
     protected Environment env = new SystemEnvironment();
     protected ITimeService timeService = new SystemTimeService();
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private Log logger = LogFactory.getLog(this.getClass());
+    private Log logger = LogFactory.getLog(this.getClass());
  
-	@Override
-	public void init() throws ServletException {
-		logger.info("Secrets servlet initialising");
+    @Override
+    public void init() throws ServletException {
+        logger.info("Secrets servlet initialising");
 
         try {
             ICredentialsService credentialsService = framework.getCredentialsService();
-            addRoute(new SecretsRoute(getResponseBuilder(), credentialsService, env, timeService));
-            addRoute(new SecretDetailsRoute(getResponseBuilder(), credentialsService, env, timeService));
-        } catch (CredentialsException e) {
+            RBACService rbacService = framework.getRBACService();
+            addRoute(new SecretsRoute(getResponseBuilder(), credentialsService, env, timeService, rbacService));
+            addRoute(new SecretDetailsRoute(getResponseBuilder(), credentialsService, env, timeService, rbacService));
+        } catch (CredentialsException | RBACException e) {
             throw new ServletException("Failed to initialise the Secrets servlet");
         }
 		logger.info("Secrets servlet initialised");

@@ -7,7 +7,6 @@ package dev.galasa.framework.api.runs.routes;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
@@ -16,14 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 
-import dev.galasa.framework.api.common.BaseServletTest;
 import dev.galasa.framework.api.runs.RunsServletTest;
 import dev.galasa.framework.api.runs.mocks.MockRunsServlet;
 
 public class TestGroupRunsRoute extends RunsServletTest{
-    
-    private String jwt = BaseServletTest.DUMMY_JWT; // Mock JWT, not a secret //pragma: allowlist secret
-    private Map<String, String> headerMap = Map.of("Authorization", "Bearer "+jwt);
 
     /*
      * Regex Path
@@ -149,31 +144,6 @@ public class TestGroupRunsRoute extends RunsServletTest{
     /*
      * GET Requests
      */
-
-    @Test
-    public void TestGetRunsNoFrameworkReturnsError() throws Exception {
-        //Given...
-        setServlet("/group", null, null);
-        MockRunsServlet servlet = getServlet();
-        HttpServletRequest req = getRequest();
-		HttpServletResponse resp = getResponse();
-		ServletOutputStream outStream = resp.getOutputStream();
-
-        //When...
-        servlet.init();
-		servlet.doGet(req,resp);
-
-        //Then...
-        assertThat(resp.getStatus()).isEqualTo(500);
-		assertThat(resp.getContentType()).isEqualTo("application/json");
-
-		checkErrorStructure(
-			outStream.toString(),
-			5000,
-			"GAL5000E: ",
-			"Error occurred when trying to access the endpoint"
-		);
-    }
 
     @Test
     public void TestGetRunsWithInvalidGroupNameReturnsError() throws Exception {
@@ -417,7 +387,7 @@ public class TestGroupRunsRoute extends RunsServletTest{
 		String groupName = "valid";
         String value = "Invalid";
         setServlet("/"+groupName, groupName, value, "POST");
-;		MockRunsServlet servlet = getServlet();
+		MockRunsServlet servlet = getServlet();
 		HttpServletRequest req = getRequest();
 		HttpServletResponse resp = getResponse();
         ServletOutputStream outStream = resp.getOutputStream();
@@ -507,7 +477,7 @@ public class TestGroupRunsRoute extends RunsServletTest{
 		String groupName = "valid";
         String payload = "{\"classNames\": [\"Class/name\"]," +
         "\"requestorType\": \"requestorType\"," +
-        "\"requestor\": \"user1\"," +
+        "\"requestor\": \"testRequestor\"," +
         "\"testStream\": \"this is a test stream\"," +
         "\"obr\": \"this.obr\","+
         "\"mavenRepository\": \"this.maven.repo\"," +
@@ -515,7 +485,7 @@ public class TestGroupRunsRoute extends RunsServletTest{
         "\"sharedEnvironmentRunTime\": \"envRunTime\"," +
         "\"overrides\": {}," +
         "\"trace\": true }";
-        addRun("runnamename", "requestorType", "user1", "name", "submitted",
+        addRun("runnamename", "requestorType", JWT_USERNAME, "name", "submitted",
                "Class", "java", groupName);
 
         setServlet("/"+groupName, groupName, payload, "POST");
@@ -540,7 +510,7 @@ public class TestGroupRunsRoute extends RunsServletTest{
         // Given...
 		String groupName = "valid";
         String[] classes = new String[]{"Class/name"};
-        String payload = generatePayload(classes, "requestorType", "user1", "this.test.stream", groupName, null);
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, null);
 
         setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
@@ -563,7 +533,7 @@ public class TestGroupRunsRoute extends RunsServletTest{
         // Given...
 		String groupName = "valid";
         String[] classes = new String[]{"Class/name"};
-        String payload = generatePayload(classes, "requestorType", "user1", null, groupName, null);
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, null, groupName, null);
 
         setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
@@ -588,7 +558,7 @@ public class TestGroupRunsRoute extends RunsServletTest{
         // Given...
 		String groupName = "valid";
         String[] classes = new String[]{"Class1/name", "Class2/name"};
-        String payload = generatePayload(classes, "requestorType", "user1", "this.test.stream", groupName, null);
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, null);
 
         setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
@@ -611,7 +581,7 @@ public class TestGroupRunsRoute extends RunsServletTest{
         // Given...
 		String groupName = "8149dc91-dabc-461a-b9e8-6f11a4455f59";
         String[] classes = new String[]{"Class1/name", "Class2/name"};
-        String payload = generatePayload(classes, "requestorType", "user1", "this.test.stream", groupName, null);
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, null);
 
         setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
@@ -639,7 +609,7 @@ public class TestGroupRunsRoute extends RunsServletTest{
 		String groupName = "valid";
         String payload = "{\"classNames\": [\"Class/name\"]," +
         "\"requestorType\": \"requestorType\"," +
-        "\"requestor\": \"user1\"," +
+        "\"requestor\": \"testRequestor\"," +
         "\"testStream\": \"this is a test stream\"," +
         "\"obr\": \"this.obr\","+
         "\"mavenRepository\": \"this.maven.repo\"," +
@@ -648,10 +618,10 @@ public class TestGroupRunsRoute extends RunsServletTest{
         "\"overrides\": {}," +
         "\"trace\": true }";
 
-        addRun("runnamename", "requestorType", "testRequestor", "name", "submitted",
+        addRun("runnamename", "requestorType", JWT_USERNAME, "name", "submitted",
                "Class", "java", groupName);
 
-        setServlet("/"+groupName, groupName, payload, "POST", headerMap);
+        setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
 		HttpServletRequest req = getRequest();
 		HttpServletResponse resp = getResponse();
@@ -673,9 +643,9 @@ public class TestGroupRunsRoute extends RunsServletTest{
         // Given...
 		String groupName = "valid";
         String[] classes = new String[]{"Class/name"};
-        String payload = generatePayload(classes, "requestorType", "user1", "this.test.stream", groupName, "testRequestor");
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, "testRequestor");
 
-        setServlet("/"+groupName, groupName, payload, "POST", headerMap);
+        setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
 		HttpServletRequest req = getRequest();
 		HttpServletResponse resp = getResponse();
@@ -696,9 +666,9 @@ public class TestGroupRunsRoute extends RunsServletTest{
         // Given...
 		String groupName = "valid";
         String[] classes = new String[]{"Class1/name", "Class2/name"};
-        String payload = generatePayload(classes, "requestorType", "user1", "this.test.stream", groupName, "testRequestor");
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, "testRequestor");
 
-        setServlet("/"+groupName, groupName, payload, "POST", headerMap);
+        setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
 		HttpServletRequest req = getRequest();
 		HttpServletResponse resp = getResponse();
@@ -719,9 +689,9 @@ public class TestGroupRunsRoute extends RunsServletTest{
         // Given...
 		String groupName = "8149dc91-dabc-461a-b9e8-6f11a4455f59";
         String[] classes = new String[]{"Class1/name", "Class2/name"};
-        String payload = generatePayload(classes, "requestorType", "user1", "this.test.stream", groupName, "testRequestor");
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, "testRequestor");
 
-        setServlet("/"+groupName, groupName, payload, "POST", headerMap);
+        setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
 		HttpServletRequest req = getRequest();
 		HttpServletResponse resp = getResponse();

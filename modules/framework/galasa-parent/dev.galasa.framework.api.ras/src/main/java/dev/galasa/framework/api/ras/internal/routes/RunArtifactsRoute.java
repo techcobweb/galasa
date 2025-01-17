@@ -16,10 +16,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import dev.galasa.framework.IFileSystem;
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.IRunResult;
 import dev.galasa.framework.spi.ResultArchiveStoreException;
+import dev.galasa.framework.spi.rbac.RBACException;
 
 /**
  * An abstract route for holding common code used by multiple artifact-related
@@ -33,8 +35,14 @@ public abstract class RunArtifactsRoute extends RunsRoute {
     // Get it using the getter method.
     private IFileSystem fileSystem;
 
-    public RunArtifactsRoute(ResponseBuilder responseBuilder,String path, IFileSystem fileSystem, IFramework framework) {
-        super(responseBuilder, path, framework);
+    public RunArtifactsRoute(
+        ResponseBuilder responseBuilder,
+        String path,
+        IFileSystem fileSystem,
+        IFramework framework,
+        Environment env
+    ) throws RBACException {
+        super(responseBuilder, path, framework, env);
         this.fileSystem = fileSystem;
     }
 

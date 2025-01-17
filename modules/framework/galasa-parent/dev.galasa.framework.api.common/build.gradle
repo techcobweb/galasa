@@ -19,6 +19,7 @@ dependencies {
     testFixturesImplementation(project(':dev.galasa.framework'))
     testFixturesImplementation(project(':dev.galasa.framework.api.beans'))
     testFixturesImplementation 'javax.validation:validation-api'
+    testFixturesImplementation(testFixtures(project(':dev.galasa.framework')))
 
 }
 

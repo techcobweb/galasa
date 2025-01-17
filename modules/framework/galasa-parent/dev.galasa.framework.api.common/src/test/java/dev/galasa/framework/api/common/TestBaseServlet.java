@@ -64,6 +64,11 @@ public class TestBaseServlet extends BaseServletTest {
         private HttpServletResponse writeMockResponse(HttpServletRequest request, HttpServletResponse response) throws IOException {
             return mockResponseBuilder.buildResponse(request, response, HttpServletResponse.SC_OK);
         }
+
+        @Override
+        public boolean isActionPermitted(String actionId, HttpServletRequest request) throws InternalServletException {
+            return true;
+        }
     }
 
 

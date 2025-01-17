@@ -34,4 +34,6 @@ public interface IRoute {
 
     HttpServletResponse handleDeleteRequest(String pathInfo, QueryParameters queryParameters, HttpServletRequest request ,HttpServletResponse response)
     throws ServletException, IOException, FrameworkException;
+
+    boolean isActionPermitted(String actionId, HttpServletRequest request) throws InternalServletException;
 }

@@ -13,20 +13,19 @@ import java.util.List;
 import java.util.Map;
 
 import dev.galasa.framework.spi.rbac.Action;
+import dev.galasa.framework.spi.rbac.BuiltInAction;
+import dev.galasa.framework.spi.rbac.CacheRBAC;
 import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.rbac.Role;
 
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
+
 public class RBACServiceImpl implements RBACService {
 
-    private static final Action actionUserRoleUpdateAny = new ActionImpl("USER_ROLE_UPDATE_ANY","User role update any", "Able to update the role of any user");
-    private static final Action actionSecretsGet = new ActionImpl("SECRETS_GET","Get secrets", "Able to get secret values" );
-    private static final Action actionGeneralApiAccess = new ActionImpl("GENERAL_API_ACCESS","General API access", "Able to access the REST API" );
+    private static final CacheRBAC userActionsCache = new CacheRBACImpl();
 
-    private static final List<Action> allActionsUnsorted = List.of(
-        actionUserRoleUpdateAny, 
-        actionSecretsGet, 
-        actionGeneralApiAccess);
+    private static final List<Action> allActionsUnsorted = BuiltInAction.getActions();
 
     private static List<Action> actionsSortedByName ;
 
@@ -59,7 +58,7 @@ public class RBACServiceImpl implements RBACService {
         roleAdmin= new RoleImpl("admin","2","Administrator access",allActionIds);
 
         roleTester = new RoleImpl("tester", "1", "Test developer and runner", 
-            List.of( actionUserRoleUpdateAny.getId() , actionGeneralApiAccess.getId() )   
+            List.of( USER_ROLE_UPDATE_ANY.getAction().getId() , GENERAL_API_ACCESS.getAction().getId() )   
         );
 
         roleDeactivated = new RoleImpl("deactivated", "0", "User has no access", new ArrayList<String>());
@@ -125,5 +124,9 @@ public class RBACServiceImpl implements RBACService {
         }
         return roleFound; 
     }
-    
+
+    @Override
+    public CacheRBAC getUsersActionsCache() {
+        return userActionsCache;
+    }
 }

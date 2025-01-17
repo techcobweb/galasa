@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.utils.GalasaGson;
-import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,6 +20,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import static dev.galasa.framework.api.common.ServletErrorMessage.*;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 public class BaseServlet extends HttpServlet {
 
@@ -145,6 +147,11 @@ public class BaseServlet extends HttpServlet {
     ) throws ServletException, IOException, FrameworkException {
         String requestMethodStr = req.getMethod();
         HttpMethod requestMethod = HttpMethod.getFromString(requestMethodStr);
+
+        if (!route.isActionPermitted(GENERAL_API_ACCESS.getAction().getId(), req)) {
+            ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED);
+            throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
+        }
 
         boolean isBadMethod = false ;
         if (requestMethod == null ) {

@@ -25,6 +25,8 @@ import dev.galasa.framework.auth.spi.IAuthService;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.auth.AuthStoreException;
 import dev.galasa.framework.spi.auth.IUser;
+import dev.galasa.framework.spi.rbac.CacheRBAC;
+import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.rbac.RBACService;
 
 /**
@@ -150,7 +152,7 @@ public class UserRoute extends AbstractUsersRoute {
 
 
 
-    private void deleteUser(IUser user) throws AuthStoreException, InternalServletException{
+    private void deleteUser(IUser user) throws InternalServletException{
 
         try {
             String loginId = user.getLoginId();
@@ -162,9 +164,13 @@ public class UserRoute extends AbstractUsersRoute {
             }
 
             authStoreService.deleteUser(user);
+
+            CacheRBAC rbacCache = rbacService.getUsersActionsCache();
+            rbacCache.invalidateUser(loginId);
+
             logger.info("The user with the given loginId was deleted OK");
 
-        } catch (AuthStoreException e) {
+        } catch (AuthStoreException | RBACException e) {
             ServletError error = new ServletError(GAL5084_FAILED_TO_DELETE_USER);
             throw new InternalServletException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }

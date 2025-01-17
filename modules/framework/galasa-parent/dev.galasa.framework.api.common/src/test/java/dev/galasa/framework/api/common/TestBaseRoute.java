@@ -18,6 +18,8 @@ import static dev.galasa.framework.api.common.MimeType.APPLICATION_JSON;
 import static dev.galasa.framework.api.common.MimeType.TEXT_PLAIN;
 import static org.assertj.core.api.Assertions.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class TestBaseRoute {
 
     public class MockBaseRoute extends BaseRoute {
@@ -25,7 +27,11 @@ public class TestBaseRoute {
         public MockBaseRoute() {
             super(new ResponseBuilder(), "/");
         }
-        
+
+        @Override
+        public boolean isActionPermitted(String actionId, HttpServletRequest request) throws InternalServletException {
+            return true;
+        }
     }
 
     @Test

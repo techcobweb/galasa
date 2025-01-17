@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import dev.galasa.framework.spi.rbac.Action;
+import dev.galasa.framework.spi.rbac.CacheRBAC;
 import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.rbac.Role;
@@ -25,10 +26,11 @@ public class MockRBACService implements RBACService {
     private final Map<String,Action> actionMapByName;
     private List<Action> actionsSortedByName;
     private List<Role> rolesSortedByName;
-    private Role defaultRole ;
+    private Role defaultRole;
+    private CacheRBAC usersToActionsCache;
 
     public MockRBACService( List<Role> roles, List<Action> actions, Role defaultRole ) {
-
+        this.usersToActionsCache = new MockCacheRBAC();
         this.defaultRole = defaultRole;
 
         roleMapById = new HashMap<String,Role>();
@@ -94,5 +96,13 @@ public class MockRBACService implements RBACService {
     public Role getRoleByName(String roleNameWanted) throws RBACException {
         return this.roleMapByName.get(roleNameWanted);
     }
-    
+
+    @Override
+    public CacheRBAC getUsersActionsCache() {
+        return usersToActionsCache;
+    }
+
+    public void setUsersActionsCache(MockCacheRBAC cache) {
+        this.usersToActionsCache = cache;
+    }
 }

@@ -7,6 +7,9 @@ package dev.galasa.framework.api.authentication.internal.routes;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.ServletOutputStream;
 
 import org.junit.Test;
@@ -24,6 +27,7 @@ import dev.galasa.framework.spi.utils.GalasaGson;
 public class AuthClientsRouteTest extends BaseServletTest {
 
     private static final GalasaGson gson = new GalasaGson();
+    private static final Map<String, String> REQUEST_HEADERS = new HashMap<>(Map.of("Authorization", "Bearer " + BaseServletTest.DUMMY_JWT));
 
     @Test
     public void testAuthClientsPostRequestWithNoCreatedClientReturnsError() throws Exception {
@@ -32,7 +36,7 @@ public class AuthClientsRouteTest extends BaseServletTest {
 
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(mockDexGrpcClient);
 
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/clients", "", "POST");
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/clients", "", "POST", REQUEST_HEADERS);
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         ServletOutputStream outStream = servletResponse.getOutputStream();
 
@@ -62,7 +66,7 @@ public class AuthClientsRouteTest extends BaseServletTest {
 
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(mockDexGrpcClient);
 
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/clients", "", "POST");
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/clients", "", "POST", REQUEST_HEADERS);
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         ServletOutputStream outStream = servletResponse.getOutputStream();
 
@@ -93,7 +97,7 @@ public class AuthClientsRouteTest extends BaseServletTest {
 
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(mockDexGrpcClient);
 
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/clients", "", "POST");
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/clients", "", "POST", REQUEST_HEADERS);
 
         mockRequest.setHeader("Accept", "text/*, application/json");
 

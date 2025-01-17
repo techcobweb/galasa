@@ -158,6 +158,8 @@ public enum ServletErrorMessage {
     GAL5122_ACTION_NAMED_NOT_FOUND                    (5122, "E: Action with that name not found."),
     GAL5123_ROLE_ID_NOT_FOUND                         (5123, "E: Role with that ID not found."),
     GAL5124_ROLE_ID_NOT_FOUND_FOR_USER                (5124, "E: A user has a role which cannot be found in the system. Inconsistent data. Report this issue to your Galasa systems administrator."),
+    GAL5125_ACTION_NOT_PERMITTED                      (5125, "E: Insufficient privileges to perform the requested operation. Check that you have been assigned the correct role with your Galasa systems administrator before trying again."),
+
     ;
 
 

@@ -9,7 +9,9 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
@@ -31,10 +33,12 @@ import dev.galasa.framework.spi.auth.IInternalUser;
 
 public class AuthTokensDetailsRouteTest extends BaseServletTest {
 
+    private static final Map<String, String> REQUEST_HEADERS = new HashMap<>(Map.of("Authorization", "Bearer " + BaseServletTest.DUMMY_JWT));
+
     @Test
     public void testAuthTokensDetailsRouteRegexMatchesExpectedPaths() throws Exception {
         //Given...
-        String tokensDetailsRoutePath = new AuthTokensDetailsRoute(null, new AuthService(null, null)).getPathRegex().toString();
+        String tokensDetailsRoutePath = new AuthTokensDetailsRoute(null, new AuthService(null, null), null, null).getPathRegex().toString();
 
         //When...
         Pattern routePattern = Pattern.compile(tokensDetailsRoutePath);
@@ -79,7 +83,7 @@ public class AuthTokensDetailsRouteTest extends BaseServletTest {
         MockAuthStoreService authStoreService = new MockAuthStoreService(tokens);
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(null, mockDexGrpcClient, new MockFramework(authStoreService));
 
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE");
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE", REQUEST_HEADERS);
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
 
         // When...
@@ -111,7 +115,7 @@ public class AuthTokensDetailsRouteTest extends BaseServletTest {
         MockAuthStoreService authStoreService = new MockAuthStoreService(tokens);
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(null, mockDexGrpcClient, new MockFramework(authStoreService));
 
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE");
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE", REQUEST_HEADERS);
 
         mockRequest.setHeader("Accept", "text/plain");
 
@@ -150,7 +154,7 @@ public class AuthTokensDetailsRouteTest extends BaseServletTest {
 
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(null, mockDexGrpcClient, new MockFramework(authStoreService));
 
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE");
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE", REQUEST_HEADERS);
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         ServletOutputStream outStream = servletResponse.getOutputStream();
 
@@ -182,7 +186,7 @@ public class AuthTokensDetailsRouteTest extends BaseServletTest {
         MockAuthStoreService authStoreService = new MockAuthStoreService(tokens);
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(null, mockDexGrpcClient, new MockFramework(authStoreService));
 
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE");
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE", REQUEST_HEADERS);
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         ServletOutputStream outStream = servletResponse.getOutputStream();
 
@@ -214,7 +218,7 @@ public class AuthTokensDetailsRouteTest extends BaseServletTest {
         MockAuthStoreService authStoreService = new MockAuthStoreService(tokens);
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(null, mockDexGrpcClient, new MockFramework(authStoreService));
 
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE");
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE", REQUEST_HEADERS);
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
 
         // When...
@@ -245,7 +249,7 @@ public class AuthTokensDetailsRouteTest extends BaseServletTest {
         MockAuthStoreService authStoreService = new MockAuthStoreService(tokens);
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(null, mockDexGrpcClient, new MockFramework(authStoreService));
 
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE");
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE", REQUEST_HEADERS);
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
 
         // When...
@@ -277,7 +281,7 @@ public class AuthTokensDetailsRouteTest extends BaseServletTest {
         MockAuthStoreService authStoreService = new MockAuthStoreService(tokens);
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(null, mockDexGrpcClient, new MockFramework(authStoreService));
 
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE");
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/tokens/" + tokenId, "", "DELETE", REQUEST_HEADERS);
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
 
         // When...

@@ -9,13 +9,13 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import dev.galasa.framework.api.common.BaseRoute;
+import dev.galasa.framework.api.common.PublicRoute;
 import dev.galasa.framework.api.common.ResponseBuilder;
 
 /**
  * An abstract route class containing common methods used by auth routes.
  */
-public abstract class AbstractAuthRoute extends BaseRoute {
+public abstract class AbstractAuthRoute extends PublicRoute {
 
     // Suffix for the DSS auth property 'dss.auth.STATEID.callback.url'
     public static final String DSS_CALLBACK_URL_PROPERTY_SUFFIX = ".callback.url";

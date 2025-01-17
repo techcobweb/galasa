@@ -20,7 +20,7 @@ public class MockIConfigurationPropertyStoreService implements IConfigurationPro
 
     protected String namespaceInput;
     protected Map<String, String> properties = new HashMap<String,String>();
-
+    private boolean throwError = false;
 
     public MockIConfigurationPropertyStoreService() {
         this("framework");
@@ -59,6 +59,7 @@ public class MockIConfigurationPropertyStoreService implements IConfigurationPro
     @Override
     public @Null String getProperty(@NotNull String prefix, @NotNull String suffix, String... infixes)
             throws ConfigurationPropertyStoreException {
+            checkThrowError();
             for (Map.Entry<String,String> property : properties.entrySet()){
                 String key = property.getKey().substring(property.getKey().indexOf(".")+1);
                 String match = prefix+"."+suffix;
@@ -78,11 +79,13 @@ public class MockIConfigurationPropertyStoreService implements IConfigurationPro
 
     @Override
     public void setProperty(@NotNull String name, @NotNull String value) throws ConfigurationPropertyStoreException {
+        checkThrowError();
        this.properties.put(name,value);
     }
 
     @Override
     public void deleteProperty(@NotNull String name) throws ConfigurationPropertyStoreException {
+        checkThrowError();
         this.properties.remove(namespaceInput+"."+name);
     }
 
@@ -113,5 +116,15 @@ public class MockIConfigurationPropertyStoreService implements IConfigurationPro
         }
         return namespaces;
     }
-    ;
+
+    public void setThrowError(boolean throwError) {
+        this.throwError = throwError;
+    }
+
+
+    private void checkThrowError() throws ConfigurationPropertyStoreException {
+        if (throwError) {
+            throw new ConfigurationPropertyStoreException("Simulating a CPS failure!");
+        }
+    }
 }
