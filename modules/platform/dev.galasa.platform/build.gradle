@@ -4,7 +4,7 @@ plugins {
     id 'signing'
 }
 
-version = "0.39.0"
+version = "0.40.0"
 
 javaPlatform {
     allowDependencies()
@@ -19,7 +19,6 @@ dependencies {
     api platform('org.apache.httpcomponents:httpcomponents-client:4.5.14')
     api platform('org.apache.httpcomponents:httpcomponents-core:4.4.16')
     api platform('org.apache.httpcomponents:httpcomponents-parent:11')
-    api platform('org.assertj:assertj-parent-pom:2.2.1')
     api platform('org.slf4j:slf4j-parent:1.7.25')
 
     // TODO: Isolated/MVP contain multiple versions of these to be consolidated.
@@ -250,10 +249,7 @@ dependencies {
 
         api 'org.apache.velocity:velocity-engine-core:2.4.1'
 
-        // Removing from the platform! Breaks the tests.
-        // api 'org.assertj:assertj-core:3.16.1'
-        // 3.23.1 found in dev.galasa.framework.api.cps but breaks Extensions unit tests when used in other bundles.
-        // So using 3.16.1 as the default and 3.23.1 as override in dev.galasa.framework.api.cps.
+        api 'org.assertj:assertj-core:3.25.3'
 
         api 'org.awaitility:awaitility:3.0.0'
 
@@ -332,7 +328,7 @@ publishing {
                 name = 'Gradle Java Platform for Galasa bundles'
                 groupId = 'dev.galasa'
                 artifactId = 'dev.galasa.platform'
-                version = "0.39.0"
+                version = "0.40.0"
                 description = 'Provides versions to dependencies'
                 licenses {
                     license {
