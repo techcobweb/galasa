@@ -19,22 +19,23 @@ import dev.galasa.framework.spi.rbac.Role;
 
 public class CacheRBACImpl implements CacheRBAC {
 
-    private Map<String, List<String>> usersToActionsMap = new HashMap<>();
+    private Map<String, List<String>> usersToActionsMap;
     private IAuthStoreService authStoreService;
     private RBACService rbacService;
     
     public CacheRBACImpl(IAuthStoreService authStoreService, RBACService rbacService) {
+        this.usersToActionsMap = new HashMap<>();
         this.authStoreService = authStoreService;
         this.rbacService = rbacService;
     }
 
     @Override
-    public void addUser(String loginId, List<String> actionIds) throws RBACException {
+    public synchronized void addUser(String loginId, List<String> actionIds) throws RBACException {
         usersToActionsMap.put(loginId, actionIds);
     }
 
     @Override
-    public boolean isActionPermitted(String loginId, String actionId) throws RBACException {
+    public synchronized boolean isActionPermitted(String loginId, String actionId) throws RBACException {
         boolean isActionPermitted = false;
         List<String> userActionIds = usersToActionsMap.get(loginId);
         if (userActionIds == null) {
@@ -50,7 +51,7 @@ public class CacheRBACImpl implements CacheRBAC {
     }
 
     @Override
-    public void invalidateUser(String loginId) throws RBACException {
+    public synchronized void invalidateUser(String loginId) throws RBACException {
         usersToActionsMap.remove(loginId);
     }
 
@@ -67,7 +68,7 @@ public class CacheRBACImpl implements CacheRBAC {
         return user;
     }
 
-    private void addUserToCacheFromAuthStore(String loginId) throws RBACException {
+    private synchronized void addUserToCacheFromAuthStore(String loginId) throws RBACException {
         IUser user = getUserFromAuthStore(loginId);
         String userRoleId = user.getRoleId();
         if (userRoleId == null) {
