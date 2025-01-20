@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
 import dev.galasa.framework.api.common.mocks.MockHttpServletResponse;
+import dev.galasa.framework.spi.rbac.Action;
 
 import static dev.galasa.framework.api.common.MimeType.APPLICATION_JSON;
 import static dev.galasa.framework.api.common.MimeType.TEXT_PLAIN;
@@ -29,8 +30,8 @@ public class TestBaseRoute {
         }
 
         @Override
-        public boolean isActionPermitted(String actionId, HttpServletRequest request) throws InternalServletException {
-            return true;
+        public void validateActionPermitted(Action action, HttpServletRequest request) throws InternalServletException {
+            // Do nothing...
         }
     }
 

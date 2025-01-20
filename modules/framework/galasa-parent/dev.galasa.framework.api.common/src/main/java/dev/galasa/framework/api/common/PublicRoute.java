@@ -7,6 +7,8 @@ package dev.galasa.framework.api.common;
 
 import javax.servlet.http.HttpServletRequest;
 
+import dev.galasa.framework.spi.rbac.Action;
+
 public abstract class PublicRoute extends BaseRoute {
 
     public PublicRoute(ResponseBuilder responseBuilder, String path) {
@@ -14,8 +16,7 @@ public abstract class PublicRoute extends BaseRoute {
     }
 
     @Override
-    public boolean isActionPermitted(String actionId, HttpServletRequest request) throws InternalServletException {
+    public void validateActionPermitted(Action action, HttpServletRequest request) throws InternalServletException {
         // Public routes don't require a JWT challenge, so are not restricted by RBAC
-        return true;
     }
 }

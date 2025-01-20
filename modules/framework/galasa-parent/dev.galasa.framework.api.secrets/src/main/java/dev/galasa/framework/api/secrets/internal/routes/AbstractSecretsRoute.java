@@ -77,11 +77,7 @@ public abstract class AbstractSecretsRoute extends ProtectedRoute {
         HttpServletRequest request,
         HttpServletResponse response
     ) throws FrameworkException {
-
-        if (!isActionPermitted(SECRETS_GET.getAction().getId(), request)) {
-            ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED);
-            throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
-        }
+        validateActionPermitted(SECRETS_GET.getAction(), request);
         return response;
     }
 

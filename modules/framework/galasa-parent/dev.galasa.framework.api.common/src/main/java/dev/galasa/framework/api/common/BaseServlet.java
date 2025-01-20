@@ -148,10 +148,7 @@ public class BaseServlet extends HttpServlet {
         String requestMethodStr = req.getMethod();
         HttpMethod requestMethod = HttpMethod.getFromString(requestMethodStr);
 
-        if (!route.isActionPermitted(GENERAL_API_ACCESS.getAction().getId(), req)) {
-            ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED);
-            throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
-        }
+        route.validateActionPermitted(GENERAL_API_ACCESS.getAction(), req);
 
         boolean isBadMethod = false ;
         if (requestMethod == null ) {
