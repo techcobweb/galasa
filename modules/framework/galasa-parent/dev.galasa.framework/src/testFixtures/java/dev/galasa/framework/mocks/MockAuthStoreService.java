@@ -3,13 +3,12 @@
 *
 * SPDX-License-Identifier: EPL-2.0
 */
-package dev.galasa.framework.auth.spi.mocks;
+package dev.galasa.framework.mocks;
 
 
 import java.time.Instant;
 import java.util.*;
 
-import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.spi.auth.IAuthStoreService;
 import dev.galasa.framework.spi.auth.IFrontEndClient;
 import dev.galasa.framework.spi.auth.IInternalAuthToken;

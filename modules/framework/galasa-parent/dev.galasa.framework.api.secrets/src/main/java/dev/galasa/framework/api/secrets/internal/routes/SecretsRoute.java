@@ -61,6 +61,9 @@ public class SecretsRoute extends AbstractSecretsRoute {
         HttpServletRequest request,
         HttpServletResponse response
     ) throws FrameworkException {
+
+        super.handleGetRequest(pathInfo, queryParams, request, response);
+
         logger.info("handleGetRequest() entered. Getting secrets from the credentials store");
         List<GalasaSecret> secrets = new ArrayList<>();
         Map<String, ICredentials> retrievedCredentials = credentialsService.getAllCredentials();

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package dev.galasa.framework.auth.spi.mocks;
+package dev.galasa.framework.mocks;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,6 +64,10 @@ public class MockUser implements IUser {
     @Override
     public void setRoleId(String newRoleId) {
         this.roleId = newRoleId;
+    }
+
+    public void setLoginId(String loginId) {
+        this.loginId = loginId;
     }
 
 };

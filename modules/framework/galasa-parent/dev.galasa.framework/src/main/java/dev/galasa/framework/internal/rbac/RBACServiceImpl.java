@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import dev.galasa.framework.spi.auth.IAuthStoreService;
 import dev.galasa.framework.spi.rbac.Action;
 import dev.galasa.framework.spi.rbac.BuiltInAction;
 import dev.galasa.framework.spi.rbac.CacheRBAC;
@@ -23,7 +24,7 @@ import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 public class RBACServiceImpl implements RBACService {
 
-    private static final CacheRBAC userActionsCache = new CacheRBACImpl();
+    private static CacheRBAC userActionsCache;
 
     private static final List<Action> allActionsUnsorted = BuiltInAction.getActions();
 
@@ -73,6 +74,10 @@ public class RBACServiceImpl implements RBACService {
         for( Role role : rolesUnsorted ) {
             rolesMapById.put( role.getId(), role);
         }
+    }
+
+    public RBACServiceImpl(IAuthStoreService authStoreService) {
+        userActionsCache = new CacheRBACImpl(authStoreService, this);
     }
 
     @Override

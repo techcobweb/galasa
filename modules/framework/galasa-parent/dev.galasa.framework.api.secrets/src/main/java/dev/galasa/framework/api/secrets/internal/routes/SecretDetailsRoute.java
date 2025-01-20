@@ -72,6 +72,9 @@ public class SecretDetailsRoute extends AbstractSecretsRoute {
         HttpServletRequest request,
         HttpServletResponse response
     ) throws FrameworkException {
+
+        super.handleGetRequest(pathInfo, queryParams, request, response);
+
         logger.info("handleGetRequest() entered. Getting secret with the given name");
         String secretName = getSecretNameFromPath(pathInfo);
         GalasaSecret secret = getSecretByName(secretName);

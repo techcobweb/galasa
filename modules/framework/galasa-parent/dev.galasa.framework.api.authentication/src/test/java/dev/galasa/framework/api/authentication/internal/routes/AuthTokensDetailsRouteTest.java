@@ -25,9 +25,9 @@ import dev.galasa.framework.api.common.mocks.MockFramework;
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
 import dev.galasa.framework.api.common.mocks.MockHttpServletResponse;
 import dev.galasa.framework.auth.spi.internal.AuthService;
-import dev.galasa.framework.auth.spi.mocks.MockAuthStoreService;
 import dev.galasa.framework.auth.spi.mocks.MockDexGrpcClient;
-import dev.galasa.framework.auth.spi.mocks.MockInternalAuthToken;
+import dev.galasa.framework.mocks.MockAuthStoreService;
+import dev.galasa.framework.mocks.MockInternalAuthToken;
 import dev.galasa.framework.spi.auth.IInternalAuthToken;
 import dev.galasa.framework.spi.auth.IInternalUser;
 

@@ -31,16 +31,20 @@ import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.JwtWrapper;
 import dev.galasa.framework.api.common.ProtectedRoute;
+import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.api.common.resources.GalasaResourceValidator;
 import dev.galasa.framework.api.common.resources.GalasaSecretType;
+import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.creds.CredentialsToken;
 import dev.galasa.framework.spi.creds.CredentialsUsername;
 import dev.galasa.framework.spi.creds.CredentialsUsernamePassword;
 import dev.galasa.framework.spi.creds.CredentialsUsernameToken;
 import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.ITimeService;
+
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 public abstract class AbstractSecretsRoute extends ProtectedRoute {
 
@@ -64,6 +68,21 @@ public abstract class AbstractSecretsRoute extends ProtectedRoute {
     ) {
         super(responseBuilder, path, rbacService, env);
         this.timeService = timeService;
+    }
+
+    @Override
+    public HttpServletResponse handleGetRequest(
+        String pathInfo,
+        QueryParameters queryParams,
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) throws FrameworkException {
+
+        if (!isActionPermitted(SECRETS_GET.getAction().getId(), request)) {
+            ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED);
+            throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
+        }
+        return response;
     }
 
     protected GalasaSecret createGalasaSecretFromCredentials(String secretName, ICredentials credentials) throws InternalServletException {

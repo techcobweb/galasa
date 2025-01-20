@@ -553,7 +553,7 @@ public class Framework implements IFramework, IShuttableFramework {
 
     @Override
     public RBACService getRBACService() throws RBACException {
-        return new RBACServiceImpl();
+        return new RBACServiceImpl(getAuthStoreService());
     }
 
 }

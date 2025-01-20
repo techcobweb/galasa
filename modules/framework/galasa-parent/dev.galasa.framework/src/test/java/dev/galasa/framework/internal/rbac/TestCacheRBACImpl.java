@@ -5,11 +5,18 @@
  */
 package dev.galasa.framework.internal.rbac;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.junit.*;
 
+import dev.galasa.framework.mocks.FilledMockRBACService;
+import dev.galasa.framework.mocks.MockAuthStoreService;
+import dev.galasa.framework.mocks.MockRBACService;
+import dev.galasa.framework.mocks.MockTimeService;
+import dev.galasa.framework.mocks.MockUser;
 import dev.galasa.framework.spi.rbac.CacheRBAC;
+import dev.galasa.framework.spi.rbac.RBACException;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -18,8 +25,41 @@ public class TestCacheRBACImpl {
     @Test
     public void testIsActionPermittedReturnsTrueForValidMappings() throws Exception {
         // Given...
-        CacheRBAC cache = new CacheRBACImpl();
+        MockTimeService timeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(timeService);
+        MockRBACService mockRbacService = FilledMockRBACService.createTestRBACService();
+        CacheRBAC cache = new CacheRBACImpl(mockAuthStoreService, mockRbacService);
         String loginId = "bob";
+
+        String apiAccessActionId = "GENERAL_API_ACCESS";
+        String secretsGetActionId = "SECRETS_GET";
+        List<String> actions = List.of(apiAccessActionId, secretsGetActionId);
+
+        cache.addUser(loginId, actions);
+
+        // When...
+        boolean isApiAccessPermitted = cache.isActionPermitted(loginId, apiAccessActionId);
+        boolean isSecretsAccessPermitted = cache.isActionPermitted(loginId, secretsGetActionId);
+
+        // Then...
+        assertThat(isApiAccessPermitted).isTrue();
+        assertThat(isSecretsAccessPermitted).isTrue();
+    }
+
+    @Test
+    public void testIsActionPermittedUpdatesCacheWhenUserIsNotCached() throws Exception {
+        // Given...
+        MockTimeService timeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(timeService);
+
+        String loginId = "bob";
+        MockUser mockUser = new MockUser();
+        mockUser.setLoginId(loginId);
+
+        mockAuthStoreService.addUser(mockUser);
+
+        MockRBACService mockRbacService = FilledMockRBACService.createTestRBACService();
+        CacheRBAC cache = new CacheRBACImpl(mockAuthStoreService, mockRbacService);
 
         String apiAccessActionId = "GENERAL_API_ACCESS";
         String secretsGetActionId = "SECRETS_GET";
@@ -39,7 +79,10 @@ public class TestCacheRBACImpl {
     @Test
     public void testIsActionPermittedReturnsFalseForInvalidMappings() throws Exception {
         // Given...
-        CacheRBAC cache = new CacheRBACImpl();
+        MockTimeService timeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(timeService);
+        MockRBACService mockRbacService = FilledMockRBACService.createTestRBACService();
+        CacheRBAC cache = new CacheRBACImpl(mockAuthStoreService, mockRbacService);
         String loginId = "bob";
 
         String apiAccessActionId = "GENERAL_API_ACCESS";
@@ -53,20 +96,32 @@ public class TestCacheRBACImpl {
     }
 
     @Test
-    public void testIsActionPermittedReturnsFalseForUnknownUsers() throws Exception {
+    public void testIsActionPermittedThrowsErrorForUnknownUsers() throws Exception {
         // Given...
-        CacheRBAC cache = new CacheRBACImpl();
+        MockTimeService timeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(timeService);
+        MockRBACService mockRbacService = FilledMockRBACService.createTestRBACService();
+        CacheRBAC cache = new CacheRBACImpl(mockAuthStoreService, mockRbacService);
         String loginId = "unknown";
         String apiAccessActionId = "GENERAL_API_ACCESS";
 
+        // When...
+        RBACException thrown = catchThrowableOfType(() -> {
+            cache.isActionPermitted(loginId, apiAccessActionId);
+        }, RBACException.class);
+
         // Then...
-        assertThat(cache.isActionPermitted(loginId, apiAccessActionId)).isFalse();
+        assertThat(thrown).isNotNull();
+        assertThat(thrown.getMessage()).contains("No user with the given login ID exists");
     }
 
     @Test
     public void testInvalidateRemovesUserFromCache() throws Exception {
         // Given...
-        CacheRBAC cache = new CacheRBACImpl();
+        MockTimeService timeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(timeService);
+        MockRBACService mockRbacService = FilledMockRBACService.createTestRBACService();
+        CacheRBAC cache = new CacheRBACImpl(mockAuthStoreService, mockRbacService);
         String loginId = "bob";
 
         String apiAccessActionId = "GENERAL_API_ACCESS";
@@ -80,6 +135,11 @@ public class TestCacheRBACImpl {
         cache.invalidateUser(loginId);
 
         // Then...
-        assertThat(cache.isActionPermitted(loginId, apiAccessActionId)).isFalse();
+        RBACException thrown = catchThrowableOfType(() -> {
+            cache.isActionPermitted(loginId, apiAccessActionId);
+        }, RBACException.class);
+
+        assertThat(thrown).isNotNull();
+        assertThat(thrown.getMessage()).contains("No user with the given login ID exists");
     }
 }
