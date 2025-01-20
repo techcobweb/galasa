@@ -17,6 +17,6 @@ public abstract class PublicRoute extends BaseRoute {
 
     @Override
     public void validateActionPermitted(Action action, HttpServletRequest request) throws InternalServletException {
-        // Public routes don't require a JWT challenge, so are not restricted by RBAC
+        // Public routes don't require a JWT challenge, so are not restricted by RBAC - do nothing...
     }
 }

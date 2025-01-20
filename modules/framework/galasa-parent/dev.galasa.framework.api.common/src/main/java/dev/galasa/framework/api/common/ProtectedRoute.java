@@ -48,7 +48,7 @@ public abstract class ProtectedRoute extends BaseRoute {
         }
 
         if (!isActionPermitted) {
-            ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED);
+            ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, action.getId());
             throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
         }
     }

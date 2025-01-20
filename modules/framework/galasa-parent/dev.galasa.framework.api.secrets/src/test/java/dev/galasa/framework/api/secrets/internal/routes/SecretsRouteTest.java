@@ -5,13 +5,16 @@
  */
 package dev.galasa.framework.api.secrets.internal.routes;
 
+import static dev.galasa.framework.spi.rbac.BuiltInAction.GENERAL_API_ACCESS;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.Instant;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletOutputStream;
 
@@ -26,7 +29,10 @@ import dev.galasa.framework.api.common.mocks.MockCredentialsService;
 import dev.galasa.framework.api.common.mocks.MockFramework;
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
 import dev.galasa.framework.api.common.mocks.MockHttpServletResponse;
+import dev.galasa.framework.mocks.MockCacheRBAC;
 import dev.galasa.framework.mocks.MockCredentials;
+import dev.galasa.framework.mocks.MockRBACService;
+import dev.galasa.framework.mocks.MockRole;
 import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.api.secrets.internal.SecretsServletTest;
 import dev.galasa.framework.api.secrets.mocks.MockSecretsServlet;
@@ -34,6 +40,8 @@ import dev.galasa.framework.spi.creds.CredentialsToken;
 import dev.galasa.framework.spi.creds.CredentialsUsername;
 import dev.galasa.framework.spi.creds.CredentialsUsernamePassword;
 import dev.galasa.framework.spi.creds.CredentialsUsernameToken;
+import dev.galasa.framework.spi.rbac.Action;
+import dev.galasa.framework.spi.rbac.Role;
 
 public class SecretsRouteTest extends SecretsServletTest {
 
@@ -51,6 +59,60 @@ public class SecretsRouteTest extends SecretsServletTest {
         // The route should not accept the following
         assertThat(routePattern.matcher("////").matches()).isFalse();
         assertThat(routePattern.matcher("/wrongpath!").matches()).isFalse();
+    }
+
+    @Test
+    public void testGetSecretsWithMissingPermissionsThrowsForbiddenError() throws Exception {
+        // Given...
+        Map<String, ICredentials> creds = new HashMap<>();
+        String secretName1 = "BOB";
+        String username1 = "my-username";
+        String password1 = "not-a-password";
+        String description1 = "this is my first secret";
+        String lastUser1 = "user1";
+        Instant lastUpdated1 = Instant.EPOCH;
+
+        ICredentials secret1 = new CredentialsUsernamePassword(username1, password1);
+        secret1.setDescription(description1);
+        secret1.setLastUpdatedByUser(lastUser1);
+        secret1.setLastUpdatedTime(lastUpdated1);
+
+        creds.put(secretName1, secret1);
+
+        MockCredentialsService credsService = new MockCredentialsService(creds);
+
+        List<Action> actions = List.of(GENERAL_API_ACCESS.getAction());
+        List<String> actionIdsList = actions.stream().map(action -> action.getId()).collect(Collectors.toList());
+
+        MockRole role1 = new MockRole("role1","2","role1 description",actionIdsList);
+        List<Role> roles = List.of(role1);
+
+        MockRBACService rbacService = new MockRBACService(roles,actions,role1);
+
+        Map<String, List<String>> usersToActions = new HashMap<>();
+        usersToActions.put(JWT_USERNAME, actionIdsList);
+
+        rbacService.setUsersActionsCache(new MockCacheRBAC(usersToActions));
+
+        MockFramework mockFramework = new MockFramework(credsService);
+        mockFramework.setRBACService(rbacService);
+
+        MockTimeService timeService = new MockTimeService(Instant.EPOCH);
+        MockSecretsServlet servlet = new MockSecretsServlet(mockFramework, timeService);
+
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/", REQUEST_HEADERS);
+
+        MockHttpServletResponse servletResponse = new MockHttpServletResponse();
+        ServletOutputStream outStream = servletResponse.getOutputStream();
+
+        // When...
+        servlet.init();
+        servlet.doGet(mockRequest, servletResponse);
+
+        // Then...
+        String output = outStream.toString();
+        assertThat(servletResponse.getStatus()).isEqualTo(403);
+        checkErrorStructure(output, 5125, "GAL5125E", "SECRETS_GET");
     }
 
     @Test
