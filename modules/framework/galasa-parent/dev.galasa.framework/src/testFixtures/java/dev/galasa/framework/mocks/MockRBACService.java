@@ -20,6 +20,7 @@ import dev.galasa.framework.spi.rbac.Role;
 public class MockRBACService implements RBACService {
 
     private final Map<String,Role> roleMapById;
+    private final Map<String,Role> roleMapByName;
     private final Map<String,Action> actionMapById;
     private final Map<String,Action> actionMapByName;
     private List<Action> actionsSortedByName;
@@ -31,8 +32,10 @@ public class MockRBACService implements RBACService {
         this.defaultRole = defaultRole;
 
         roleMapById = new HashMap<String,Role>();
+        roleMapByName = new HashMap<String,Role>();
         for(Role role: roles) {
             roleMapById.put(role.getId(),role);
+            roleMapByName.put(role.getName(),role);
         }
         
         actionMapById = new HashMap<String,Action>();
@@ -85,6 +88,11 @@ public class MockRBACService implements RBACService {
     @Override
     public String getDefaultRoleId() throws RBACException {
        return this.defaultRole.getId();
+    }
+
+    @Override
+    public Role getRoleByName(String roleNameWanted) throws RBACException {
+        return this.roleMapByName.get(roleNameWanted);
     }
     
 }

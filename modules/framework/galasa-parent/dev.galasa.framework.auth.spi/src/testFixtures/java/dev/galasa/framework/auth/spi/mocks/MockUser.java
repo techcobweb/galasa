@@ -61,4 +61,9 @@ public class MockUser implements IUser {
         return roleId;
     }
 
+    @Override
+    public void setRoleId(String newRoleId) {
+        this.roleId = newRoleId;
+    }
+
 };

@@ -112,5 +112,18 @@ public class RBACServiceImpl implements RBACService {
         // without a role already.
         return roleAdmin.getId();
     }
+
+    @Override
+    public Role getRoleByName(String roleNameWanted) throws RBACException {
+        Role roleFound = null;
+
+        for (Role possibleMatch: rolesSortedByName) {
+            if (possibleMatch.getName().equals(roleNameWanted)) {
+                roleFound = possibleMatch;
+                break;
+            }
+        }
+        return roleFound; 
+    }
     
 }

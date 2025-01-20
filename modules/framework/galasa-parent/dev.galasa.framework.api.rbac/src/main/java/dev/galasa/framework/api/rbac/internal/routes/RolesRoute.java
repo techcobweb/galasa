@@ -5,6 +5,7 @@
  */
 package dev.galasa.framework.api.rbac.internal.routes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,9 @@ public class RolesRoute extends AbstractRBACRoute {
         super(responseBuilder, PATH_PATTERN, env, timeService, rbacService);
     }
 
+    public static final String QUERY_PARAMETER_NAME_NAME = "name";
+    private static final List<String> supportedQueryParameters = List.of(QUERY_PARAMETER_NAME_NAME);
+
     @Override
     public HttpServletResponse handleGetRequest(
         String pathInfo,
@@ -48,9 +52,27 @@ public class RolesRoute extends AbstractRBACRoute {
         HttpServletRequest request,
         HttpServletResponse response
     ) throws FrameworkException {
+
         logger.info("handleGetRequest() entered. Getting roles");
 
-        Collection<Role> roles = getRBACService().getRolesSortedByName();
+        // TODO: This check should really be in the servlet, checking all routes, but that's a big change, so just leaving it here for now.
+        queryParams.checkForUnsupportedQueryParameters(supportedQueryParameters);
+
+        Collection<Role> roles ;
+
+        String roleNameWanted = queryParams.getSingleString(QUERY_PARAMETER_NAME_NAME, null);
+
+        if (roleNameWanted==null || roleNameWanted.trim().equals("")) {
+            // The caller wants all the roles.
+            roles = getRBACService().getRolesSortedByName();
+        } else {
+            // The caller wants a specific role.
+            Role role = getRBACService().getRoleByName(roleNameWanted);
+            roles = new ArrayList<Role>();
+            if (role!=null) {
+                roles.add(role);
+            }
+        }
 
         String baseUrl = request.getRequestURL().toString();
 

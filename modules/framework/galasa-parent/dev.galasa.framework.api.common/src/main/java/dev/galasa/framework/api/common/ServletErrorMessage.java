@@ -48,6 +48,7 @@ public enum ServletErrorMessage {
     GAL5405_METHOD_NOT_ALLOWED                        (5405,"E: Error occurred when trying to access the endpoint ''{0}''. The method ''{1}'' is not allowed."),
     GAL5406_UNSUPPORTED_CONTENT_TYPE_REQUESTED        (5406, "E: Unsupported ''Accept'' header value set. Supported response types are: [{0}]. Ensure the ''Accept'' header in your request contains a valid value and try again"),
     GAL5411_NO_REQUEST_BODY                           (5411,"E: Error occurred when trying to access the endpoint ''{0}''. The request body is empty."),
+    GAL5412_UNSUPPORTED_QUERY_PARAMETERS              (5412,"E: One or more query parameters sent to the Galasa service are not supported ({0}). Supported query parameters are: {1}"),
 
     //CPS Namespaces...
     GAL5015_INTERNAL_CPS_ERROR                        (5015,"E: Error occurred when trying to access the Configuration Property Store. Report the problem to your Galasa Ecosystem owner."),
@@ -130,6 +131,7 @@ public enum ServletErrorMessage {
     GAL5084_FAILED_TO_DELETE_USER                     (5084, "E: Failed to delete a user with the given 'loginId' from the auth store. The auth store might be experiencing temporary issues. Report the problem to your Galasa Ecosystem owner."),
     GAL5085_FAILED_TO_GET_LOGIN_ID_FROM_URL           (5085, "E: Failed to retrieve a loginId from the request path. Please ensure that you have provided a valid ID representing an existing auth token in your request and try again"),
     GAL5086_FAILED_TO_GET_DEFAULT_ROLE                (5086, "E: Failed to retrieve a default role id for a user with no role set."),
+    GAL5087_BAD_USER_UPDATE_FIELD_ROLE                (5087, "E: Server detected an invalid 'role' field value from a client wishing to update a user record. The role field must be less than 128 characters and a consist of alphanumeric characters, '-' (hyphen) or '_' (underscore)"),
 
     // Secrets APIs...
     GAL5092_INVALID_SECRET_NAME_PROVIDED              (5092, "E: Invalid secret name provided. The name of a Galasa secret cannot be empty, contain only spaces or tabs, or contain dots ('.'), and must only contain characters in the Latin-1 character set. Check your request payload and try again."),

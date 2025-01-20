@@ -5,7 +5,9 @@
  */
 package dev.galasa.framework.api.common;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.time.*;
@@ -73,10 +75,8 @@ public class QueryParameters {
 		if (paramValues != null && paramValues.length > 0) {
 			returnedValues = Arrays.asList(paramValues[0].split(","));
 		}
-
 		return returnedValues;
 	}
-
 
 	/**
 	 * @param queryParameterName
@@ -174,5 +174,57 @@ public class QueryParameters {
     public int getSize() {
         return this.params.size();
     }
+
+	public void checkForUnsupportedQueryParameters( List<String> supportedParamNames ) throws InternalServletException {
+
+		List<String> unsupportedParamNames = getUnsupportedQueryParameters(supportedParamNames);
+		if (!unsupportedParamNames.isEmpty()) {
+			raiseUnsupportedQueryParameterError(unsupportedParamNames, supportedParamNames);
+		}
+	}
+
+	protected List<String> getUnsupportedQueryParameters(List<String> supportedParamNames ) throws InternalServletException {
+		List<String> unsupportedParamNames = new ArrayList<String>();
+
+		for (String paramName : params.keySet()) {
+			String trimmedParamName = paramName.trim();
+			if (!supportedParamNames.contains(trimmedParamName)) {
+				// This parameter is not supported.
+				unsupportedParamNames.add(trimmedParamName);
+			}
+		}
+		return unsupportedParamNames;
+	}
+
+	private void raiseUnsupportedQueryParameterError( List<String> unsupportedParamNames, List<String> supportedParamNames ) throws InternalServletException {
+
+		String renderedUnsupportedParamNames = listToString(unsupportedParamNames);
+		String renderedSupportedParamNames = listToString(supportedParamNames);
+		
+		ServletError error = new ServletError(GAL5412_UNSUPPORTED_QUERY_PARAMETERS, renderedUnsupportedParamNames , renderedSupportedParamNames);
+		throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);
+	}
+
+	protected String listToString( List<String> listToRender) {
+
+		// Make sure the list we are passed is sorted.
+		// We take a copy in  case the list is immutable.
+		List<String> sortedlistToRender = new ArrayList<String>();
+		sortedlistToRender.addAll(listToRender);
+		Collections.sort(sortedlistToRender);
+
+		StringBuilder buff = new StringBuilder();
+		boolean isFirst = true ;
+		for( String listItem : sortedlistToRender ) {
+			if(!isFirst) {
+				buff.append(",");
+			}
+			buff.append("'");
+			buff.append(listItem);
+			buff.append("'");
+			isFirst = false ;
+		}
+		return buff.toString();
+	}
 
 }

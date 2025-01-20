@@ -16,6 +16,10 @@ import static org.assertj.core.api.Assertions.*;
 
 import org.junit.Test;
 
+import com.google.gson.Gson;
+
+import dev.galasa.framework.api.beans.generated.UserData;
+import dev.galasa.framework.api.beans.generated.UserUpdateData;
 import dev.galasa.framework.api.common.BaseServletTest;
 import dev.galasa.framework.api.common.EnvironmentVariables;
 import dev.galasa.framework.api.common.HttpMethod;
@@ -32,12 +36,14 @@ import dev.galasa.framework.auth.spi.mocks.MockDexGrpcClient;
 import dev.galasa.framework.auth.spi.mocks.MockFrontEndClient;
 import dev.galasa.framework.auth.spi.mocks.MockUser;
 import dev.galasa.framework.spi.auth.IInternalUser;
+import dev.galasa.framework.spi.auth.IUser;
+import dev.galasa.framework.spi.utils.GalasaGsonBuilder;
 
-public class UsersDeleteRouteTest extends BaseServletTest {
+public class UserRouteTest extends BaseServletTest {
 
     Map<String, String> headerMap = Map.of("Authorization", "Bearer " + BaseServletTest.DUMMY_JWT);
 
-    private static final Pattern pattern = Pattern.compile(UsersDeleteRoute.path);
+    private static final Pattern pattern = Pattern.compile(UserRoute.path);
 
     @Test
     public void testUsersDeleteRequestReturnsNotFoundDueToMissingUserDoc() throws Exception {
@@ -257,5 +263,153 @@ public class UsersDeleteRouteTest extends BaseServletTest {
         return mockUser;
 
     }
+
+    @Test
+    public void testUpdateUserUnknownUserNumberReturnsNotFound() throws Exception {
+        // Given...
+        MockEnvironment env = new MockEnvironment();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService authStoreService = new MockAuthStoreService(mockTimeService);
+
+        MockDexGrpcClient mockDexGrpcClient = new MockDexGrpcClient("http://my-issuer");
+
+        String baseUrl = "http://my.server/api";
+        String badUserNumber = "badDocId";
+
+        env.setenv(EnvironmentVariables.GALASA_USERNAME_CLAIMS, "preferred_username");
+        env.setenv(EnvironmentVariables.GALASA_EXTERNAL_API_URL,baseUrl);
+        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, mockDexGrpcClient), env, FilledMockRBACService.createTestRBACService());
+
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + badUserNumber, headerMap); // Ask for the wrong user number.
+        mockRequest.setMethod(HttpMethod.DELETE.toString());
+
+        MockHttpServletResponse servletResponse = new MockHttpServletResponse();     
+
+        IInternalUser owner = new InternalUser("user-1", "dexId");
+        authStoreService.storeToken("some-client-id", "test-token", owner);
+        
+        MockUser mockUser1 = createMockUser("user-1", "docid", "web-ui");
+        authStoreService.addUser(mockUser1);
+
+        // When...
+        servlet.init();
+        servlet.doPut(mockRequest, servletResponse);
+
+        assertThat(servletResponse.getStatus()).isEqualTo(404);
+    } 
+
+    @Test
+    public void testUpdateUserGoodReturnsOK() throws Exception {
+        // Given...
+        MockEnvironment env = new MockEnvironment();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService authStoreService = new MockAuthStoreService(mockTimeService);
+
+        MockDexGrpcClient mockDexGrpcClient = new MockDexGrpcClient("http://my-issuer");
+
+        String baseUrl = "http://my.server/api";
+        String userNumber = "user-1-number";
+
+        env.setenv(EnvironmentVariables.GALASA_USERNAME_CLAIMS, "preferred_username");
+        env.setenv(EnvironmentVariables.GALASA_EXTERNAL_API_URL,baseUrl);
+        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, mockDexGrpcClient), env, FilledMockRBACService.createTestRBACService());
+
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + userNumber, headerMap); // Ask for the wrong user number.
+        mockRequest.setMethod(HttpMethod.PUT.toString());
+        mockRequest.setContentType("application/json");
+
+        // Now set up some value data.
+        UserUpdateData putData = new UserUpdateData();
+        String desiredUpdatedRoleId = "2";
+        putData.setrole(desiredUpdatedRoleId);
+        GalasaGsonBuilder builder = new GalasaGsonBuilder();
+        Gson gson = builder.getGson();
+        String jsonPayload = gson.toJson(putData);
+        mockRequest.setPayload(jsonPayload);
+
+        MockHttpServletResponse servletResponse = new MockHttpServletResponse();     
+
+        IInternalUser owner = new InternalUser("user-1", "dexId");
+        authStoreService.storeToken("some-client-id", "test-token", owner);
+        
+        MockUser mockUser1 = createMockUser("user-1", "user-1-number", "web-ui");
+
+        String originalRole = "1";
+        mockUser1.setRoleId(originalRole);
+        authStoreService.addUser(mockUser1);
+
+        // When...
+        servlet.init();
+        servlet.doPut(mockRequest, servletResponse);
+
+        assertThat(servletResponse.getStatus()).isEqualTo(200);
+
+        // Check that the user has been updated in the auth Store.
+        IUser updatedUserFromStore = authStoreService.getUser(userNumber);
+        assertThat(updatedUserFromStore).isNotNull();
+        assertThat(updatedUserFromStore.getRoleId()).isEqualTo(desiredUpdatedRoleId);
+
+        // Now check a few things about the payload which was returned. 
+        // It should contain the rendered json of the updated user record.
+        ServletOutputStream outStream = servletResponse.getOutputStream();
+        String payloadGotBack = outStream.toString();
+        UserData userGotBackInPayload = gson.fromJson(payloadGotBack, UserData.class);
+
+        assertThat(userGotBackInPayload).isNotNull();
+        assertThat(userGotBackInPayload.getLoginId()).isEqualTo("user-1");
+        assertThat(userGotBackInPayload.getid()).isEqualTo("user-1-number");
+        assertThat(userGotBackInPayload.getrole()).isEqualTo(desiredUpdatedRoleId);
+    } 
+
+
+
+    @Test
+    public void testGetUserGoodReturnsOK() throws Exception {
+        // Given...
+        MockEnvironment env = new MockEnvironment();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService authStoreService = new MockAuthStoreService(mockTimeService);
+
+        MockDexGrpcClient mockDexGrpcClient = new MockDexGrpcClient("http://my-issuer");
+
+        String baseUrl = "http://my.server/api";
+        String userNumber = "user-1-number";
+
+        env.setenv(EnvironmentVariables.GALASA_USERNAME_CLAIMS, "preferred_username");
+        env.setenv(EnvironmentVariables.GALASA_EXTERNAL_API_URL,baseUrl);
+        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, mockDexGrpcClient), env, FilledMockRBACService.createTestRBACService());
+
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + userNumber, headerMap); // Ask for the wrong user number.
+        mockRequest.setMethod(HttpMethod.GET.toString());
+        mockRequest.setContentType("application/json");
+
+        MockHttpServletResponse servletResponse = new MockHttpServletResponse();     
+
+        IInternalUser owner = new InternalUser("user-1", "dexId");
+        authStoreService.storeToken("some-client-id", "test-token", owner);
+        
+        MockUser mockUser1 = createMockUser("user-1", "user-1-number", "web-ui");
+
+        String originalRole = "2";
+        mockUser1.setRoleId(originalRole);
+        authStoreService.addUser(mockUser1);
+
+        // When...
+        servlet.init();
+        servlet.doGet(mockRequest, servletResponse);
+
+        assertThat(servletResponse.getStatus()).isEqualTo(200);
+
+        // Now check a few things about the payload which was returned.
+        // It should contain the rendered json of the updated user record.
+        ServletOutputStream outStream = servletResponse.getOutputStream();
+        String payloadGotBack = outStream.toString();
+        UserData userGotBackInPayload = gson.fromJson(payloadGotBack, UserData.class);
+
+        assertThat(userGotBackInPayload).isNotNull();
+        assertThat(userGotBackInPayload.getLoginId()).isEqualTo("user-1");
+        assertThat(userGotBackInPayload.getid()).isEqualTo("user-1-number");
+        assertThat(userGotBackInPayload.getrole()).isEqualTo(originalRole);
+    } 
 
 }
