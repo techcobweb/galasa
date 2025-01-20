@@ -67,7 +67,7 @@ public class ResourcesRoute  extends ProtectedRoute {
         super(responseBuilder, path, rbacService, env);
         this.env = env;
 
-        resourceProcessors.put(GALASA_PROPERTY, new GalasaPropertyProcessor(cps));
+        resourceProcessors.put(GALASA_PROPERTY, new GalasaPropertyProcessor(cps, rbacService));
         resourceProcessors.put(GALASA_SECRET, new GalasaSecretProcessor(credentialsService, timeService));
     }
 
@@ -134,7 +134,10 @@ public class ResourcesRoute  extends ProtectedRoute {
                     throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);
                 }
 
-                errors.addAll(resourceProcessors.get(kind).processResource(resource, action, username));
+                IGalasaResourceProcessor resourceProcessor = resourceProcessors.get(kind);
+                resourceProcessor.validateActionPermissions(action, username);
+
+                errors.addAll(resourceProcessor.processResource(resource, action, username));
 
             } catch (InternalServletException s) {
                 errors.add(s.getMessage());

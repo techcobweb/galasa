@@ -12,6 +12,8 @@ dependencies {
     implementation project(':dev.galasa.framework.api.beans')
     implementation 'dev.galasa:dev.galasa.wrapping.com.auth0.jwt'
 
+    testImplementation(testFixtures(project(':dev.galasa.framework')))
+
     testFixturesImplementation platform('dev.galasa:dev.galasa.platform:'+version)
     testFixturesImplementation 'javax.servlet:javax.servlet-api'
     testFixturesImplementation 'org.assertj:assertj-core'

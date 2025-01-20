@@ -7,6 +7,7 @@ package dev.galasa.framework.api.resources.routes;
 
 import static org.assertj.core.api.Assertions.*;
 import static dev.galasa.framework.api.common.resources.ResourceAction.*;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -24,9 +25,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import dev.galasa.framework.api.common.Environment;
+import dev.galasa.framework.api.common.mocks.FilledMockEnvironment;
+import dev.galasa.framework.api.common.mocks.MockFramework;
+import dev.galasa.framework.api.common.mocks.MockIConfigurationPropertyStoreService;
 import dev.galasa.framework.api.common.resources.CPSFacade;
 import dev.galasa.framework.api.resources.ResourcesServletTest;
 import dev.galasa.framework.api.resources.mocks.MockResourcesServlet;
+import dev.galasa.framework.mocks.FilledMockRBACService;
+import dev.galasa.framework.mocks.MockRBACService;
+import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.Action;
+import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 public class TestResourcesRoute extends ResourcesServletTest{
@@ -120,19 +130,22 @@ public class TestResourcesRoute extends ResourcesServletTest{
     @Test
     public void TestProcessDataArrayBadJsonArrayReturnsError() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "property.name";
         String value = "value";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         String jsonString = "[{},{},{}]";
         JsonArray propertyJson = JsonParser.parseString(jsonString).getAsJsonArray();
 
         //When...
-        resourcesRoute.processDataArray(propertyJson, APPLY, username);
+        resourcesRoute.processDataArray(propertyJson, APPLY, JWT_USERNAME);
         List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -144,19 +157,22 @@ public class TestResourcesRoute extends ResourcesServletTest{
     @Test
     public void TestProcessDataArrayBadJsonReturnsError() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "property.name";
         String value = "value";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         String jsonString = "[{\"kind\":\"GalasaProperty\",\"apiVersion\":\"galasa-dev/v1alpha1\","+namespace+"."+propertyname+":"+value+"}]";
         JsonArray propertyJson = JsonParser.parseString(jsonString).getAsJsonArray();
 
         //When...
-        resourcesRoute.processDataArray(propertyJson, APPLY, username);
+        resourcesRoute.processDataArray(propertyJson, APPLY, JWT_USERNAME);
         List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -168,19 +184,22 @@ public class TestResourcesRoute extends ResourcesServletTest{
     @Test
     public void TestProcessDataArrayBadKindReturnsError() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "property.name";
         String value = "value";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         String jsonString = "[{\"kind\":\"GalasaProperly\",\"apiVersion\":\"v1alpha1\","+namespace+"."+propertyname+":"+value+"}]";
         JsonArray propertyJson = JsonParser.parseString(jsonString).getAsJsonArray();
 
         //When...
-        resourcesRoute.processDataArray(propertyJson, APPLY, username);
+        resourcesRoute.processDataArray(propertyJson, APPLY, JWT_USERNAME);
         List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -192,17 +211,20 @@ public class TestResourcesRoute extends ResourcesServletTest{
     @Test
     public void TestProcessDataArrayNullJsonObjectReturnsError() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         String jsonString = "[null]";
         JsonArray propertyJson = JsonParser.parseString(jsonString).getAsJsonArray();
 
         //When...
-        resourcesRoute.processDataArray(propertyJson, APPLY, username);
+        resourcesRoute.processDataArray(propertyJson, APPLY, JWT_USERNAME);
         List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -213,18 +235,21 @@ public class TestResourcesRoute extends ResourcesServletTest{
     @Test
     public void TestProcessDataArrayCorrectJSONReturnsOK() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "property.name";
         String value = "value";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         JsonArray propertyJson = generatePropertyArrayJson(namespace,propertyname,value,"galasa-dev/v1alpha1");
 
         //When...
-        resourcesRoute.processDataArray(propertyJson, APPLY, username);
+        resourcesRoute.processDataArray(propertyJson, APPLY, JWT_USERNAME);
         List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -235,18 +260,21 @@ public class TestResourcesRoute extends ResourcesServletTest{
     @Test
     public void TestProcessDataArrayCorrectJSONWithAtSymbolInPropertyReturnsOK() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "Galasadelivery@ibm.com";
         String value = "value";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         JsonArray propertyJson = generatePropertyArrayJson(namespace,propertyname,value,"galasa-dev/v1alpha1");
 
         //When...
-        resourcesRoute.processDataArray(propertyJson, APPLY, username);
+        resourcesRoute.processDataArray(propertyJson, APPLY, JWT_USERNAME);
         List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -257,20 +285,23 @@ public class TestResourcesRoute extends ResourcesServletTest{
     @Test
     public void TestProcessDataArrayThreeBadJsonReturnsErrors() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "property.name";
         String value = "value";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         String jsonString = "[null, {\"kind\":\"GalasaProperty\",\"apiVersion\":\"galasa-dev/v1alpha1\","+namespace+"."+propertyname+":"+value+"},"+
             "{\"kind\":\"GalasaProperly\",\"apiVersion\":\"v1alpha1\","+namespace+"."+propertyname+":"+value+"},{}]";
         JsonArray propertyJson = JsonParser.parseString(jsonString).getAsJsonArray();
 
         //When...
-        resourcesRoute.processDataArray(propertyJson, APPLY, username);
+        resourcesRoute.processDataArray(propertyJson, APPLY, JWT_USERNAME);
         List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -285,7 +316,6 @@ public class TestResourcesRoute extends ResourcesServletTest{
     @Test
     public void TestProcessDataArrayCreateWithOneExistingRecordJSONReturnsOneError() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "property.name";
         String value = "value";
@@ -293,14 +323,18 @@ public class TestResourcesRoute extends ResourcesServletTest{
         String valueTwo = "random";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         String jsonString ="["+ generatePropertyJson(namespace,propertyname,value,"galasa-dev/v1alpha1");
         jsonString = jsonString+","+ generatePropertyJson(namespace,propertyNameTwo,valueTwo,"galasa-dev/v1alpha1") +"]";
         JsonArray propertyJson = JsonParser.parseString(jsonString).getAsJsonArray();
 
         //When...
-        resourcesRoute.processDataArray(propertyJson, CREATE, username);
+        resourcesRoute.processDataArray(propertyJson, CREATE, JWT_USERNAME);
         List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -314,7 +348,6 @@ public class TestResourcesRoute extends ResourcesServletTest{
     @Test
     public void TestProcessDataArrayCreateWithTwoExistingRecordsJSONReturnsTwoErrors() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "property.1";
         String value = "value";
@@ -322,14 +355,18 @@ public class TestResourcesRoute extends ResourcesServletTest{
         String valueTwo = "random";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         String jsonString ="["+ generatePropertyJson(namespace,propertyname,value,"galasa-dev/v1alpha1");
         jsonString = jsonString+","+ generatePropertyJson(namespace,propertyNameTwo,valueTwo,"galasa-dev/v1alpha1") +"]";
         JsonArray propertyJson = JsonParser.parseString(jsonString).getAsJsonArray();
 
         //When...
-        resourcesRoute.processDataArray(propertyJson, CREATE, username);
+        resourcesRoute.processDataArray(propertyJson, CREATE, JWT_USERNAME);
         List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -345,7 +382,6 @@ public class TestResourcesRoute extends ResourcesServletTest{
     @Test
     public void TestProcessDataArrayUpdateWithOneNewRecordJSONReturnsOneError() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "property.name";
         String value = "value";
@@ -353,14 +389,18 @@ public class TestResourcesRoute extends ResourcesServletTest{
         String valueTwo = "random";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         String jsonString ="["+ generatePropertyJson(namespace,propertyname,value,"galasa-dev/v1alpha1");
         jsonString = jsonString+","+ generatePropertyJson(namespace,propertyNameTwo,valueTwo,"galasa-dev/v1alpha1") +"]";
         JsonArray propertyJson = JsonParser.parseString(jsonString).getAsJsonArray();
 
         //When...
-        resourcesRoute.processDataArray(propertyJson, UPDATE, username);
+        resourcesRoute.processDataArray(propertyJson, UPDATE, JWT_USERNAME);
         List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -373,7 +413,6 @@ public class TestResourcesRoute extends ResourcesServletTest{
     @Test
     public void TestProcessDataArrayUpdateWithTwoNewRecordsJSONReturnsTwoError() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "property.name";
         String value = "value";
@@ -381,14 +420,18 @@ public class TestResourcesRoute extends ResourcesServletTest{
         String valueTwo = "random";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         String jsonString ="["+ generatePropertyJson(namespace,propertyname,value,"galasa-dev/v1alpha1");
         jsonString = jsonString+","+ generatePropertyJson(namespace,propertyNameTwo,valueTwo,"galasa-dev/v1alpha1") +"]";
         JsonArray propertyJson = JsonParser.parseString(jsonString).getAsJsonArray();
 
         //When...
-        resourcesRoute.processDataArray(propertyJson, UPDATE, username);
+        resourcesRoute.processDataArray(propertyJson, UPDATE, JWT_USERNAME);
         List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -406,19 +449,22 @@ public class TestResourcesRoute extends ResourcesServletTest{
      @Test
     public void TestProcessRequestApplyActionReturnsOK() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "property.name";
         String value = "value";
         String action = "apply";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         JsonObject requestJson = generateRequestJson(action, namespace,propertyname,value,"galasa-dev/v1alpha1");
 
         //When...
-        resourcesRoute.processRequest(requestJson, username);
+        resourcesRoute.processRequest(requestJson, JWT_USERNAME);
         List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -429,19 +475,22 @@ public class TestResourcesRoute extends ResourcesServletTest{
     @Test
     public void TestProcessRequestCreateActionReturnsOK() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "property.name";
         String value = "value";
         String action = "create";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         JsonObject jsonString = generateRequestJson(action, namespace,propertyname,value,"galasa-dev/v1alpha1");
 
         //When...
-        resourcesRoute.processRequest(jsonString, username);
+        resourcesRoute.processRequest(jsonString, JWT_USERNAME);
         List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -452,19 +501,22 @@ public class TestResourcesRoute extends ResourcesServletTest{
     @Test
     public void TestProcessRequestUpdateActionReturnsOK() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "property.1";
         String value = "value";
         String action = "apply";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         JsonObject jsonString = generateRequestJson(action, namespace,propertyname,value,"galasa-dev/v1alpha1");
 
         //When...
-        resourcesRoute.processRequest(jsonString, username);
+        resourcesRoute.processRequest(jsonString, JWT_USERNAME);
          List<String> errors = resourcesRoute.errors;
 
         //Then...
@@ -472,23 +524,87 @@ public class TestResourcesRoute extends ResourcesServletTest{
         checkPropertyInNamespace(namespace,propertyname,value);
     }
 
+
+    @Test
+    public void TestCreatePropertyWithMissingPermissionsReturnsForbidden() throws Exception{
+        //Given...
+        String namespace = "framework";
+        String propertyname = "property.name";
+        String value = "value";
+        String action = "create";
+
+        List<Action> actions = List.of(GENERAL_API_ACCESS.getAction());
+        MockRBACService rbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, actions);
+
+		MockIConfigurationPropertyStoreService cpsStore = new MockIConfigurationPropertyStoreService(namespace);
+		MockFramework mockFramework = new MockFramework(cpsStore);
+		mockFramework.setRBACService(rbacService);
+
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
+        JsonObject jsonString = generateRequestJson(action, namespace,propertyname,value,"galasa-dev/v1alpha1");
+
+        //When...
+        resourcesRoute.processRequest(jsonString, JWT_USERNAME);
+        List<String> errors = resourcesRoute.errors;
+
+        //Then...
+        assertThat(errors.size()).isEqualTo(1);
+        checkErrorStructure(errors.get(0), 5125, "GAL5125E", "CPS_PROPERTIES_SET");
+    }
+
+    @Test
+    public void TestApplyPropertyWithMissingPermissionsReturnsForbidden() throws Exception{
+        //Given...
+        String namespace = "framework";
+        String propertyname = "property.1";
+        String value = "value";
+        String action = "apply";
+
+        List<Action> actions = List.of(GENERAL_API_ACCESS.getAction());
+        MockRBACService rbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, actions);
+
+		MockIConfigurationPropertyStoreService cpsStore = new MockIConfigurationPropertyStoreService(namespace);
+		MockFramework mockFramework = new MockFramework(cpsStore);
+		mockFramework.setRBACService(rbacService);
+
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
+        JsonObject jsonString = generateRequestJson(action, namespace,propertyname,value,"galasa-dev/v1alpha1");
+
+        //When...
+        resourcesRoute.processRequest(jsonString, JWT_USERNAME);
+         List<String> errors = resourcesRoute.errors;
+
+        //Then...
+        assertThat(errors.size()).isEqualTo(1);
+        checkErrorStructure(errors.get(0), 5125, "GAL5125E", "CPS_PROPERTIES_SET");
+    }
+
     @Test
     public void TestProcessRequestBadActionReturnsError() throws Exception{
         //Given...
-        String username = "myuser";
         String namespace = "framework";
         String propertyname = "property.name";
         String value = "value";
         String action = "BadAction";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
         JsonObject jsonString = generateRequestJson(action, namespace,propertyname,value,"galasa-dev/v1alpha1");
 
         //When...
         Throwable thrown = catchThrowable(() -> {
-          resourcesRoute.processRequest(jsonString, username);
+          resourcesRoute.processRequest(jsonString, JWT_USERNAME);
         });
 
         //Then...
@@ -1008,8 +1124,12 @@ public class TestResourcesRoute extends ResourcesServletTest{
         errors.add("{\"error_code\":5030,\"error_message\":\"GAL5030E: Error occurred when trying to delete Property 'property.1'. Report the problem to your Galasa Ecosystem owner.\"}");
         setServlet("framework");
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, null, null);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+
+        Environment mockEnv = FilledMockEnvironment.createTestEnvironment();
+        RBACService rbacService = mockFramework.getRBACService();
+        ResourcesRoute resourcesRoute = new ResourcesRoute(null, cps, null, null, mockEnv, rbacService);
 
         // When...
         String json = resourcesRoute.getErrorsAsJson(errors);

@@ -24,4 +24,6 @@ public interface IGalasaResourceProcessor {
      * @throws InternalServletException if there was an issue processing the resource
      */
     List<String> processResource(JsonObject resourceJson, ResourceAction action, String username) throws InternalServletException;
+
+    void validateActionPermissions(ResourceAction action, String username) throws InternalServletException;
 }
