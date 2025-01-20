@@ -5,15 +5,20 @@
  */
 package dev.galasa.framework.api.cps.internal.routes;
 import dev.galasa.framework.api.common.mocks.MockFramework;
+import dev.galasa.framework.api.common.mocks.MockIConfigurationPropertyStoreService;
 import dev.galasa.framework.api.common.resources.CPSProperty;
 import dev.galasa.framework.api.common.resources.GalasaPropertyName;
 import dev.galasa.framework.api.cps.internal.CpsServletTest;
 import dev.galasa.framework.api.cps.internal.mocks.MockCpsServlet;
+import dev.galasa.framework.mocks.FilledMockRBACService;
+import dev.galasa.framework.mocks.MockRBACService;
+import dev.galasa.framework.spi.rbac.Action;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -989,6 +994,38 @@ public class TestPropertyRoute extends CpsServletTest{
 	/*
 	 * TEST - HANDLE POST REQUEST
 	 */
+    @Test
+    public void TestCreatePropertyWithMissingPermissionsReturnsForbidden() throws Exception {
+        // Given...
+		String namespace = "framework";
+        String propertyName = "property.6";
+        String value = "value6";
+		String propertyJSON = generatePropertyJSON(namespace, propertyName, value, "galasa-dev/v1alpha1");
+
+        List<Action> actions = List.of(GENERAL_API_ACCESS.getAction());
+        MockRBACService rbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, actions);
+
+		MockIConfigurationPropertyStoreService cpsStore = new MockIConfigurationPropertyStoreService(namespace);
+		MockFramework mockFramework = new MockFramework(cpsStore);
+		mockFramework.setRBACService(rbacService);
+
+		setServlet("/framework/properties", namespace, propertyJSON , "POST", mockFramework);
+		MockCpsServlet servlet = getServlet();
+		HttpServletRequest req = getRequest();
+		HttpServletResponse resp = getResponse();
+        ServletOutputStream outStream = resp.getOutputStream();
+
+        // When...
+        servlet.init();
+        servlet.doPost(req, resp);
+
+        // Then...
+        String output = outStream.toString();
+        assertThat(resp.getStatus()).isEqualTo(403);
+		assertThat(resp.getContentType()).isEqualTo("application/json");
+		checkErrorStructure(output, 5125, "GAL5125E", "CPS_PROPERTIES_SET");
+    }
+
     @Test
     public void TestPropertyRoutePOSTBadNamespaceReturnsError() throws Exception{
 		// Given...

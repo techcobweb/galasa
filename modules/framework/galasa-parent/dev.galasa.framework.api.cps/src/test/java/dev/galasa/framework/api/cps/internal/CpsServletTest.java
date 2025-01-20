@@ -78,14 +78,18 @@ public class CpsServletTest extends BaseServletTest {
 	}
 
 	protected void setServlet( String path,String namespace, String value, String method, MockIConfigurationPropertyStoreService store){
+		setServlet(path, namespace, value, method, new MockFramework(store));
+	}
+
+	protected void setServlet(String path, String namespace, String requestContent, String method, MockFramework framework) {
 		setServlet(namespace);
 		ServletOutputStream outStream = new MockServletOutputStream();
         PrintWriter writer = new PrintWriter(outStream);
-		IFramework framework = new MockFramework(store);
 		this.servlet.setFramework(framework);
-		this.req = new MockHttpServletRequest(path, value, method, REQUIRED_HEADERS);
+		this.req = new MockHttpServletRequest(path, requestContent, method, REQUIRED_HEADERS);
 		this.resp = new MockHttpServletResponse(writer, outStream);
 	}
+
 	protected void setServlet( String path,String namespace, String value, String method, MockIConfigurationPropertyStoreService store, Map<String,String> headerMap){
 		setServlet(path,namespace, value, method, store);
 		headerMap.putAll(REQUIRED_HEADERS);

@@ -6,12 +6,10 @@
 package dev.galasa.framework.api.users.internal.routes;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletOutputStream;
 
@@ -32,10 +30,8 @@ import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
 import dev.galasa.framework.api.common.mocks.MockHttpServletResponse;
 import dev.galasa.framework.mocks.FilledMockRBACService;
 import dev.galasa.framework.mocks.MockAuthStoreService;
-import dev.galasa.framework.mocks.MockCacheRBAC;
 import dev.galasa.framework.mocks.MockFrontEndClient;
 import dev.galasa.framework.mocks.MockRBACService;
-import dev.galasa.framework.mocks.MockRole;
 import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.mocks.MockUser;
 import dev.galasa.framework.api.users.mocks.MockUsersServlet;
@@ -45,7 +41,6 @@ import dev.galasa.framework.spi.auth.IInternalUser;
 import dev.galasa.framework.spi.auth.IUser;
 import dev.galasa.framework.spi.rbac.Action;
 import dev.galasa.framework.spi.rbac.BuiltInAction;
-import dev.galasa.framework.spi.rbac.Role;
 import dev.galasa.framework.spi.utils.GalasaGsonBuilder;
 
 public class UserRouteTest extends BaseServletTest {
@@ -386,17 +381,7 @@ public class UserRouteTest extends BaseServletTest {
         env.setenv(EnvironmentVariables.GALASA_EXTERNAL_API_URL,baseUrl);
 
         List<Action> actions = List.of(BuiltInAction.GENERAL_API_ACCESS.getAction());
-        List<String> actionIdsList = actions.stream().map(action -> action.getId()).collect(Collectors.toList());
-
-        MockRole role1 = new MockRole("role1","2","role1 description",actionIdsList);
-        List<Role> roles = List.of(role1);
-
-        MockRBACService rbacService = new MockRBACService(roles,actions,role1);
-
-        Map<String, List<String>> usersToActions = new HashMap<>();
-        usersToActions.put(JWT_USERNAME, actionIdsList);
-
-        rbacService.setUsersActionsCache(new MockCacheRBAC(usersToActions));
+        MockRBACService rbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, actions);
 
         MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, mockDexGrpcClient), env, rbacService);
 

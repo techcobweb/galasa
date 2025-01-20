@@ -7,10 +7,12 @@ package dev.galasa.framework.api.secrets.internal.routes;
 
 import static org.assertj.core.api.Assertions.*;
 import static dev.galasa.framework.api.common.resources.GalasaSecretType.*;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 import java.time.Instant;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -26,7 +28,9 @@ import dev.galasa.framework.api.common.mocks.MockCredentialsService;
 import dev.galasa.framework.api.common.mocks.MockFramework;
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
 import dev.galasa.framework.api.common.mocks.MockHttpServletResponse;
+import dev.galasa.framework.mocks.FilledMockRBACService;
 import dev.galasa.framework.mocks.MockCredentials;
+import dev.galasa.framework.mocks.MockRBACService;
 import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.api.secrets.internal.SecretsServletTest;
 import dev.galasa.framework.api.secrets.mocks.MockSecretsServlet;
@@ -34,6 +38,7 @@ import dev.galasa.framework.spi.creds.CredentialsToken;
 import dev.galasa.framework.spi.creds.CredentialsUsername;
 import dev.galasa.framework.spi.creds.CredentialsUsernamePassword;
 import dev.galasa.framework.spi.creds.CredentialsUsernameToken;
+import dev.galasa.framework.spi.rbac.Action;
 
 public class SecretDetailsRouteTest extends SecretsServletTest {
 
@@ -90,6 +95,40 @@ public class SecretDetailsRouteTest extends SecretsServletTest {
 
         String expectedJson = gson.toJson(generateSecretJson(secretName, "Username", username, null, null));
         assertThat(outStream.toString()).isEqualTo(expectedJson);
+    }
+
+    @Test
+    public void testGetSecretByNameWithMissingPermissionsReturnsForbiddenError() throws Exception {
+        // Given...
+        Map<String, ICredentials> creds = new HashMap<>();
+        String secretName = "BOB";
+        String username = "my-user";
+        creds.put(secretName, new CredentialsUsername(username));
+
+        MockCredentialsService credsService = new MockCredentialsService(creds);
+
+        List<Action> actions = List.of(GENERAL_API_ACCESS.getAction());
+        MockRBACService rbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, actions);
+
+        MockFramework mockFramework = new MockFramework(credsService);
+        mockFramework.setRBACService(rbacService);
+
+        MockTimeService timeService = new MockTimeService(Instant.EPOCH);
+        MockSecretsServlet servlet = new MockSecretsServlet(mockFramework, timeService);
+
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + secretName, REQUEST_HEADERS);
+
+        MockHttpServletResponse servletResponse = new MockHttpServletResponse();
+        ServletOutputStream outStream = servletResponse.getOutputStream();
+
+        // When...
+        servlet.init();
+        servlet.doGet(mockRequest, servletResponse);
+
+        // Then...
+        assertThat(servletResponse.getStatus()).isEqualTo(403);
+        assertThat(servletResponse.getContentType()).isEqualTo("application/json");
+        checkErrorStructure(outStream.toString(), 5125, "GAL5125E", "SECRETS_GET");
     }
 
     @Test

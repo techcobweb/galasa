@@ -8,6 +8,7 @@ package dev.galasa.framework.mocks;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -47,10 +48,13 @@ public class FilledMockRBACService {
 
         return service;
     }
-    
+
     public static MockRBACService createTestRBACServiceWithTestUser(String loginId) {
+        return createTestRBACServiceWithTestUser(loginId, BuiltInAction.getActions());
+    }
+
+    public static MockRBACService createTestRBACServiceWithTestUser(String loginId, List<Action> actions) {
         
-        List<Action> actions = BuiltInAction.getActions();
         List<String> actionIDsList = actions.stream().map(action -> action.getId()).collect(Collectors.toList());
 
         MockRole role1 = new MockRole("role1","2","role1 description",actionIDsList);

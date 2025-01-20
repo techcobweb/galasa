@@ -6,6 +6,7 @@
 package dev.galasa.framework.api.cps.internal.routes;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -82,6 +83,9 @@ public class PropertyUpdateRoute extends CPSRoute {
     @Override
     public HttpServletResponse handlePutRequest(String pathInfo, QueryParameters queryParameters, HttpServletRequest request , HttpServletResponse response)
             throws  IOException, FrameworkException {
+
+        validateActionPermitted(CPS_PROPERTIES_SET.getAction(), request);
+
         String namespaceName = getNamespaceFromURL(pathInfo);
         String name = getPropertyNameFromURL(pathInfo);
         checkRequestHasContent(request);

@@ -6,9 +6,11 @@
 package dev.galasa.framework.api.cps.internal.routes;
 
 import static org.assertj.core.api.Assertions.*;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 import java.util.regex.Pattern;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
@@ -19,10 +21,14 @@ import javax.validation.constraints.Null;
 
 import org.junit.Test;
 
+import dev.galasa.framework.api.common.mocks.MockFramework;
 import dev.galasa.framework.api.common.mocks.MockIConfigurationPropertyStoreService;
 import dev.galasa.framework.api.cps.internal.CpsServletTest;
 import dev.galasa.framework.api.cps.internal.mocks.MockCpsServlet;
+import dev.galasa.framework.mocks.FilledMockRBACService;
+import dev.galasa.framework.mocks.MockRBACService;
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
+import dev.galasa.framework.spi.rbac.Action;
 
 public class TestAddPropertyInNamespaceRoute extends CpsServletTest {
 
@@ -323,6 +329,50 @@ public class TestAddPropertyInNamespaceRoute extends CpsServletTest {
         assertThat(resp.getContentType()).isEqualTo("application/json");
         assertThat(output).isEqualTo("{\n  \"name\": \""+propertyName+"\",\n  \"value\": \""+value+"\"\n}");
         assertThat(checkNewPropertyInNamespace(namespace, propertyName, value)).isTrue();      
+    }
+
+    @Test
+	public void TestCreatePropertyWithMissingPermissionsReturnsForbiddenError() throws Exception{
+		// Given...
+        String namespace = "framework";
+        String propertyName = "property.6";
+        String value = "value6";
+        String json = "{\"name\":\""+propertyName+"\", \"value\":\""+value+"\"}";
+        MockIConfigurationPropertyStoreService store = new MockIConfigurationPropertyStoreService(namespace){
+            @Override
+            public @Null String getProperty(@NotNull String prefix, @NotNull String suffix, String... infixes)
+            throws ConfigurationPropertyStoreException {
+            for (Map.Entry<String,String> property : properties.entrySet()){
+                String key = property.getKey();
+                String match = prefix+"."+suffix;
+                if (key.contains(match)){
+                    return property.getValue();
+                }
+            }
+            return null;
+            }
+        };
+
+        List<Action> actions = List.of(GENERAL_API_ACCESS.getAction());
+        MockRBACService rbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, actions);
+
+        MockFramework mockFramework = new MockFramework(store);
+        mockFramework.setRBACService(rbacService);
+
+		setServlet("/namespace/framework/property/"+propertyName, namespace, json, "PUT", mockFramework);
+		MockCpsServlet servlet = getServlet();
+		HttpServletRequest req = getRequest();
+		HttpServletResponse resp = getResponse();
+		ServletOutputStream outStream = resp.getOutputStream();	
+				
+		// When...
+		servlet.init();
+		servlet.doPut(req,resp);
+
+		// Then...
+        assertThat(resp.getStatus()).isEqualTo(403);
+        assertThat(resp.getContentType()).isEqualTo("application/json");
+        checkErrorStructure(outStream.toString(), 5125, "GAL5125E", "CPS_PROPERTIES_SET");
     }
 
     @Test

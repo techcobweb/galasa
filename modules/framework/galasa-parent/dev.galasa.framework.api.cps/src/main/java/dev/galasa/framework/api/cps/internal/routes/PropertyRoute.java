@@ -29,6 +29,7 @@ import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.rbac.RBACException;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 public class PropertyRoute extends CPSRoute{
 
@@ -79,6 +80,9 @@ public class PropertyRoute extends CPSRoute{
     public HttpServletResponse handlePostRequest(String pathInfo, QueryParameters queryParameters,
             HttpServletRequest request, HttpServletResponse response)
             throws  IOException, FrameworkException {
+
+        validateActionPermitted(CPS_PROPERTIES_SET.getAction(), request);
+
         String namespaceName = getNamespaceFromURL(pathInfo);
         checkRequestHasContent(request);
         ServletInputStream body = request.getInputStream();
