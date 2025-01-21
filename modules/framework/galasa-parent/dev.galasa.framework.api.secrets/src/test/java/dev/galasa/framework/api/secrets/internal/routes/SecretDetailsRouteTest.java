@@ -8,6 +8,7 @@ package dev.galasa.framework.api.secrets.internal.routes;
 import static org.assertj.core.api.Assertions.*;
 import static dev.galasa.framework.api.common.resources.GalasaSecretType.*;
 import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
+import static dev.galasa.framework.api.secrets.internal.routes.AbstractSecretsRoute.*;
 
 import java.time.Instant;
 import java.util.Base64;
@@ -93,12 +94,12 @@ public class SecretDetailsRouteTest extends SecretsServletTest {
         assertThat(servletResponse.getStatus()).isEqualTo(200);
         assertThat(servletResponse.getContentType()).isEqualTo("application/json");
 
-        String expectedJson = gson.toJson(generateSecretJson(secretName, "Username", username, null, null));
+        String expectedJson = gson.toJson(generateUsernameSecretJson(secretName, username, BASE64_ENCODING, null, null, null));
         assertThat(outStream.toString()).isEqualTo(expectedJson);
     }
 
     @Test
-    public void testGetSecretByNameWithMissingPermissionsReturnsForbiddenError() throws Exception {
+    public void testGetSecretByNameWithMissingPermissionsReturnsRedactedSecret() throws Exception {
         // Given...
         Map<String, ICredentials> creds = new HashMap<>();
         String secretName = "BOB";
@@ -126,9 +127,11 @@ public class SecretDetailsRouteTest extends SecretsServletTest {
         servlet.doGet(mockRequest, servletResponse);
 
         // Then...
-        assertThat(servletResponse.getStatus()).isEqualTo(403);
+        assertThat(servletResponse.getStatus()).isEqualTo(200);
         assertThat(servletResponse.getContentType()).isEqualTo("application/json");
-        checkErrorStructure(outStream.toString(), 5125, "GAL5125E", "SECRETS_GET");
+
+        String expectedJson = gson.toJson(generateUsernameSecretJson(secretName, REDACTED_SECRET_VALUE, null, null, null, null));
+        assertThat(outStream.toString()).isEqualTo(expectedJson);
     }
 
     @Test
@@ -176,7 +179,6 @@ public class SecretDetailsRouteTest extends SecretsServletTest {
         MockSecretsServlet servlet = new MockSecretsServlet(mockFramework, timeService);
 
         MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + secretName, REQUEST_HEADERS);
-        mockRequest.setQueryParameter("name", secretName);
 
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         ServletOutputStream outStream = servletResponse.getOutputStream();

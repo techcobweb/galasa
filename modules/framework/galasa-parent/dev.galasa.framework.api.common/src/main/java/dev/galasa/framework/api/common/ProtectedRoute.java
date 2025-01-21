@@ -32,8 +32,15 @@ public abstract class ProtectedRoute extends BaseRoute {
         this.env = env;
     }
 
+    protected void validateActionPermitted(Action action, HttpServletRequest request) throws InternalServletException {
+        if (!isActionPermitted(action, request)) {
+            ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, action.getId());
+            throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
+        }
+    }
+
     @Override
-    public void validateActionPermitted(Action action, HttpServletRequest request) throws InternalServletException {
+    public boolean isActionPermitted(Action action, HttpServletRequest request) throws InternalServletException {
         boolean isActionPermitted = false;
         String jwt = JwtWrapper.getBearerTokenFromAuthHeader(request);
         if (jwt != null) {
@@ -46,10 +53,6 @@ public abstract class ProtectedRoute extends BaseRoute {
                 throw new InternalServletException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         }
-
-        if (!isActionPermitted) {
-            ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, action.getId());
-            throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
-        }
+        return isActionPermitted;
     }
 }

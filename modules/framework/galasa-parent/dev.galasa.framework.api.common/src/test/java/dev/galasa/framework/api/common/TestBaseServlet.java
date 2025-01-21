@@ -67,8 +67,8 @@ public class TestBaseServlet extends BaseServletTest {
         }
 
         @Override
-        public void validateActionPermitted(Action action, HttpServletRequest request) throws InternalServletException {
-            // Do nothing...
+        public boolean isActionPermitted(Action action, HttpServletRequest request) throws InternalServletException {
+            return true;
         }
     }
 

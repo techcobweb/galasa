@@ -7,6 +7,7 @@ package dev.galasa.framework.api.secrets.internal.routes;
 
 import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 import static org.assertj.core.api.Assertions.*;
+import static dev.galasa.framework.api.secrets.internal.routes.AbstractSecretsRoute.*;
 
 import java.time.Instant;
 import java.util.Base64;
@@ -59,7 +60,7 @@ public class SecretsRouteTest extends SecretsServletTest {
     }
 
     @Test
-    public void testGetSecretsWithMissingPermissionsThrowsForbiddenError() throws Exception {
+    public void testGetSecretsWithMissingPermissionsRedactsSecretValues() throws Exception {
         // Given...
         Map<String, ICredentials> creds = new HashMap<>();
         String secretName1 = "BOB";
@@ -69,12 +70,40 @@ public class SecretsRouteTest extends SecretsServletTest {
         String lastUser1 = "user1";
         Instant lastUpdated1 = Instant.EPOCH;
 
+        String secretName2 = "ITS_BOB_AGAIN";
+        String username2 = "another-username";
+        String description2 = "this is my second secret";
+        String lastUser2 = "user2";
+        Instant lastUpdated2 = Instant.EPOCH.plusMillis(1);
+
+        String secretName3 = "not-b0b";
+        String token3 = "this-is-a-token";
+
+        String secretName4 = "new-bob";
+        String username4 = "this-is-yet-another-username";
+        String token4 = "this-is-another-token";
+        String lastUser4 = "user4";
+        Instant lastUpdated4 = Instant.EPOCH.plusMillis(4);
+
         ICredentials secret1 = new CredentialsUsernamePassword(username1, password1);
         secret1.setDescription(description1);
         secret1.setLastUpdatedByUser(lastUser1);
         secret1.setLastUpdatedTime(lastUpdated1);
 
+        ICredentials secret2 = new CredentialsUsername(username2);
+        secret2.setDescription(description2);
+        secret2.setLastUpdatedByUser(lastUser2);
+        secret2.setLastUpdatedTime(lastUpdated2);
+
+        ICredentials secret4 = new CredentialsUsernameToken(username4, token4);
+        secret4.setLastUpdatedByUser(username4);
+        secret4.setLastUpdatedByUser(lastUser4);
+        secret4.setLastUpdatedTime(lastUpdated4);
+
         creds.put(secretName1, secret1);
+        creds.put(secretName2, secret2);
+        creds.put(secretName3, new CredentialsToken(token3));
+        creds.put(secretName4, secret4);
 
         MockCredentialsService credsService = new MockCredentialsService(creds);
 
@@ -97,9 +126,15 @@ public class SecretsRouteTest extends SecretsServletTest {
         servlet.doGet(mockRequest, servletResponse);
 
         // Then...
+        JsonArray expectedJson = new JsonArray();
+        expectedJson.add(generateUsernameTokenSecretJson(secretName4, REDACTED_SECRET_VALUE, REDACTED_SECRET_VALUE, null, null, lastUser4, lastUpdated4));
+        expectedJson.add(generateUsernameSecretJson(secretName2, REDACTED_SECRET_VALUE, null, description2, lastUser2, lastUpdated2));
+        expectedJson.add(generateUsernamePasswordSecretJson(secretName1, REDACTED_SECRET_VALUE, REDACTED_SECRET_VALUE, null, description1, lastUser1, lastUpdated1));
+        expectedJson.add(generateTokenSecretJson(secretName3, REDACTED_SECRET_VALUE, null, null, null, null));
+
         String output = outStream.toString();
-        assertThat(servletResponse.getStatus()).isEqualTo(403);
-        checkErrorStructure(output, 5125, "GAL5125E", "SECRETS_GET");
+        assertThat(servletResponse.getStatus()).isEqualTo(200);
+        assertThat(output).isEqualTo(gson.toJson(expectedJson));
     }
 
     @Test
@@ -165,10 +200,10 @@ public class SecretsRouteTest extends SecretsServletTest {
 
         // Then...
         JsonArray expectedJson = new JsonArray();
-        expectedJson.add(generateSecretJson(secretName4, "UsernameToken", username4, null, token4, null, lastUser4, lastUpdated4));
-        expectedJson.add(generateSecretJson(secretName2, "Username", username2, null, null, description2, lastUser2, lastUpdated2));
-        expectedJson.add(generateSecretJson(secretName1, "UsernamePassword", username1, password1, null, description1, lastUser1, lastUpdated1));
-        expectedJson.add(generateSecretJson(secretName3, "Token", null, null, token3));
+        expectedJson.add(generateUsernameTokenSecretJson(secretName4, username4, token4, BASE64_ENCODING, null, lastUser4, lastUpdated4));
+        expectedJson.add(generateUsernameSecretJson(secretName2, username2, BASE64_ENCODING, description2, lastUser2, lastUpdated2));
+        expectedJson.add(generateUsernamePasswordSecretJson(secretName1, username1, password1, BASE64_ENCODING, description1, lastUser1, lastUpdated1));
+        expectedJson.add(generateTokenSecretJson(secretName3, token3, BASE64_ENCODING, null, null, null));
 
         String output = outStream.toString();
         assertThat(servletResponse.getStatus()).isEqualTo(200);

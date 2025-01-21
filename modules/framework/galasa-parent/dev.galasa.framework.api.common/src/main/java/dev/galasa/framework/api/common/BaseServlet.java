@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import dev.galasa.framework.spi.FrameworkException;
+import dev.galasa.framework.spi.rbac.Action;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 import java.io.IOException;
@@ -148,7 +149,11 @@ public class BaseServlet extends HttpServlet {
         String requestMethodStr = req.getMethod();
         HttpMethod requestMethod = HttpMethod.getFromString(requestMethodStr);
 
-        route.validateActionPermitted(GENERAL_API_ACCESS.getAction(), req);
+        Action apiAccessAction = GENERAL_API_ACCESS.getAction();
+        if (!route.isActionPermitted(apiAccessAction, req)) {
+            ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, apiAccessAction.getId());
+            throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
+        }
 
         boolean isBadMethod = false ;
         if (requestMethod == null ) {

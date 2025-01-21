@@ -7,6 +7,7 @@ package dev.galasa.framework.api.secrets.internal.routes;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 import static dev.galasa.framework.api.common.resources.GalasaSecretType.*;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -73,11 +74,11 @@ public class SecretDetailsRoute extends AbstractSecretsRoute {
         HttpServletResponse response
     ) throws FrameworkException {
 
-        super.handleGetRequest(pathInfo, queryParams, request, response);
+        boolean shouldRedactSecretValues = !isActionPermitted(SECRETS_GET.getAction(), request);
 
         logger.info("handleGetRequest() entered. Getting secret with the given name");
         String secretName = getSecretNameFromPath(pathInfo);
-        GalasaSecret secret = getSecretByName(secretName);
+        GalasaSecret secret = getSecretByName(secretName, shouldRedactSecretValues);
 
         logger.info("handleGetRequest() exiting");
         return getResponseBuilder().buildResponse(request, response, "application/json",
@@ -155,7 +156,7 @@ public class SecretDetailsRoute extends AbstractSecretsRoute {
         return matcher.group(1);
     }
 
-    private GalasaSecret getSecretByName(String secretName) throws InternalServletException {
+    private GalasaSecret getSecretByName(String secretName, boolean shouldRedactSecretValues) throws InternalServletException {
         GalasaSecret secret = null;
         try {
             ICredentials credentials = credentialsService.getCredentials(secretName);
@@ -167,7 +168,7 @@ public class SecretDetailsRoute extends AbstractSecretsRoute {
 
             logger.info("A secret with the given name was found OK");
 
-            secret = createGalasaSecretFromCredentials(secretName, credentials);
+            secret = createGalasaSecretFromCredentials(secretName, credentials, shouldRedactSecretValues);
         } catch (CredentialsException e) {
             ServletError error = new ServletError(GAL5094_FAILED_TO_GET_SECRET_FROM_CREDS);
             throw new InternalServletException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

@@ -37,12 +37,12 @@ public interface IRoute {
     throws ServletException, IOException, FrameworkException;
 
     /**
-     * Checks if the given action is permitted for the user that sent the given request, throwing an exception
-     * if not
+     * Checks if the given action is permitted for the user that sent the given request
      * 
      * @param action the action being performed
      * @param request the request containing an auth header with a bearer token for the current user
+     * @return true if the user is allowed to perform the given action, false otherwise
      * @throws InternalServletException if the action is not permitted or if there was an issue accessing the RBAC service
      */
-    void validateActionPermitted(Action action, HttpServletRequest request) throws InternalServletException;
+    boolean isActionPermitted(Action action, HttpServletRequest request) throws InternalServletException;
 }

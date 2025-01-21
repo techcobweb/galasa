@@ -31,12 +31,10 @@ import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.JwtWrapper;
 import dev.galasa.framework.api.common.ProtectedRoute;
-import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.api.common.resources.GalasaResourceValidator;
 import dev.galasa.framework.api.common.resources.GalasaSecretType;
-import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.creds.CredentialsToken;
 import dev.galasa.framework.spi.creds.CredentialsUsername;
 import dev.galasa.framework.spi.creds.CredentialsUsernamePassword;
@@ -44,10 +42,9 @@ import dev.galasa.framework.spi.creds.CredentialsUsernameToken;
 import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.ITimeService;
 
-import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
-
 public abstract class AbstractSecretsRoute extends ProtectedRoute {
 
+    public static final String REDACTED_SECRET_VALUE = "******";
     private static final String DEFAULT_RESPONSE_ENCODING = "base64";
 
     protected ITimeService timeService;
@@ -70,24 +67,19 @@ public abstract class AbstractSecretsRoute extends ProtectedRoute {
         this.timeService = timeService;
     }
 
-    @Override
-    public HttpServletResponse handleGetRequest(
-        String pathInfo,
-        QueryParameters queryParams,
-        HttpServletRequest request,
-        HttpServletResponse response
-    ) throws FrameworkException {
-        validateActionPermitted(SECRETS_GET.getAction(), request);
-        return response;
-    }
-
-    protected GalasaSecret createGalasaSecretFromCredentials(String secretName, ICredentials credentials) throws InternalServletException {
+    protected GalasaSecret createGalasaSecretFromCredentials(String secretName, ICredentials credentials, boolean shouldRedactSecretValues) throws InternalServletException {
         GalasaSecretmetadata metadata = new GalasaSecretmetadata(null);
         GalasaSecretdata data = new GalasaSecretdata();
         
         metadata.setname(secretName);
-        metadata.setencoding(DEFAULT_RESPONSE_ENCODING);
-        setSecretTypeValuesFromCredentials(metadata, data, credentials);
+
+        if (shouldRedactSecretValues) {
+            setRedactedSecretTypeValues(metadata, data, credentials);
+        } else {
+            metadata.setencoding(DEFAULT_RESPONSE_ENCODING);
+            setSecretTypeValuesFromCredentials(metadata, data, credentials);
+        }
+
         setSecretMetadata(metadata, credentials.getDescription(), credentials.getLastUpdatedByUser(), credentials.getLastUpdatedTime());
         GalasaSecret secret = new GalasaSecret();
         secret.setApiVersion(GalasaResourceValidator.DEFAULT_API_VERSION);
@@ -146,6 +138,29 @@ public abstract class AbstractSecretsRoute extends ProtectedRoute {
             }
         }
         return decodedValue;
+    }
+
+    private void setRedactedSecretTypeValues(GalasaSecretmetadata metadata, GalasaSecretdata data, ICredentials credentials) throws InternalServletException {
+        GalasaSecretType secretType = getSecretType(credentials);
+        if (secretType == GalasaSecretType.USERNAME) {
+            data.setusername(REDACTED_SECRET_VALUE);
+            metadata.settype(Username);
+        } else if (secretType == GalasaSecretType.USERNAME_PASSWORD) {
+            data.setusername(REDACTED_SECRET_VALUE);
+            data.setpassword(REDACTED_SECRET_VALUE);
+            metadata.settype(USERNAME_PASSWORD);
+        } else if (secretType == GalasaSecretType.USERNAME_TOKEN) {
+            data.setusername(REDACTED_SECRET_VALUE);
+            data.settoken(REDACTED_SECRET_VALUE);
+            metadata.settype(USERNAME_TOKEN);
+        } else if (secretType == GalasaSecretType.TOKEN) {
+            data.settoken(REDACTED_SECRET_VALUE);
+            metadata.settype(Token);
+        } else {
+            // The credentials are in an unknown format, throw an error
+            ServletError error = new ServletError(GAL5101_ERROR_UNEXPECTED_SECRET_TYPE_DETECTED);
+            throw new InternalServletException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
     private void setSecretTypeValuesFromCredentials(GalasaSecretmetadata metadata, GalasaSecretdata data, ICredentials credentials) throws InternalServletException {
