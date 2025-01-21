@@ -16,6 +16,10 @@ import dev.galasa.framework.spi.rbac.CacheRBAC;
 import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.rbac.RBACService;
 
+/**
+ * This is an abstract class that represents a route protected under a JWT challenge and RBAC.
+ * Requests to protected routes will always contain an 'Authorization' header with a bearer token. 
+ */
 public abstract class ProtectedRoute extends BaseRoute {
 
     protected RBACService rbacService;
