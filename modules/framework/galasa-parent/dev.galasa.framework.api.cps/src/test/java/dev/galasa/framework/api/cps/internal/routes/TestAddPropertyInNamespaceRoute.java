@@ -338,20 +338,7 @@ public class TestAddPropertyInNamespaceRoute extends CpsServletTest {
         String propertyName = "property.6";
         String value = "value6";
         String json = "{\"name\":\""+propertyName+"\", \"value\":\""+value+"\"}";
-        MockIConfigurationPropertyStoreService store = new MockIConfigurationPropertyStoreService(namespace){
-            @Override
-            public @Null String getProperty(@NotNull String prefix, @NotNull String suffix, String... infixes)
-            throws ConfigurationPropertyStoreException {
-            for (Map.Entry<String,String> property : properties.entrySet()){
-                String key = property.getKey();
-                String match = prefix+"."+suffix;
-                if (key.contains(match)){
-                    return property.getValue();
-                }
-            }
-            return null;
-            }
-        };
+        MockIConfigurationPropertyStoreService store = new MockIConfigurationPropertyStoreService(namespace);
 
         List<Action> actions = List.of(GENERAL_API_ACCESS.getAction());
         MockRBACService rbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, actions);
