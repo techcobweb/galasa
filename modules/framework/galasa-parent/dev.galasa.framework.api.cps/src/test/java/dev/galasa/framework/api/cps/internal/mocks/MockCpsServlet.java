@@ -6,6 +6,7 @@
 package dev.galasa.framework.api.cps.internal.mocks;
 
 import dev.galasa.framework.IFileSystem;
+import dev.galasa.framework.api.common.mocks.FilledMockEnvironment;
 import dev.galasa.framework.api.common.mocks.IServletUnderTest;
 import dev.galasa.framework.api.common.mocks.MockFramework;
 import dev.galasa.framework.api.cps.internal.CpsServlet;
@@ -20,6 +21,7 @@ public class MockCpsServlet extends CpsServlet implements IServletUnderTest {
 
 	public MockCpsServlet() {
 		setFramework(new MockFramework());
+		super.env = FilledMockEnvironment.createTestEnvironment();
 	}
 
 	@Override

@@ -42,6 +42,8 @@ public class CpsServlet extends BaseServlet {
 	private static final long serialVersionUID = 1L;
 
 	private Log  logger  =  LogFactory.getLog(this.getClass());
+
+	protected Environment env = new SystemEnvironment();
  
 	protected IFramework getFramework() {
         return this.framework;
@@ -50,8 +52,6 @@ public class CpsServlet extends BaseServlet {
 	protected void setFramework(IFramework framework) {
         this.framework = framework;
     }
-
-	private Environment env = new SystemEnvironment();
 
 	@Override
 	public void init() throws ServletException {
