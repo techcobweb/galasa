@@ -160,4 +160,10 @@ public class GalasaSecretProcessor extends AbstractGalasaResourceProcessor imple
         }
         return credentials;
     }
+
+    @Override
+    public void validateActionPermissions(ResourceAction action, String username) throws InternalServletException {
+        // TODO: Implement SECRETS_SET and SECRETS_DELETE as part of story https://github.com/galasa-dev/projectmanagement/issues/2110
+        // Do nothing for now...
+    }
 }

@@ -18,9 +18,13 @@ import dev.galasa.framework.api.cps.internal.routes.AllPropertiesInNamespaceRout
 import dev.galasa.framework.api.cps.internal.routes.NamespacesRoute;
 import dev.galasa.framework.api.cps.internal.routes.PropertyRoute;
 import dev.galasa.framework.api.cps.internal.routes.PropertyUpdateRoute;
+
 import dev.galasa.framework.api.common.BaseServlet;
+import dev.galasa.framework.api.common.Environment;
+import dev.galasa.framework.api.common.SystemEnvironment;
 
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.RBACException;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -38,6 +42,8 @@ public class CpsServlet extends BaseServlet {
 	private static final long serialVersionUID = 1L;
 
 	private Log  logger  =  LogFactory.getLog(this.getClass());
+
+	protected Environment env = new SystemEnvironment();
  
 	protected IFramework getFramework() {
         return this.framework;
@@ -49,17 +55,22 @@ public class CpsServlet extends BaseServlet {
 
 	@Override
 	public void init() throws ServletException {
-		logger.info("CPS Servlet initialising");
+		logger.info("CPS servlet initialising");
 
 		super.init();
-		
-		addRoute(new NamespacesRoute(getResponseBuilder(), framework));
-		addRoute(new PropertyUpdateRoute(getResponseBuilder(), framework));
-		addRoute(new PropertyRoute(getResponseBuilder(), framework));
-		addRoute(new AllNamespaceRoute(getResponseBuilder(), framework));
-		addRoute(new AllPropertiesInNamespaceRoute(getResponseBuilder(), framework));
-		addRoute(new AllPropertiesInNamesapceFilteredRoute(getResponseBuilder(), framework));
-		addRoute(new AddPropertyInNamespaceRoute(getResponseBuilder(), framework));
+
+		try {
+			addRoute(new NamespacesRoute(getResponseBuilder(), framework, env));
+			addRoute(new PropertyUpdateRoute(getResponseBuilder(), framework, env));
+			addRoute(new PropertyRoute(getResponseBuilder(), framework, env));
+			addRoute(new AllNamespaceRoute(getResponseBuilder(), framework, env));
+			addRoute(new AllPropertiesInNamespaceRoute(getResponseBuilder(), framework, env));
+			addRoute(new AllPropertiesInNamesapceFilteredRoute(getResponseBuilder(), framework, env));
+			addRoute(new AddPropertyInNamespaceRoute(getResponseBuilder(), framework, env));
+		} catch (RBACException e) {
+			throw new ServletException("Failed to initialise CPS servlet");
+		}
+		logger.info("CPS servlet initialised");
 	}
 
 }

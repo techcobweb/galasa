@@ -6,6 +6,7 @@
 package dev.galasa.framework.api.cps.internal.routes;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 import java.io.IOException;
 
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.JsonObject;
 
 import dev.galasa.framework.api.beans.GalasaProperty;
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -29,6 +31,7 @@ import dev.galasa.framework.api.common.resources.CPSProperty;
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.RBACException;
 
 public class AddPropertyInNamespaceRoute extends CPSRoute {
 
@@ -37,17 +40,20 @@ public class AddPropertyInNamespaceRoute extends CPSRoute {
     private String propertyName;
     private String namespaceName;
     
-    public AddPropertyInNamespaceRoute(ResponseBuilder responseBuilder, IFramework framework) {
+    public AddPropertyInNamespaceRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
         /* Regex to match endpoints: 
 		*  -> /cps/namespace/namespaceName//property/propertyName
 		*  -> /cps/namespace/namespaceName//property/propertyName/
 		*/
-        super(responseBuilder, path, framework);
+        super(responseBuilder, path, framework, env);
     }
     
     @Override
     public HttpServletResponse handlePutRequest(String pathInfo, QueryParameters queryParams,HttpServletRequest req, HttpServletResponse response)
             throws ServletException, FrameworkException, IOException {
+
+        validateActionPermitted(CPS_PROPERTIES_SET.getAction(), req);
+
         getPropertyDetailsFromURL(pathInfo);
         checkNamespaceExists(namespaceName);
         checkRequestHasContent(req);

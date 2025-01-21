@@ -18,6 +18,7 @@ import com.google.gson.JsonParser;
 import dev.galasa.framework.api.common.resources.CPSFacade;
 import dev.galasa.framework.api.resources.ResourcesServletTest;
 import dev.galasa.framework.api.resources.mocks.MockResourcesServlet;
+import dev.galasa.framework.spi.IFramework;
 
 public class GalasaPropertyProcessorTest extends ResourcesServletTest {
 
@@ -30,8 +31,10 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "myvalue";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -50,8 +53,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "myvalue";
         setServlet("framework");
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -70,8 +74,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "myvalue";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -94,8 +99,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "myvalue";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -117,8 +123,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "myvalue";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -140,8 +147,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "myvalue";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -163,8 +171,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "myvalue";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -186,8 +195,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "myvalue";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -209,8 +219,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "myvalue";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -232,8 +243,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "myvalue";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -255,8 +267,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "myvalue";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -278,8 +291,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -302,8 +316,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -327,8 +342,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         String jsonString = "{\"apiVersion\": \"galasa-dev/v1alpha1\",\n\"kind\": \"GalasaProperty\",\"metadata\": {},\"data\": {}}";
         JsonObject propertyJson = JsonParser.parseString(jsonString).getAsJsonObject();
 
@@ -354,8 +370,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "value";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "");
 
         //When...
@@ -378,8 +395,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         String value = "value";
         setServlet(namespace);
         MockResourcesServlet servlet = getServlet();
-        CPSFacade cps = new CPSFacade(servlet.getFramework());
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps);
+        IFramework mockFramework = servlet.getFramework();
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
         String jsonString = "{\"apiVersion\":\"galasa-dev/v1alpha1\","+namespace+"."+propertyname+":"+value+"}";
         JsonObject propertyJson = JsonParser.parseString(jsonString).getAsJsonObject();
 

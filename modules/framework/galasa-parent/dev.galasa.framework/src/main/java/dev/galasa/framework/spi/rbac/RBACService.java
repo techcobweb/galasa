@@ -34,4 +34,6 @@ public interface RBACService {
 
     Role getRoleByName(String roleNameWanted) throws RBACException;
 
+    CacheRBAC getUsersActionsCache();
+
 }

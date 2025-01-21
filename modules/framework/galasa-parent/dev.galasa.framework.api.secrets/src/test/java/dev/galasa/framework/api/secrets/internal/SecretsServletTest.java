@@ -18,6 +18,7 @@ import dev.galasa.framework.api.common.resources.GalasaResourceValidator;
 public class SecretsServletTest extends BaseServletTest {
 
     protected static final Map<String, String> REQUEST_HEADERS = Map.of("Authorization", "Bearer " + BaseServletTest.DUMMY_JWT);
+    protected static final String BASE64_ENCODING = "base64";
 
     protected JsonObject createSecretJson(String value, String encoding) {
         JsonObject secretJson = new JsonObject();
@@ -36,22 +37,11 @@ public class SecretsServletTest extends BaseServletTest {
         return createSecretJson(value, null);
     }
 
-    protected JsonObject generateSecretJson(
+    protected JsonObject generateUsernamePasswordSecretJson(
         String secretName,
-        String type,
         String username,
         String password,
-        String token
-    ) {
-        return generateSecretJson(secretName, type, username, password, token, null, null, null);
-    }
-
-    protected JsonObject generateSecretJson(
-        String secretName,
-        String type,
-        String username,
-        String password,
-        String token,
+        String encoding,
         String description,
         String lastUpdatedUser,
         Instant lastUpdatedTime
@@ -59,8 +49,70 @@ public class SecretsServletTest extends BaseServletTest {
         JsonObject secretJson = new JsonObject();
         secretJson.addProperty("apiVersion", GalasaResourceValidator.DEFAULT_API_VERSION);
 
-        secretJson.add("metadata", generateExpectedMetadata(secretName, type, description, lastUpdatedUser, lastUpdatedTime));
-        secretJson.add("data", generateExpectedData(username, password, token));
+        String type = "UsernamePassword";
+        secretJson.add("metadata", generateExpectedMetadata(secretName, type, encoding, description, lastUpdatedUser, lastUpdatedTime));
+        secretJson.add("data", generateExpectedUsernamePasswordData(username, password, encoding));
+
+        secretJson.addProperty("kind", "GalasaSecret");
+
+        return secretJson;
+    }
+
+    protected JsonObject generateUsernameSecretJson(
+        String secretName,
+        String username,
+        String encoding,
+        String description,
+        String lastUpdatedUser,
+        Instant lastUpdatedTime
+    ) {
+        JsonObject secretJson = new JsonObject();
+        secretJson.addProperty("apiVersion", GalasaResourceValidator.DEFAULT_API_VERSION);
+
+        String type = "Username";
+        secretJson.add("metadata", generateExpectedMetadata(secretName, type, encoding, description, lastUpdatedUser, lastUpdatedTime));
+        secretJson.add("data", generateExpectedUsernameData(username, encoding));
+
+        secretJson.addProperty("kind", "GalasaSecret");
+
+        return secretJson;
+    }
+
+    protected JsonObject generateUsernameTokenSecretJson(
+        String secretName,
+        String username,
+        String token,
+        String encoding,
+        String description,
+        String lastUpdatedUser,
+        Instant lastUpdatedTime
+    ) {
+        JsonObject secretJson = new JsonObject();
+        secretJson.addProperty("apiVersion", GalasaResourceValidator.DEFAULT_API_VERSION);
+
+        String type = "UsernameToken";
+        secretJson.add("metadata", generateExpectedMetadata(secretName, type, encoding, description, lastUpdatedUser, lastUpdatedTime));
+        secretJson.add("data", generateExpectedUsernameTokenData(username, token, encoding));
+
+        secretJson.addProperty("kind", "GalasaSecret");
+
+        return secretJson;
+    }
+
+    protected JsonObject generateTokenSecretJson(
+        String secretName,
+        String token,
+        String encoding,
+        String description,
+        String lastUpdatedUser,
+        Instant lastUpdatedTime
+    ) {
+        JsonObject secretJson = new JsonObject();
+        secretJson.addProperty("apiVersion", GalasaResourceValidator.DEFAULT_API_VERSION);
+
+        String type = "Token";
+        secretJson.add("metadata", generateExpectedMetadata(secretName, type, encoding, description, lastUpdatedUser, lastUpdatedTime));
+        secretJson.add("data", generateExpectedTokenData(token, encoding));
 
         secretJson.addProperty("kind", "GalasaSecret");
 
@@ -70,6 +122,7 @@ public class SecretsServletTest extends BaseServletTest {
     private JsonObject generateExpectedMetadata(
         String secretName,
         String type,
+        String encoding,
         String description,
         String lastUpdatedUser,
         Instant lastUpdatedTime
@@ -84,7 +137,9 @@ public class SecretsServletTest extends BaseServletTest {
             metadata.addProperty("lastUpdatedBy", lastUpdatedUser);
         }
 
-        metadata.addProperty("encoding", "base64");
+        if (encoding != null) {
+            metadata.addProperty("encoding", encoding);
+        }
 
         if (description != null) {
             metadata.addProperty("description", description);
@@ -95,20 +150,58 @@ public class SecretsServletTest extends BaseServletTest {
         return metadata;
     }
 
-    private JsonObject generateExpectedData(String username, String password, String token) {
+    private JsonObject generateExpectedUsernameData(String username, String encoding) {
         JsonObject data = new JsonObject();
-        Encoder encoder = Base64.getEncoder();
-        if (username != null) {
-            data.addProperty("username", encoder.encodeToString(username.getBytes()));
+
+        if (encoding != null && encoding.equals("base64")) {
+            Encoder encoder = Base64.getEncoder();
+            username = encoder.encodeToString(username.getBytes());
         }
 
-        if (password != null) {
-            data.addProperty("password", encoder.encodeToString(password.getBytes()));
+        data.addProperty("username", username);
+
+        return data;
+    }
+
+    private JsonObject generateExpectedTokenData(String token, String encoding) {
+        JsonObject data = new JsonObject();
+
+        if (encoding != null && encoding.equals("base64")) {
+            Encoder encoder = Base64.getEncoder();
+            token = encoder.encodeToString(token.getBytes());
         }
 
-        if (token != null) {
-            data.addProperty("token", encoder.encodeToString(token.getBytes()));
+        data.addProperty("token", token);
+
+        return data;
+    }
+
+    private JsonObject generateExpectedUsernameTokenData(String username, String token, String encoding) {
+        JsonObject data = new JsonObject();
+
+        if (encoding != null && encoding.equals("base64")) {
+            Encoder encoder = Base64.getEncoder();
+            username = encoder.encodeToString(username.getBytes());
+            token = encoder.encodeToString(token.getBytes());
         }
+
+        data.addProperty("username", username);
+        data.addProperty("token", token);
+
+        return data;
+    }
+
+    private JsonObject generateExpectedUsernamePasswordData(String username, String password, String encoding) {
+        JsonObject data = new JsonObject();
+
+        if (encoding != null && encoding.equals("base64")) {
+            Encoder encoder = Base64.getEncoder();
+            username = encoder.encodeToString(username.getBytes());
+            password = encoder.encodeToString(password.getBytes());
+        }
+
+        data.addProperty("username", username);
+        data.addProperty("password", password);
 
         return data;
     }

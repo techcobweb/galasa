@@ -46,14 +46,14 @@ import dev.galasa.framework.spi.utils.ITimeService;
 import dev.galasa.framework.auth.spi.IAuthService;
 import dev.galasa.framework.auth.spi.IDexGrpcClient;
 import dev.galasa.framework.auth.spi.internal.AuthService;
-import dev.galasa.framework.auth.spi.mocks.MockAuthStoreService;
 import dev.galasa.framework.auth.spi.mocks.MockDexGrpcClient;
-import dev.galasa.framework.auth.spi.mocks.MockFrontEndClient;
-import dev.galasa.framework.auth.spi.mocks.MockInternalAuthToken;
-import dev.galasa.framework.auth.spi.mocks.MockUser;
 import dev.galasa.framework.mocks.FilledMockRBACService;
+import dev.galasa.framework.mocks.MockAuthStoreService;
+import dev.galasa.framework.mocks.MockFrontEndClient;
+import dev.galasa.framework.mocks.MockInternalAuthToken;
 import dev.galasa.framework.mocks.MockRBACService;
 import dev.galasa.framework.mocks.MockTimeService;
+import dev.galasa.framework.mocks.MockUser;
 
 public class AuthTokensRouteTest extends BaseServletTest {
 
@@ -101,15 +101,20 @@ public class AuthTokensRouteTest extends BaseServletTest {
      * @param expectedList    the expected ordering of tokens
      * @param actualJsonArray the actual JSON array contained in a servlet response
      */
-    private void checkOrderMatches(List<AuthToken> expectedList, JsonArray actualJsonArray) {
+    private void checkOrderMatches(List<MockInternalAuthToken> expectedList, JsonArray actualJsonArray) {
         for (int i = 0; i < actualJsonArray.size(); i++) {
             JsonObject actualJsonObject = actualJsonArray.get(i).getAsJsonObject();
 
             AuthToken actualToken = gson.fromJson(actualJsonObject, AuthToken.class);
-            AuthToken expectedToken = expectedList.get(i);
+            MockInternalAuthToken expectedToken = expectedList.get(i);
+            AuthToken convertedExpectedToken = new AuthToken(
+                expectedToken.getTokenId(),
+                expectedToken.getDescription(),
+                expectedToken.getCreationTime(),
+                new User(expectedToken.getOwner().getLoginId()));
 
             // Check that all the fields of the actual token match the fields of the expected token
-            assertThat(actualToken).usingRecursiveComparison().isEqualTo(expectedToken);
+            assertThat(actualToken).usingRecursiveComparison().isEqualTo(convertedExpectedToken);
         }
     }
 
@@ -315,22 +320,24 @@ public class AuthTokensRouteTest extends BaseServletTest {
 
         queryParams.put("loginId", new String[] { requestorLoginId });
 
-        User owner = new User(requestorLoginId);
+        IInternalUser owner = new InternalUser(requestorLoginId, "dexId");
+        String clientId = "my-client";
 
         Instant time1 = Instant.EPOCH;
         Instant time2 = Instant.ofEpochSecond(2000);
         Instant time3 = Instant.MAX;
 
-        AuthToken token1 = new AuthToken("token1", "creation time after epoch", time2, owner);
-        AuthToken token2 = new AuthToken("token2", "epoch creation time", time1, owner);
-        AuthToken token3 = new AuthToken("token3", "future creation time", time3, owner);
-        AuthToken token4 = new AuthToken("token4", "creation time after epoch, same as token1", time2, owner);
+        MockInternalAuthToken token1 = new MockInternalAuthToken("token1", "creation time after epoch", time2, owner, clientId);
+        MockInternalAuthToken token2 = new MockInternalAuthToken("token2", "epoch creation time", time1, owner, clientId);
+        MockInternalAuthToken token3 = new MockInternalAuthToken("token3", "future creation time", time3, owner, clientId);
+        MockInternalAuthToken token4 = new MockInternalAuthToken("token4", "creation time after epoch, same as token1", time2, owner, clientId);
 
         List<IInternalAuthToken> tokens = List.of(
-                new MockInternalAuthToken(token1),
-                new MockInternalAuthToken(token2),
-                new MockInternalAuthToken(token3),
-                new MockInternalAuthToken(token4));
+            token1,
+            token2,
+            token3,
+            token4
+        );
 
         MockAuthStoreService authStoreService = new MockAuthStoreService(tokens);
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(new MockFramework(authStoreService));
@@ -360,23 +367,26 @@ public class AuthTokensRouteTest extends BaseServletTest {
 
         queryParams.put("loginId", new String[] { requestorLoginId });
 
-        User actualOwner = new User(requestorLoginId);
-        User someOtherUser = new User("someOtherUser");
+        IInternalUser actualOwner = new InternalUser(requestorLoginId, "dexId");
+        IInternalUser someOtherUser = new InternalUser("someOtherUser", "dexId");
+
+        String clientId = "my-client";
 
         Instant time1 = Instant.EPOCH;
         Instant time2 = Instant.ofEpochSecond(2000);
         Instant time3 = Instant.MAX;
 
-        AuthToken token1 = new AuthToken("token1", "creation time after epoch", time2, actualOwner);
-        AuthToken token2 = new AuthToken("token2", "epoch creation time", time1, someOtherUser);
-        AuthToken token3 = new AuthToken("token3", "future creation time", time3, actualOwner);
-        AuthToken token4 = new AuthToken("token4", "creation time after epoch, same as token1", time2, someOtherUser);
+        MockInternalAuthToken token1 = new MockInternalAuthToken("token1", "creation time after epoch", time2, actualOwner, clientId);
+        MockInternalAuthToken token2 = new MockInternalAuthToken("token2", "epoch creation time", time1, someOtherUser, clientId);
+        MockInternalAuthToken token3 = new MockInternalAuthToken("token3", "future creation time", time3, actualOwner, clientId);
+        MockInternalAuthToken token4 = new MockInternalAuthToken("token4", "creation time after epoch, same as token1", time2, someOtherUser, clientId);
 
         List<IInternalAuthToken> tokens = List.of(
-                new MockInternalAuthToken(token1),
-                new MockInternalAuthToken(token2),
-                new MockInternalAuthToken(token3),
-                new MockInternalAuthToken(token4));
+            token1,
+            token2,
+            token3,
+            token4
+        );
 
         MockAuthStoreService authStoreService = new MockAuthStoreService(tokens);
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(new MockFramework(authStoreService));
@@ -436,25 +446,26 @@ public class AuthTokensRouteTest extends BaseServletTest {
     @Test
     public void testGetAuthTokensReturnsMultipleTokensOrderedByCreationTimeAscending() throws Exception {
         // Given...
-        User owner = new User("username");
+        IInternalUser owner = new InternalUser("username", "dexId");
+        String clientId = "my-client";
 
         Instant time1 = Instant.EPOCH;
         Instant time2 = Instant.ofEpochSecond(2000);
         Instant time3 = Instant.MAX;
 
-        AuthToken token1 = new AuthToken("token1", "creation time after epoch", time2, owner);
-        AuthToken token2 = new AuthToken("token2", "epoch creation time", time1, owner);
-        AuthToken token3 = new AuthToken("token3", "future creation time", time3, owner);
-        AuthToken token4 = new AuthToken("token4", "creation time after epoch, same as token1", time2, owner);
+        MockInternalAuthToken token1 = new MockInternalAuthToken("token1", "creation time after epoch", time2, owner, clientId);
+        MockInternalAuthToken token2 = new MockInternalAuthToken("token2", "epoch creation time", time1, owner, clientId);
+        MockInternalAuthToken token3 = new MockInternalAuthToken("token3", "future creation time", time3, owner, clientId);
+        MockInternalAuthToken token4 = new MockInternalAuthToken("token4", "creation time after epoch, same as token1", time2, owner, clientId);
 
         List<IInternalAuthToken> tokens = List.of(
-            new MockInternalAuthToken(token1),
-            new MockInternalAuthToken(token2),
-            new MockInternalAuthToken(token3),
-            new MockInternalAuthToken(token4)
+            token1,
+            token2,
+            token3,
+            token4
         );
 
-        List<AuthToken> expectedTokenOrder = List.of(token2, token1, token4, token3);
+        List<MockInternalAuthToken> expectedTokenOrder = List.of(token2, token1, token4, token3);
 
         MockAuthStoreService authStoreService = new MockAuthStoreService(tokens);
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(new MockFramework(authStoreService));

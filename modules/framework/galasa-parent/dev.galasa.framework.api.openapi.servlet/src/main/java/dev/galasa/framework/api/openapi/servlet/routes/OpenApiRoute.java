@@ -20,9 +20,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.yaml.snakeyaml.Yaml;
 
-import dev.galasa.framework.api.common.BaseRoute;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.MimeType;
+import dev.galasa.framework.api.common.PublicRoute;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
@@ -33,7 +33,7 @@ import dev.galasa.framework.spi.utils.GalasaGson;
  * This is the base /openapi route that is used to serve the Galasa API server's OpenAPI specification,
  * either in YAML or JSON format, depending on the MIME type requested.
  */
-public class OpenApiRoute extends BaseRoute {
+public class OpenApiRoute extends PublicRoute {
 
     private static final String OPENAPI_SERVER_TEMPLATE = "{API_SERVER_URL}";
     private static final String OPENAPI_FILE_NAME = "openapi.yaml";

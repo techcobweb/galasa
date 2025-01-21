@@ -25,6 +25,7 @@ import dev.galasa.framework.api.ras.internal.common.ArtifactsProperties;
 import dev.galasa.framework.api.ras.internal.common.IRunRootArtifact;
 import dev.galasa.framework.api.ras.internal.common.RunLogArtifact;
 import dev.galasa.framework.api.ras.internal.common.StructureJsonArtifact;
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -33,6 +34,7 @@ import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.IRunResult;
 import dev.galasa.framework.spi.ResultArchiveStoreException;
+import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 /**
@@ -50,9 +52,10 @@ public class RunArtifactsListRoute extends RunArtifactsRoute {
     public RunArtifactsListRoute(
         ResponseBuilder responseBuilder,
         IFileSystem fileSystem,
-        IFramework framework
-    ) {
-        super(responseBuilder, path, fileSystem, framework);
+        IFramework framework,
+        Environment env
+    ) throws RBACException {
+        super(responseBuilder, path, fileSystem, framework, env);
         rootArtifacts = Arrays.asList(
             new RunLogArtifact(),
             new StructureJsonArtifact(),

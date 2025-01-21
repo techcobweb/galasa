@@ -25,6 +25,9 @@ import dev.galasa.framework.api.resources.routes.ResourcesRoute;
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.creds.CredentialsException;
+import dev.galasa.framework.spi.creds.ICredentialsService;
+import dev.galasa.framework.spi.rbac.RBACException;
+import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.ITimeService;
 import dev.galasa.framework.spi.utils.SystemTimeService;
 /*
@@ -61,8 +64,11 @@ public class ResourcesServlet extends BaseServlet {
 		super.init();
 
 		try {
-            addRoute(new ResourcesRoute(getResponseBuilder(), new CPSFacade(framework), framework.getCredentialsService(), timeService, env));
-        } catch (ConfigurationPropertyStoreException | CredentialsException e) {
+			CPSFacade cpsFacade = new CPSFacade(framework);
+			ICredentialsService credsService = framework.getCredentialsService();
+			RBACService rbacService = framework.getRBACService();
+            addRoute(new ResourcesRoute(getResponseBuilder(), cpsFacade, credsService, timeService, env, rbacService));
+        } catch (ConfigurationPropertyStoreException | CredentialsException | RBACException e) {
             logger.error("Failed to initialise the Resources servlet", e);
             throw new ServletException("Failed to initialise the Resources servlet", e);
         }

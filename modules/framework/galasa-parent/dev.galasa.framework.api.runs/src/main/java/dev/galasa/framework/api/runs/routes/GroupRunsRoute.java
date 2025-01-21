@@ -24,6 +24,7 @@ import dev.galasa.framework.api.runs.common.GroupRuns;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.IRun;
+import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
@@ -34,11 +35,11 @@ public class GroupRunsRoute extends GroupRuns{
 
     private Environment env;
 
-    public GroupRunsRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) {
+    public GroupRunsRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
         // Regex to match endpoints:
 		// -> /runs/{GroupID}
 		//
-        super(responseBuilder, path, framework);
+        super(responseBuilder, path, framework, env);
         this.env = env;
     }
 

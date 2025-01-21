@@ -22,10 +22,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import dev.galasa.framework.api.common.BaseRoute;
 import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.JwtWrapper;
+import dev.galasa.framework.api.common.ProtectedRoute;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
@@ -38,10 +38,11 @@ import dev.galasa.framework.api.resources.processors.GalasaSecretProcessor;
 import dev.galasa.framework.api.resources.processors.IGalasaResourceProcessor;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.creds.ICredentialsService;
+import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.GalasaGson;
 import dev.galasa.framework.spi.utils.ITimeService;
 
-public class ResourcesRoute  extends BaseRoute{
+public class ResourcesRoute  extends ProtectedRoute {
 
     static final GalasaGson gson = new GalasaGson();
 
@@ -60,12 +61,13 @@ public class ResourcesRoute  extends BaseRoute{
         CPSFacade cps,
         ICredentialsService credentialsService,
         ITimeService timeService,
-        Environment env
+        Environment env,
+        RBACService rbacService
     ) {
-        super(responseBuilder, path);
+        super(responseBuilder, path, rbacService, env);
         this.env = env;
 
-        resourceProcessors.put(GALASA_PROPERTY, new GalasaPropertyProcessor(cps));
+        resourceProcessors.put(GALASA_PROPERTY, new GalasaPropertyProcessor(cps, rbacService));
         resourceProcessors.put(GALASA_SECRET, new GalasaSecretProcessor(credentialsService, timeService));
     }
 
@@ -132,7 +134,10 @@ public class ResourcesRoute  extends BaseRoute{
                     throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);
                 }
 
-                errors.addAll(resourceProcessors.get(kind).processResource(resource, action, username));
+                IGalasaResourceProcessor resourceProcessor = resourceProcessors.get(kind);
+                resourceProcessor.validateActionPermissions(action, username);
+
+                errors.addAll(resourceProcessor.processResource(resource, action, username));
 
             } catch (InternalServletException s) {
                 errors.add(s.getMessage());

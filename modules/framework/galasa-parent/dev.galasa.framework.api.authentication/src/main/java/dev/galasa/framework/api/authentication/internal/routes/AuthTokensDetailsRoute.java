@@ -12,15 +12,17 @@ import java.util.regex.Matcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dev.galasa.framework.api.common.BaseRoute;
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
+import dev.galasa.framework.api.common.ProtectedRoute;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.auth.spi.IAuthService;
 import dev.galasa.framework.spi.FrameworkException;
+import dev.galasa.framework.spi.rbac.RBACService;
 
-public class AuthTokensDetailsRoute extends BaseRoute {
+public class AuthTokensDetailsRoute extends ProtectedRoute {
     private IAuthService authService;
 
     // Regex to match /auth/tokens/{tokenid} and /auth/tokens/{tokenid}/, where {tokenid}
@@ -29,9 +31,11 @@ public class AuthTokensDetailsRoute extends BaseRoute {
 
     public AuthTokensDetailsRoute(
         ResponseBuilder responseBuilder,
-        IAuthService authService
+        IAuthService authService,
+        Environment env,
+        RBACService rbacService
     ) {
-        super(responseBuilder, PATH_PATTERN);
+        super(responseBuilder, PATH_PATTERN, rbacService, env);
         this.authService = authService;
     }
 

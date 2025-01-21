@@ -24,8 +24,9 @@ import com.google.gson.JsonObject;
 import dev.galasa.framework.api.beans.GalasaProperty;
 import dev.galasa.framework.api.beans.GalasaPropertyData;
 import dev.galasa.framework.api.beans.GalasaPropertyMetadata;
-import dev.galasa.framework.api.common.BaseRoute;
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
+import dev.galasa.framework.api.common.ProtectedRoute;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.api.common.resources.CPSFacade;
@@ -38,6 +39,7 @@ import dev.galasa.framework.api.cps.internal.common.PropertyComparator;
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
@@ -45,7 +47,7 @@ import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 /**
  * An abstract route used by all the Run-related routes.
  */
-public abstract class CPSRoute extends BaseRoute {
+public abstract class CPSRoute extends ProtectedRoute {
 
     static final ResourceNameValidator nameValidator = new ResourceNameValidator();
     static final GalasaGson gson = new GalasaGson();
@@ -58,8 +60,8 @@ public abstract class CPSRoute extends BaseRoute {
     protected IFramework framework;
     CPSFacade cps;
 
-    public CPSRoute(ResponseBuilder responseBuilder, String path , IFramework framework) {
-        super(responseBuilder, path);
+    public CPSRoute(ResponseBuilder responseBuilder, String path, IFramework framework, Environment env) throws RBACException {
+        super(responseBuilder, path, framework.getRBACService(), env);
         this.framework = framework;
     }
 

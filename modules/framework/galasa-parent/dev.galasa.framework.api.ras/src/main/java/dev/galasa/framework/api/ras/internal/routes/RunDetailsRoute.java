@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import dev.galasa.framework.api.ras.internal.common.RunActionJson;
 import dev.galasa.framework.api.ras.internal.common.RunActionStatus;
 import dev.galasa.framework.api.ras.internal.common.RunResultUtility;
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -30,6 +31,7 @@ import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.IRunResult;
 import dev.galasa.framework.spi.ResultArchiveStoreException;
+import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 /*
@@ -43,9 +45,9 @@ public class RunDetailsRoute extends RunsRoute {
 
    protected static final String path = "\\/runs\\/([A-Za-z0-9.\\-=]+)\\/?";
 
-   public RunDetailsRoute(ResponseBuilder responseBuilder, IFramework framework) {
+   public RunDetailsRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
       //  Regex to match endpoint: /ras/runs/{runid}
-      super(responseBuilder, path, framework);
+      super(responseBuilder, path, framework, env);
       this.framework = framework;
    }
 

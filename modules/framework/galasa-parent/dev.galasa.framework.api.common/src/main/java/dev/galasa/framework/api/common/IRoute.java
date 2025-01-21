@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dev.galasa.framework.spi.FrameworkException;
+import dev.galasa.framework.spi.rbac.Action;
 
 /**
  * IRoute provides methods for endpoints to implement when a request is sent through a servlet,
@@ -34,4 +35,14 @@ public interface IRoute {
 
     HttpServletResponse handleDeleteRequest(String pathInfo, QueryParameters queryParameters, HttpServletRequest request ,HttpServletResponse response)
     throws ServletException, IOException, FrameworkException;
+
+    /**
+     * Checks if the given action is permitted for the user that sent the given request
+     * 
+     * @param action the action being performed
+     * @param request the request containing an auth header with a bearer token for the current user
+     * @return true if the user is allowed to perform the given action, false otherwise
+     * @throws InternalServletException if there was an issue accessing the RBAC service
+     */
+    boolean isActionPermitted(Action action, HttpServletRequest request) throws InternalServletException;
 }

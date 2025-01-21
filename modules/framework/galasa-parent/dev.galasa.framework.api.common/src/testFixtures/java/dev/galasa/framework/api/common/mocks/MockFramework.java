@@ -5,6 +5,8 @@
  */
 package dev.galasa.framework.api.common.mocks;
 
+import dev.galasa.framework.api.common.BaseServletTest;
+import dev.galasa.framework.mocks.FilledMockRBACService;
 import dev.galasa.framework.spi.Api;
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
 import dev.galasa.framework.spi.DynamicStatusStoreException;
@@ -43,22 +45,26 @@ public class MockFramework implements IFramework {
     private IDynamicStatusStoreService dssService;
     
     public MockFramework() {
-        // Do nothing...
+        this.rbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(BaseServletTest.JWT_USERNAME);
     }
 
     public MockFramework(MockCredentialsService credsService) {
+        this();
         this.creds = credsService;
     }
 
     public MockFramework(IAuthStoreService authStoreService) {
+        this();
         this.authStoreService = authStoreService;
     }
 
     public MockFramework(IResultArchiveStore archiveStore) {
+        this();
         this.archiveStore = archiveStore;
     }
 
     public MockFramework(IFrameworkRuns frameworkRuns){
+        this();
         this.frameworkRuns = frameworkRuns;
     }
 
@@ -67,15 +73,15 @@ public class MockFramework implements IFramework {
     }
 
     public MockFramework(IDynamicStatusStoreService dssService) {
+        this();
         this.dssService = dssService;
     }
 
     public MockFramework(IResultArchiveStore archiveStore, IFrameworkRuns frameworkRuns) {
+        this();
         this.archiveStore = archiveStore;
         this.frameworkRuns = frameworkRuns;
     }
-
-    
     
     public MockFramework(IAuthStoreService authStoreService, RBACService rbacService) {
         this.authStoreService = authStoreService;
@@ -83,6 +89,7 @@ public class MockFramework implements IFramework {
     }
 
     public MockFramework(IConfigurationPropertyStoreService cpsService){
+        this();
         this.cpsService = (MockIConfigurationPropertyStoreService) cpsService;
     }
 
@@ -118,6 +125,10 @@ public class MockFramework implements IFramework {
     @Override
     public @NotNull RBACService getRBACService() throws RBACException {
         return this.rbacService;
+    }
+
+    public void setRBACService(RBACService rbacService) {
+        this.rbacService = rbacService;
     }
 
     @Override

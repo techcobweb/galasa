@@ -4,15 +4,21 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package dev.galasa.framework.api.cps.internal.routes;
+import dev.galasa.framework.api.common.mocks.MockFramework;
+import dev.galasa.framework.api.common.mocks.MockIConfigurationPropertyStoreService;
 import dev.galasa.framework.api.common.resources.CPSProperty;
 import dev.galasa.framework.api.common.resources.GalasaPropertyName;
 import dev.galasa.framework.api.cps.internal.CpsServletTest;
 import dev.galasa.framework.api.cps.internal.mocks.MockCpsServlet;
+import dev.galasa.framework.mocks.FilledMockRBACService;
+import dev.galasa.framework.mocks.MockRBACService;
+import dev.galasa.framework.spi.rbac.Action;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -262,32 +268,6 @@ public class TestPropertyRoute extends CpsServletTest{
      * GET Requests
      */
 
-    @Test
-    public void TestPropertyQueryNoFrameworkReturnsError() throws Exception{
-		// Given...
-		setServlet("/namespace1/properties",null ,new HashMap<String,String[]>());
-		MockCpsServlet servlet = getServlet();
-		HttpServletRequest req = getRequest();
-		HttpServletResponse resp = getResponse();
-		ServletOutputStream outStream = resp.getOutputStream();	
-				
-		// When...
-		servlet.init();
-		servlet.doGet(req,resp);
-
-		// Then...
-		// We expect an error back, because the API server couldn't find any Etcd store to query
-		assertThat(resp.getStatus()).isEqualTo(500);
-		assertThat(resp.getContentType()).isEqualTo("application/json");
-
-		checkErrorStructure(
-			outStream.toString(),
-			5000,
-			"GAL5000E: ",
-			"Error occurred when trying to access the endpoint"
-		);
-    }
-
 	@Test
     public void TestPropertyQueryBadNamespaceReturnsError() throws Exception{
 		// Given...
@@ -426,7 +406,7 @@ public class TestPropertyRoute extends CpsServletTest{
 	}
 
 	@Test
-	public void TestGetPropertiesWithSuffixNoMatchReturnsEmpty() {
+	public void TestGetPropertiesWithSuffixNoMatchReturnsEmpty() throws Exception {
 		//Given...
 		String suffix  = "rty1";
 		Map<GalasaPropertyName, CPSProperty> expectedProperties = new HashMap<GalasaPropertyName, CPSProperty>();
@@ -437,16 +417,17 @@ public class TestPropertyRoute extends CpsServletTest{
 		properties.put("property.5", "value5");
 		properties.put("property.6", "value6");
 		Map<GalasaPropertyName, CPSProperty> props = getPropertiesFromMap(properties);
+		MockFramework mockFramework = new MockFramework();
 
 		//When...
-		Map<GalasaPropertyName, CPSProperty> results = new PropertyRoute(null,null).filterPropertiesBySuffix(props, suffix);
+		Map<GalasaPropertyName, CPSProperty> results = new PropertyRoute(null, mockFramework, null).filterPropertiesBySuffix(props, suffix);
 		
 		//Then...
 		checkPropertiesMatch(results, expectedProperties);
 	}
 
 	@Test
-	public void TestGetPropertiesWithSuffixReturnsOneRecord() {
+	public void TestGetPropertiesWithSuffixReturnsOneRecord() throws Exception {
 		//Given...
 		String suffix  = "1";
 		Map<String, String> expectedProperties = new HashMap<String,String>();
@@ -460,16 +441,17 @@ public class TestPropertyRoute extends CpsServletTest{
 		properties.put("framework.property.6", "value6");
 		properties.putAll(expectedProperties);
 		Map<GalasaPropertyName, CPSProperty> props = getPropertiesFromMap(properties);
+		MockFramework mockFramework = new MockFramework();
 
 		//When...
-		Map<GalasaPropertyName,CPSProperty> results = new PropertyRoute(null,null).filterPropertiesBySuffix(props, suffix);
+		Map<GalasaPropertyName,CPSProperty> results = new PropertyRoute(null, mockFramework, null).filterPropertiesBySuffix(props, suffix);
 		
 		//Then...
 		checkPropertiesMatch(results, expectedProps);
 	}
 
 	@Test
-	public void TestGetPropertiesWithSuffixReturnsFiveRecord() {
+	public void TestGetPropertiesWithSuffixReturnsFiveRecord() throws Exception {
 		//Given...
 		String suffix  = "ty";
 		Map<String, String> expectedProperties = new HashMap<String,String>();
@@ -487,16 +469,17 @@ public class TestPropertyRoute extends CpsServletTest{
 		properties.putAll(expectedProperties);
 		Map<GalasaPropertyName, CPSProperty> expectedProps = getPropertiesFromMap(expectedProperties);
 		Map<GalasaPropertyName, CPSProperty> props = getPropertiesFromMap(properties);
+		MockFramework mockFramework = new MockFramework();
 
 		//When...
-		Map<GalasaPropertyName, CPSProperty> results = new PropertyRoute(null,null).filterPropertiesBySuffix(props, suffix);
+		Map<GalasaPropertyName, CPSProperty> results = new PropertyRoute(null, mockFramework, null).filterPropertiesBySuffix(props, suffix);
 		
 		//Then...
 		checkPropertiesMatch(results, expectedProps);
 	}
 
 	@Test
-	public void TestGetPropertiesWithPrefixNoMatchReturnsEmpty() {
+	public void TestGetPropertiesWithPrefixNoMatchReturnsEmpty() throws Exception {
 		//Given...
 		String namespace = "framework";
 		String prefix  = "crate";
@@ -510,16 +493,17 @@ public class TestPropertyRoute extends CpsServletTest{
 		properties.put(namespace+".property5", "value5");
 		properties.put(namespace+".property6", "value6");
 		Map<GalasaPropertyName, CPSProperty> props = getPropertiesFromMap(properties);
+		MockFramework mockFramework = new MockFramework();
 
 		//When...
-		Map<GalasaPropertyName, CPSProperty> results = new PropertyRoute(null,null).filterPropertiesByPrefix(namespace, props, prefix);
+		Map<GalasaPropertyName, CPSProperty> results = new PropertyRoute(null, mockFramework, null).filterPropertiesByPrefix(namespace, props, prefix);
 		
 		//Then...
 		checkPropertiesMatch(results, expectedProperties);
 	}
 
 	@Test
-	public void TestGetPropertiesWithPrefixReturnsOneRecord() {
+	public void TestGetPropertiesWithPrefixReturnsOneRecord() throws Exception {
 		//Given...
 		String namespace = "framework";
 		String prefix  = "pre";
@@ -534,16 +518,17 @@ public class TestPropertyRoute extends CpsServletTest{
 		properties.putAll(expectedProperties);
 		Map<GalasaPropertyName, CPSProperty> expectedProps = getPropertiesFromMap(expectedProperties);
 		Map<GalasaPropertyName, CPSProperty> props = getPropertiesFromMap(properties);
+		MockFramework mockFramework = new MockFramework();
 
 		//When...
-		Map<GalasaPropertyName, CPSProperty> results = new PropertyRoute(null,null).filterPropertiesByPrefix(namespace, props, prefix);
+		Map<GalasaPropertyName, CPSProperty> results = new PropertyRoute(null, mockFramework, null).filterPropertiesByPrefix(namespace, props, prefix);
 		
 		//Then...
 		checkPropertiesMatch(results, expectedProps);
 	}
 
 	@Test
-	public void TestGetPropertiesWithPrefixReturnsFiveRecord() {
+	public void TestGetPropertiesWithPrefixReturnsFiveRecord() throws Exception {
 		//Given...
 		String namespace ="framework";
 		String prefix  = ".";
@@ -562,9 +547,10 @@ public class TestPropertyRoute extends CpsServletTest{
 		properties.putAll(expectedProperties);
 		Map<GalasaPropertyName, CPSProperty> expectedProps = getPropertiesFromMap(expectedProperties);
 		Map<GalasaPropertyName, CPSProperty> props = getPropertiesFromMap(properties);
+		MockFramework mockFramework = new MockFramework();
 
 		//When...
-		Map<GalasaPropertyName, CPSProperty> results = new PropertyRoute(null,null).filterPropertiesByPrefix(namespace, props, prefix);
+		Map<GalasaPropertyName, CPSProperty> results = new PropertyRoute(null, mockFramework, null).filterPropertiesByPrefix(namespace, props, prefix);
 		
 		//Then...
 		checkPropertiesMatch(results, expectedProps);
@@ -1008,33 +994,36 @@ public class TestPropertyRoute extends CpsServletTest{
 	/*
 	 * TEST - HANDLE POST REQUEST
 	 */
-	@Test
-    public void TestPropertyRoutePOSTNoFrameworkReturnsError() throws Exception{
-		// Given...
+    @Test
+    public void TestCreatePropertyWithMissingPermissionsReturnsForbidden() throws Exception {
+        // Given...
 		String namespace = "framework";
         String propertyName = "property.6";
         String value = "value6";
 		String propertyJSON = generatePropertyJSON(namespace, propertyName, value, "galasa-dev/v1alpha1");
-		setServlet("/namespace1/properties",null ,propertyJSON, "POST");
+
+        List<Action> actions = List.of(GENERAL_API_ACCESS.getAction());
+        MockRBACService rbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, actions);
+
+		MockIConfigurationPropertyStoreService cpsStore = new MockIConfigurationPropertyStoreService(namespace);
+		MockFramework mockFramework = new MockFramework(cpsStore);
+		mockFramework.setRBACService(rbacService);
+
+		setServlet("/framework/properties", namespace, propertyJSON , "POST", mockFramework);
 		MockCpsServlet servlet = getServlet();
 		HttpServletRequest req = getRequest();
 		HttpServletResponse resp = getResponse();
-		ServletOutputStream outStream = resp.getOutputStream();	
-				
-		// When...
-		servlet.init();
-		servlet.doPost(req,resp);
+        ServletOutputStream outStream = resp.getOutputStream();
 
-		// Then...
-		// We expect an error back, because the API server couldn't find any Etcd store to Route
-		assertThat(resp.getStatus()).isEqualTo(500);
+        // When...
+        servlet.init();
+        servlet.doPost(req, resp);
+
+        // Then...
+        String output = outStream.toString();
+        assertThat(resp.getStatus()).isEqualTo(403);
 		assertThat(resp.getContentType()).isEqualTo("application/json");
-
-		checkErrorStructure(
-			outStream.toString(),
-			5000,
-			"GAL5000E: Error occurred when trying to access the endpoint. Report the problem to your Galasa Ecosystem owner."
-		);
+		checkErrorStructure(output, 5125, "GAL5125E", "CPS_PROPERTIES_SET");
     }
 
     @Test

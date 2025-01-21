@@ -7,6 +7,7 @@ package dev.galasa.framework.api.runs;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ import dev.galasa.framework.spi.utils.GalasaGson;
 public class RunsServletTest extends BaseServletTest {
 
 	static final GalasaGson gson = new GalasaGson();
+    private static final Map<String, String> REQUIRED_HEADERS = new HashMap<>(Map.of("Authorization", "Bearer " + DUMMY_JWT));
 
 	MockRunsServlet servlet;
 	HttpServletRequest req;
@@ -50,7 +52,7 @@ public class RunsServletTest extends BaseServletTest {
         ServletOutputStream outStream = new MockServletOutputStream();
         PrintWriter writer = new PrintWriter(outStream);
         this.resp = new MockHttpServletResponse(writer, outStream);
-        this.req = new MockHttpServletRequest(path);
+        this.req = new MockHttpServletRequest(path, REQUIRED_HEADERS);
 		if (groupName != null){
             IFrameworkRuns frameworkRuns = new MockIFrameworkRuns(groupName, runs);
 			IFramework framework = new MockFramework(frameworkRuns);
@@ -60,16 +62,18 @@ public class RunsServletTest extends BaseServletTest {
 	
 	protected void setServlet(String path, String groupName, String value, String method){
 		setServlet(path, groupName, null);
-		this.req = new MockHttpServletRequest(path, value, method);
+		this.req = new MockHttpServletRequest(path, value, method, REQUIRED_HEADERS);
 	}
 
     protected void setServlet(String path, String groupName, String value, String method, Map<String, String> headerMap){
 		setServlet(path, groupName, null);
+        headerMap.putAll(REQUIRED_HEADERS);
 		this.req = new MockHttpServletRequest(path, value, method, headerMap);
 	}
 
     protected void setServlet(String path, String groupName, List<IRun> runs, String value, String method, Map<String, String> headerMap){
 		setServlet(path, groupName, runs);
+        headerMap.putAll(REQUIRED_HEADERS);
 		this.req = new MockHttpServletRequest(path, value, method, headerMap);
 	}
 

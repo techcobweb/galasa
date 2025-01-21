@@ -15,9 +15,9 @@ import org.junit.Test;
 
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.InternalUser;
-import dev.galasa.framework.auth.spi.mocks.MockAuthStoreService;
 import dev.galasa.framework.auth.spi.mocks.MockDexGrpcClient;
-import dev.galasa.framework.auth.spi.mocks.MockInternalAuthToken;
+import dev.galasa.framework.mocks.MockAuthStoreService;
+import dev.galasa.framework.mocks.MockInternalAuthToken;
 import dev.galasa.framework.spi.auth.IInternalAuthToken;
 import dev.galasa.framework.spi.auth.IInternalUser;
 

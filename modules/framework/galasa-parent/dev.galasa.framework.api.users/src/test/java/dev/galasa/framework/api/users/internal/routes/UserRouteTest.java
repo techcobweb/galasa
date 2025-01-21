@@ -6,6 +6,7 @@
 package dev.galasa.framework.api.users.internal.routes;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,15 +29,18 @@ import dev.galasa.framework.api.common.mocks.MockEnvironment;
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
 import dev.galasa.framework.api.common.mocks.MockHttpServletResponse;
 import dev.galasa.framework.mocks.FilledMockRBACService;
+import dev.galasa.framework.mocks.MockAuthStoreService;
+import dev.galasa.framework.mocks.MockFrontEndClient;
+import dev.galasa.framework.mocks.MockRBACService;
 import dev.galasa.framework.mocks.MockTimeService;
+import dev.galasa.framework.mocks.MockUser;
 import dev.galasa.framework.api.users.mocks.MockUsersServlet;
 import dev.galasa.framework.auth.spi.internal.AuthService;
-import dev.galasa.framework.auth.spi.mocks.MockAuthStoreService;
 import dev.galasa.framework.auth.spi.mocks.MockDexGrpcClient;
-import dev.galasa.framework.auth.spi.mocks.MockFrontEndClient;
-import dev.galasa.framework.auth.spi.mocks.MockUser;
 import dev.galasa.framework.spi.auth.IInternalUser;
 import dev.galasa.framework.spi.auth.IUser;
+import dev.galasa.framework.spi.rbac.Action;
+import dev.galasa.framework.spi.rbac.BuiltInAction;
 import dev.galasa.framework.spi.utils.GalasaGsonBuilder;
 
 public class UserRouteTest extends BaseServletTest {
@@ -58,7 +62,7 @@ public class UserRouteTest extends BaseServletTest {
 
         env.setenv(EnvironmentVariables.GALASA_USERNAME_CLAIMS, "preferred_username");
         env.setenv(EnvironmentVariables.GALASA_EXTERNAL_API_URL,baseUrl);
-        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, null), env, FilledMockRBACService.createTestRBACService());
+        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, null), env, FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME));
 
         MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + userNumber, headerMap);
         mockRequest.setMethod(HttpMethod.DELETE.toString());
@@ -89,7 +93,7 @@ public class UserRouteTest extends BaseServletTest {
 
         env.setenv(EnvironmentVariables.GALASA_USERNAME_CLAIMS, "preferred_username");
         env.setenv(EnvironmentVariables.GALASA_EXTERNAL_API_URL,baseUrl);
-        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, null), env, FilledMockRBACService.createTestRBACService());
+        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, null), env, FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME));
 
         MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + userNumber, headerMap);
         mockRequest.setMethod(HttpMethod.DELETE.toString());
@@ -120,7 +124,7 @@ public class UserRouteTest extends BaseServletTest {
 
         env.setenv(EnvironmentVariables.GALASA_USERNAME_CLAIMS, "preferred_username");
         env.setenv(EnvironmentVariables.GALASA_EXTERNAL_API_URL,baseUrl);
-        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, null), env, FilledMockRBACService.createTestRBACService());
+        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, null), env, FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME));
 
         MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + userNumber, headerMap);
         mockRequest.setMethod(HttpMethod.DELETE.toString());
@@ -157,7 +161,7 @@ public class UserRouteTest extends BaseServletTest {
 
         env.setenv(EnvironmentVariables.GALASA_USERNAME_CLAIMS, "preferred_username");
         env.setenv(EnvironmentVariables.GALASA_EXTERNAL_API_URL,baseUrl);
-        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, mockDexGrpcClient), env, FilledMockRBACService.createTestRBACService());
+        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, mockDexGrpcClient), env, FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME));
 
         MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + userNumber, headerMap);
         mockRequest.setMethod(HttpMethod.DELETE.toString());
@@ -278,7 +282,7 @@ public class UserRouteTest extends BaseServletTest {
 
         env.setenv(EnvironmentVariables.GALASA_USERNAME_CLAIMS, "preferred_username");
         env.setenv(EnvironmentVariables.GALASA_EXTERNAL_API_URL,baseUrl);
-        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, mockDexGrpcClient), env, FilledMockRBACService.createTestRBACService());
+        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, mockDexGrpcClient), env, FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME));
 
         MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + badUserNumber, headerMap); // Ask for the wrong user number.
         mockRequest.setMethod(HttpMethod.DELETE.toString());
@@ -312,7 +316,7 @@ public class UserRouteTest extends BaseServletTest {
 
         env.setenv(EnvironmentVariables.GALASA_USERNAME_CLAIMS, "preferred_username");
         env.setenv(EnvironmentVariables.GALASA_EXTERNAL_API_URL,baseUrl);
-        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, mockDexGrpcClient), env, FilledMockRBACService.createTestRBACService());
+        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, mockDexGrpcClient), env, FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME));
 
         MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + userNumber, headerMap); // Ask for the wrong user number.
         mockRequest.setMethod(HttpMethod.PUT.toString());
@@ -361,7 +365,58 @@ public class UserRouteTest extends BaseServletTest {
         assertThat(userGotBackInPayload.getrole()).isEqualTo(desiredUpdatedRoleId);
     } 
 
+    @Test
+    public void testUpdateUserWithMissingPermissionsReturnsForbiddenError() throws Exception {
+        // Given...
+        MockEnvironment env = new MockEnvironment();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService authStoreService = new MockAuthStoreService(mockTimeService);
 
+        MockDexGrpcClient mockDexGrpcClient = new MockDexGrpcClient("http://my-issuer");
+
+        String baseUrl = "http://my.server/api";
+        String userNumber = "user-1-number";
+
+        env.setenv(EnvironmentVariables.GALASA_USERNAME_CLAIMS, "preferred_username");
+        env.setenv(EnvironmentVariables.GALASA_EXTERNAL_API_URL,baseUrl);
+
+        List<Action> actions = List.of(BuiltInAction.GENERAL_API_ACCESS.getAction());
+        MockRBACService rbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, actions);
+
+        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, mockDexGrpcClient), env, rbacService);
+
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + userNumber, headerMap); // Ask for the wrong user number.
+        mockRequest.setMethod(HttpMethod.PUT.toString());
+        mockRequest.setContentType("application/json");
+
+        // Now set up some value data.
+        UserUpdateData putData = new UserUpdateData();
+        String desiredUpdatedRoleId = "2";
+        putData.setrole(desiredUpdatedRoleId);
+        GalasaGsonBuilder builder = new GalasaGsonBuilder();
+        Gson gson = builder.getGson();
+        String jsonPayload = gson.toJson(putData);
+        mockRequest.setPayload(jsonPayload);
+
+        MockHttpServletResponse servletResponse = new MockHttpServletResponse();     
+
+        IInternalUser owner = new InternalUser("user-1", "dexId");
+        authStoreService.storeToken("some-client-id", "test-token", owner);
+        
+        MockUser mockUser1 = createMockUser("user-1", "user-1-number", "web-ui");
+
+        String originalRole = "1";
+        mockUser1.setRoleId(originalRole);
+        authStoreService.addUser(mockUser1);
+
+        // When...
+        servlet.init();
+        servlet.doPut(mockRequest, servletResponse);
+
+        assertThat(servletResponse.getStatus()).isEqualTo(403);
+        ServletOutputStream outStream = servletResponse.getOutputStream();
+        checkErrorStructure(outStream.toString(), 5125, "GAL5125E", "USER_ROLE_UPDATE_ANY");
+    }
 
     @Test
     public void testGetUserGoodReturnsOK() throws Exception {
@@ -377,7 +432,7 @@ public class UserRouteTest extends BaseServletTest {
 
         env.setenv(EnvironmentVariables.GALASA_USERNAME_CLAIMS, "preferred_username");
         env.setenv(EnvironmentVariables.GALASA_EXTERNAL_API_URL,baseUrl);
-        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, mockDexGrpcClient), env, FilledMockRBACService.createTestRBACService());
+        MockUsersServlet servlet = new MockUsersServlet(new AuthService(authStoreService, mockDexGrpcClient), env, FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME));
 
         MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + userNumber, headerMap); // Ask for the wrong user number.
         mockRequest.setMethod(HttpMethod.GET.toString());

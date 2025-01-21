@@ -13,10 +13,13 @@ import com.google.gson.JsonObject;
 
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
 import dev.galasa.framework.api.common.mocks.MockHttpServletResponse;
+import dev.galasa.framework.spi.rbac.Action;
 
 import static dev.galasa.framework.api.common.MimeType.APPLICATION_JSON;
 import static dev.galasa.framework.api.common.MimeType.TEXT_PLAIN;
 import static org.assertj.core.api.Assertions.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class TestBaseRoute {
 
@@ -25,7 +28,11 @@ public class TestBaseRoute {
         public MockBaseRoute() {
             super(new ResponseBuilder(), "/");
         }
-        
+
+        @Override
+        public boolean isActionPermitted(Action action, HttpServletRequest request) throws InternalServletException {
+            return true;
+        }
     }
 
     @Test
