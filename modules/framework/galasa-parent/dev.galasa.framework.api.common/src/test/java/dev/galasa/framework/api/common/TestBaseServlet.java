@@ -34,6 +34,11 @@ public class TestBaseServlet extends BaseServletTest {
         }
 
         @Override
+        public SupportedQueryParameterNames getSupportedQueryParameterNames() {
+            return SupportedQueryParameterNames.NO_QUERY_PARAMETERS_SUPPORTED;
+        }
+
+        @Override
         public HttpServletResponse handleGetRequest(String pathInfo, QueryParameters queryParams,
                 HttpServletRequest request, HttpServletResponse response
         ) throws ServletException, IOException, FrameworkException {

@@ -137,7 +137,6 @@ public class SecretDetailsRouteTest extends SecretsServletTest {
         MockSecretsServlet servlet = new MockSecretsServlet(mockFramework, timeService);
 
         MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + secretName, REQUEST_HEADERS);
-        mockRequest.setQueryParameter("name", secretName);
 
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         ServletOutputStream outStream = servletResponse.getOutputStream();

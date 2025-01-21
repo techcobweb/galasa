@@ -307,8 +307,6 @@ public class TestRunArtifactsListServlet extends RasServletTest {
 		//Build Http query parameters
 		Map<String, String[]> parameterMap = new HashMap<String,String[]>();
 
-		parameterMap.put("runId", new String[] {runId} );
-
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest(parameterMap, "/runs/" + runId + "/artifacts");
 		MockRasServletEnvironment mockServletEnvironment = new MockRasServletEnvironment(mockInputRunResults, mockRequest, mockFileSystem);
 

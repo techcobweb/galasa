@@ -13,10 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-
 import dev.galasa.framework.api.common.BaseServletTest;
-import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.mocks.MockEnvironment;
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
@@ -169,45 +166,4 @@ public class RolesRouteTest {
         assertThat(output).isEqualTo(gson.toJson(expectedJson));
     }
 
-
-
-    @Test
-    public void testRolesRouteGetWithUnsupportedQueryParameterBlowsUp() throws Exception {
-        
-        Action action1 = new MockAction("action1Id","action1Name","action1Description");
-        Action action2 = new MockAction("action2Id","action2Name","action2Description");
-
-        List<Action> actions = List.of(action1,action2);
-
-        Role role1 = new MockRole("myRole1Name","myRole1Id","Description of myRole1Name", List.of(action1.getId(), action2.getId()));
-        Role role2 = new MockRole("myRole2Name","myRole2Id","Description of myRole2Name", List.of(action1.getId()));
-        List<Role> roles = List.of(role1, role2);
-
-        MockRBACService rbacService = new MockRBACService(roles , actions, role1);
-        MockTimeService timeService = new MockTimeService(Instant.EPOCH);
-
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/", REQUEST_HEADERS);
-        MockHttpServletResponse servletResponse = new MockHttpServletResponse();
-        ResponseBuilder respBuilder = new ResponseBuilder();
-        MockEnvironment env = new MockEnvironment();
-
-        RolesRoute route = new RolesRoute(respBuilder, rbacService, env, timeService);
-
-        Map<String,String[]> queryParamMap = new HashMap<String,String[]>();
-        String[] nameQueryValue = new String[1];
-        nameQueryValue[0] = "myRole2Name";
-        queryParamMap.put("myUnsupportedQueryParamName",nameQueryValue);
-        QueryParameters queryParams = new QueryParameters(queryParamMap);
-        String pathInfo = "myPathInfo";
-        
-        // When...
-        InternalServletException ex = catchThrowableOfType( 
-            ()->route.handleGetRequest(pathInfo, queryParams, mockRequest, servletResponse) ,
-            InternalServletException.class
-        );
-
-        // Then...
-        assertThat(ex).hasMessageContaining("myUnsupportedQueryParamName");
-        assertThat(ex.getHttpFailureCode()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
-    }
 }

@@ -7,7 +7,6 @@ package dev.galasa.framework.api.authentication.internal.routes;
 
 import java.io.IOException;
 import java.net.URI;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +17,7 @@ import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
+import dev.galasa.framework.api.common.SupportedQueryParameterNames;
 import dev.galasa.framework.spi.DynamicStatusStoreException;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IDynamicStatusStoreService;
@@ -25,6 +25,14 @@ import dev.galasa.framework.spi.IDynamicStatusStoreService;
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 
 public class AuthCallbackRoute extends AbstractAuthRoute {
+
+    // Query parameters
+    public static final String QUERY_PARAMETER_CODE  = "code";
+    public static final String QUERY_PARAMETER_STATE = "state";
+    public static final SupportedQueryParameterNames SUPPORTED_QUERY_PARAMETER_NAMES = new SupportedQueryParameterNames(
+        QUERY_PARAMETER_CODE,
+        QUERY_PARAMETER_STATE
+    );
 
     private static String externalApiServerUrl;
     private IDynamicStatusStoreService dssService;
@@ -49,6 +57,11 @@ public class AuthCallbackRoute extends AbstractAuthRoute {
         return externalApiServerUrl + "/auth/callback";
     }
 
+    @Override
+    public SupportedQueryParameterNames getSupportedQueryParameterNames() {
+        return SUPPORTED_QUERY_PARAMETER_NAMES ;
+    }
+
     /**
      * GET requests to /auth/callback are sent from Dex, and only return the
      * authorization code received during the authorization code flow, which can be
@@ -60,8 +73,8 @@ public class AuthCallbackRoute extends AbstractAuthRoute {
 
         logger.info("handleGetRequest() entered");
 
-        String authCode = sanitizeString(queryParams.getSingleString("code", null));
-        String state = sanitizeString(queryParams.getSingleString("state", null));
+        String authCode = sanitizeString(queryParams.getSingleString(QUERY_PARAMETER_CODE, null));
+        String state = sanitizeString(queryParams.getSingleString(QUERY_PARAMETER_STATE, null));
 
         if (state == null || authCode == null) {
             ServletError error = new ServletError(GAL5400_BAD_REQUEST, request.getServletPath());

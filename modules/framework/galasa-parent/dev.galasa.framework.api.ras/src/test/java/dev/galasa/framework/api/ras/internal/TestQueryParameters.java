@@ -99,8 +99,9 @@ public class TestQueryParameters extends RasServletTest {
     public void testGetSingleStringIfMultipleInstancesOfThatParameterPresentThrowsDuplicateException() throws Exception {
         // Given...
         Map<String,String[]> inputs = new HashMap<String,String[]>();
-        QueryParameters params = new QueryParameters(inputs);
+        
         inputs.put("race", new String[]{"orc","astari","hobbit"} );
+        QueryParameters params = new QueryParameters(inputs);
 
         // When...
         Throwable thrown = catchThrowable( () -> {
@@ -150,8 +151,8 @@ public class TestQueryParameters extends RasServletTest {
     public void testGetSingleIntIfMultipleInstancesOfThatParameterPresentThrowsDuplicateException() throws Exception {
         // Given...
         Map<String,String[]> inputs = new HashMap<String,String[]>();
-        QueryParameters params = new QueryParameters(inputs);
         inputs.put("runId", new String[]{"1","2","3"} );
+        QueryParameters params = new QueryParameters(inputs);
 
         // When...
         Throwable thrown = catchThrowable( () -> {
@@ -170,8 +171,8 @@ public class TestQueryParameters extends RasServletTest {
     public void testGetSingleIntIfSingleInstancesOfThatParameterIsNotANumberThrowsException() throws Exception {
         // Given...
         Map<String,String[]> inputs = new HashMap<String,String[]>();
-        QueryParameters params = new QueryParameters(inputs);
         inputs.put("runId", new String[]{" notANumber "} );
+        QueryParameters params = new QueryParameters(inputs);
 
         // When...
         Throwable thrown = catchThrowable( () -> {
@@ -269,9 +270,9 @@ public class TestQueryParameters extends RasServletTest {
         // Given...
         Map<String,String[]> inputs = new HashMap<String,String[]>();
         Instant nowInstant = Instant.now();
-
-        QueryParameters params = new QueryParameters(inputs);
         inputs.put("died", new String[]{"notAValidDateTime"} );
+        QueryParameters params = new QueryParameters(inputs);
+
 
         // When...
         Throwable thrown = catchThrowable( () -> {

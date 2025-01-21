@@ -34,4 +34,9 @@ public interface IRoute {
 
     HttpServletResponse handleDeleteRequest(String pathInfo, QueryParameters queryParameters, HttpServletRequest request ,HttpServletResponse response)
     throws ServletException, IOException, FrameworkException;
+
+    /**
+     * @return A set of query parameter names which are supported by this route. Any extra parameters will be reported as an error.
+     */
+    SupportedQueryParameterNames getSupportedQueryParameterNames();
 }

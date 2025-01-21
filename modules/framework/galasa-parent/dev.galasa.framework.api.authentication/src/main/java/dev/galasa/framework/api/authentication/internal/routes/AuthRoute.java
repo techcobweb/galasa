@@ -28,6 +28,7 @@ import dev.galasa.framework.api.common.InternalUser;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
+import dev.galasa.framework.api.common.SupportedQueryParameterNames;
 import dev.galasa.framework.auth.spi.IAuthService;
 import dev.galasa.framework.auth.spi.IDexGrpcClient;
 import dev.galasa.framework.spi.FrameworkException;
@@ -40,14 +41,17 @@ import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 
 public class AuthRoute extends AbstractAuthRoute {
 
-    private IAuthStoreService authStoreService;
-    private IOidcProvider oidcProvider;
-    private IDexGrpcClient dexGrpcClient;
-    private Environment env;
-    private IDynamicStatusStoreService dssService;
+    // Query parameters
+    public static final String QUERY_PARAMETER_CLIENT_ID = "client_id";
+    public static final String QUERY_PARAMETER_CALLBACK_URL = "callback_url";
+    public static final SupportedQueryParameterNames SUPPORTED_QUERY_PARAMETER_NAMES = new SupportedQueryParameterNames(
+        QUERY_PARAMETER_CLIENT_ID,
+        QUERY_PARAMETER_CALLBACK_URL
+    );
 
-    private static final String ID_TOKEN_KEY      = "id_token";
-    private static final String REFRESH_TOKEN_KEY = "refresh_token";
+    // Fields in a payload of a POST request we parse for meaning.
+    private static final String JSON_FIELD_ID_TOKEN_KEY      = "id_token";
+    private static final String JSON_FIELD_REFRESH_TOKEN_KEY = "refresh_token";
 
     // Regex to match endpoint /auth and /auth/
     private static final String PATH_PATTERN = "\\/?";
@@ -56,6 +60,12 @@ public class AuthRoute extends AbstractAuthRoute {
     private static final long AUTH_DSS_STATE_EXPIRY_SECONDS = 10 * 60;
 
     private static final IBeanValidator<TokenPayload> validator = new TokenPayloadValidator();
+
+    private IAuthStoreService authStoreService;
+    private IOidcProvider oidcProvider;
+    private IDexGrpcClient dexGrpcClient;
+    private Environment env;
+    private IDynamicStatusStoreService dssService;
 
     public AuthRoute(
         ResponseBuilder responseBuilder,
@@ -72,6 +82,11 @@ public class AuthRoute extends AbstractAuthRoute {
         this.dssService = dssService;
     }
 
+    @Override
+    public SupportedQueryParameterNames getSupportedQueryParameterNames() {
+        return SUPPORTED_QUERY_PARAMETER_NAMES ;
+    }
+
     /**
      * Sending a GET request to /auth redirects to the OpenID Connect provider's
      * authorization endpoint to authenticate a user.
@@ -82,8 +97,8 @@ public class AuthRoute extends AbstractAuthRoute {
 
         logger.info("AuthRoute: handleGetRequest() entered.");
         try {
-            String clientId = sanitizeString(queryParams.getSingleString("client_id", null));
-            String clientCallbackUrl = sanitizeString(queryParams.getSingleString("callback_url", null));
+            String clientId = sanitizeString(queryParams.getSingleString(QUERY_PARAMETER_CLIENT_ID, null));
+            String clientCallbackUrl = sanitizeString(queryParams.getSingleString(QUERY_PARAMETER_CALLBACK_URL, null));
 
             // Make sure the required query parameters exist
             if (clientId == null || clientCallbackUrl == null || !isUrlValid(clientCallbackUrl)) {
@@ -136,12 +151,12 @@ public class AuthRoute extends AbstractAuthRoute {
             JsonObject tokenResponseBodyJson = sendTokenPost(requestPayload);
 
             // Return the JWT and refresh token as the servlet's response
-            if (tokenResponseBodyJson != null && tokenResponseBodyJson.has(ID_TOKEN_KEY) && tokenResponseBodyJson.has(REFRESH_TOKEN_KEY)) {
+            if (tokenResponseBodyJson != null && tokenResponseBodyJson.has(JSON_FIELD_ID_TOKEN_KEY) && tokenResponseBodyJson.has(JSON_FIELD_REFRESH_TOKEN_KEY)) {
                 logger.info("Bearer and refresh tokens successfully received from issuer.");
 
-                String jwt = tokenResponseBodyJson.get(ID_TOKEN_KEY).getAsString();
+                String jwt = tokenResponseBodyJson.get(JSON_FIELD_ID_TOKEN_KEY).getAsString();
                 responseJson.addProperty("jwt", jwt);
-                responseJson.addProperty(REFRESH_TOKEN_KEY, tokenResponseBodyJson.get(REFRESH_TOKEN_KEY).getAsString());
+                responseJson.addProperty(JSON_FIELD_REFRESH_TOKEN_KEY, tokenResponseBodyJson.get(JSON_FIELD_REFRESH_TOKEN_KEY).getAsString());
 
                 // If we're refreshing an existing token, then we don't want to create a new entry in the tokens database.
                 // We only want to store tokens in the tokens database when they are created.

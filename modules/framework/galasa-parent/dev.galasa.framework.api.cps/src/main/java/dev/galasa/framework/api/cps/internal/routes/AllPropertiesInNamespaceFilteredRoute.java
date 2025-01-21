@@ -9,7 +9,6 @@ import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +19,7 @@ import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
+import dev.galasa.framework.api.common.SupportedQueryParameterNames;
 import dev.galasa.framework.api.common.resources.CPSFacade;
 import dev.galasa.framework.api.common.resources.CPSNamespace;
 import dev.galasa.framework.api.common.resources.CPSProperty;
@@ -27,20 +27,25 @@ import dev.galasa.framework.api.common.resources.GalasaPropertyName;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
 
-public class AllPropertiesInNamesapceFilteredRoute extends CPSRoute {
+public class AllPropertiesInNamespaceFilteredRoute extends CPSRoute {
 
     protected static final String path = "\\/namespace\\/([a-z][a-z0-9]+)\\/prefix\\/([a-zA-Z0-9\\.\\-\\_@]+)\\/suffix\\/([a-zA-Z0-9\\.\\-\\_@]+)\\/?";
-    
+
     private String suffix;
     private String prefix;
     private String namespaceName;
     
-    public AllPropertiesInNamesapceFilteredRoute(ResponseBuilder responseBuilder, IFramework framework) {
+    public AllPropertiesInNamespaceFilteredRoute(ResponseBuilder responseBuilder, IFramework framework) {
         /* Regex to match endpoints: 
 		*  -> /cps/namespace/namespaceName/prefix/propertyStartsWith/suffix/propertyEndsWith
 		*  -> /cps/namespace/namespaceName/prefix/propertyStartsWith/suffix/propertyEndsWith/
 		*/
         super(responseBuilder, path, framework);
+    }
+
+    @Override 
+    public SupportedQueryParameterNames getSupportedQueryParameterNames() {
+        return SUPPORTED_QUERY_PARAMETER_NAMES ;
     }
     
     @Override
@@ -75,7 +80,7 @@ public class AllPropertiesInNamesapceFilteredRoute extends CPSRoute {
                 ServletError error = new ServletError(GAL5016_INVALID_NAMESPACE_ERROR, namespaceName);
                 throw new InternalServletException(error, HttpServletResponse.SC_NOT_FOUND);
             }
-            List<String> infixes = queryParams.getMultipleString("infix", null);
+            List<String> infixes = queryParams.getMultipleString(QUERY_PARAMETER_INFIX, null);
             Map<GalasaPropertyName, CPSProperty> propertiesMap = getProperties(namespace, prefix, suffix, infixes);
             //Get First Property From propertiesMap and send it as a response
             if ( propertiesMap.size() > 0 ){

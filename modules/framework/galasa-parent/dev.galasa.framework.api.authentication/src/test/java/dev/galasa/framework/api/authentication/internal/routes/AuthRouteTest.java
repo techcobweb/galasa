@@ -490,7 +490,7 @@ public class AuthRouteTest extends BaseServletTest {
         // Given...
         MockAuthenticationServlet servlet = new MockAuthenticationServlet();
 
-        Map<String, String[]> queryParams = Map.of("callbackUrl", new String[] { "http://my.callback.url" });
+        Map<String, String[]> queryParams = Map.of("callback_url", new String[] { "http://my.callback.url" });
         MockHttpServletRequest mockRequest = new MockHttpServletRequest(queryParams, null);
         MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         ServletOutputStream outStream = servletResponse.getOutputStream();

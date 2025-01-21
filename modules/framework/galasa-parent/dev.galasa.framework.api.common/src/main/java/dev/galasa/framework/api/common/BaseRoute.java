@@ -37,7 +37,6 @@ public abstract class BaseRoute implements IRoute {
 	private final ResponseBuilder responseBuilder ;
 
     private final Pattern pathRegex;
-
     public BaseRoute(ResponseBuilder responseBuilder, String path) {
         this.pathRegex = Pattern.compile(path);
 		this.responseBuilder = responseBuilder;
@@ -249,5 +248,10 @@ public abstract class BaseRoute implements IRoute {
             contentTypes.add(new AcceptContentType(type, quality));
         }
         return contentTypes;
+    }
+
+    @Override
+    public SupportedQueryParameterNames getSupportedQueryParameterNames() {
+        return SupportedQueryParameterNames.NO_QUERY_PARAMETERS_SUPPORTED;
     }
 }

@@ -33,7 +33,6 @@ public class BaseServlet extends HttpServlet {
     private final Map<Pattern, IRoute> routes = new HashMap<>();
 
     private ResponseBuilder responseBuilder = new ResponseBuilder();
-
     protected void addRoute(IRoute route) {
         Pattern path = route.getPathRegex();
         logger.info("Base servlet adding route " + path);
@@ -136,6 +135,7 @@ public class BaseServlet extends HttpServlet {
         return routeMatched;
     }
 
+
     private void handleRoute(
         IRoute route,
         String pathInfo,
@@ -143,9 +143,18 @@ public class BaseServlet extends HttpServlet {
         HttpServletRequest req,
         HttpServletResponse res
     ) throws ServletException, IOException, FrameworkException {
+
         String requestMethodStr = req.getMethod();
         HttpMethod requestMethod = HttpMethod.getFromString(requestMethodStr);
 
+        // Check that the user hasn't supplied extra query parameters...
+        // There shouldn't be any on any call except GET
+        SupportedQueryParameterNames supportedQueryParameterNames = SupportedQueryParameterNames.NO_QUERY_PARAMETERS_SUPPORTED ;
+        if (requestMethod == HttpMethod.GET) {
+            supportedQueryParameterNames = route.getSupportedQueryParameterNames();
+        }
+        queryParameters.checkForUnsupportedQueryParameters(supportedQueryParameterNames);
+        
         boolean isBadMethod = false ;
         if (requestMethod == null ) {
             isBadMethod = true ;

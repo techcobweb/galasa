@@ -14,11 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import dev.galasa.framework.api.beans.generated.UserData;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
+import dev.galasa.framework.api.common.SupportedQueryParameterNames;
 import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.users.UsersServlet;
 import dev.galasa.framework.auth.spi.IAuthService;
@@ -34,6 +34,10 @@ public class UsersRoute extends AbstractUsersRoute {
     // Regex to match endpoint /users and /users/
     private static final String path = "\\/?";
 
+    public static final SupportedQueryParameterNames SUPPORTED_QUERY_PARAMETER_NAMES = new SupportedQueryParameterNames(
+        UsersServlet.QUERY_PARAM_LOGIN_ID
+    );
+
     private BeanTransformer beanTransformer ;
 
     public UsersRoute(ResponseBuilder responseBuilder, Environment env,
@@ -41,6 +45,11 @@ public class UsersRoute extends AbstractUsersRoute {
         super(responseBuilder,path, authService, env , rbacService );
 
         this.beanTransformer = new BeanTransformer(baseServletUrl, rbacService);
+    }
+
+    @Override
+    public SupportedQueryParameterNames getSupportedQueryParameterNames() {
+        return SUPPORTED_QUERY_PARAMETER_NAMES;
     }
 
     @Override
