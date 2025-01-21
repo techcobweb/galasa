@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import dev.galasa.api.ras.RasRunResult;
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
@@ -36,6 +37,7 @@ import dev.galasa.framework.spi.ras.RasSearchCriteriaRunName;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaStatus;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaTestName;
 import dev.galasa.framework.spi.ras.RasSortField;
+import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
@@ -88,13 +90,13 @@ public class RunQueryRoute extends RunsRoute {
 
 	private static final GalasaGson gson = new GalasaGson();
 
-	public RunQueryRoute(ResponseBuilder responseBuilder, IFramework framework) {
+	public RunQueryRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
 		/* Regex to match endpoints:
 		*  -> /ras/runs
 		*  -> /ras/runs/
 		*  -> /ras/runs?{querystring}
 		*/
-		super(responseBuilder, path, framework);
+		super(responseBuilder, path, framework, env);
 	}
 
 	@Override 

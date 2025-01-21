@@ -195,6 +195,10 @@ public class MockHttpServletRequest implements HttpServletRequest {
         this.headerMap.put(header, value);
     }
 
+    public void setHeaders(Map<String, String> headerMap) {
+        this.headerMap.putAll(headerMap);
+    }
+
     public void setMethod(String method) {
         this.method = method;
     }

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.JsonObject;
 
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -26,6 +27,7 @@ import dev.galasa.framework.api.common.resources.CPSProperty;
 import dev.galasa.framework.api.common.resources.GalasaPropertyName;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.RBACException;
 
 public class AllPropertiesInNamespaceFilteredRoute extends CPSRoute {
 
@@ -35,12 +37,12 @@ public class AllPropertiesInNamespaceFilteredRoute extends CPSRoute {
     private String prefix;
     private String namespaceName;
     
-    public AllPropertiesInNamespaceFilteredRoute(ResponseBuilder responseBuilder, IFramework framework) {
+    public AllPropertiesInNamespaceFilteredRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
         /* Regex to match endpoints: 
 		*  -> /cps/namespace/namespaceName/prefix/propertyStartsWith/suffix/propertyEndsWith
 		*  -> /cps/namespace/namespaceName/prefix/propertyStartsWith/suffix/propertyEndsWith/
 		*/
-        super(responseBuilder, path, framework);
+        super(responseBuilder, path, framework, env);
     }
 
     @Override 

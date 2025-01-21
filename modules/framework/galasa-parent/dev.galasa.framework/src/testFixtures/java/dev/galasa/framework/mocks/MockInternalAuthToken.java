@@ -3,12 +3,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package dev.galasa.framework.auth.spi.mocks;
+package dev.galasa.framework.mocks;
 
 import java.time.Instant;
 
-import dev.galasa.framework.api.beans.AuthToken;
-import dev.galasa.framework.api.common.InternalUser;
 import dev.galasa.framework.spi.auth.IInternalAuthToken;
 import dev.galasa.framework.spi.auth.IInternalUser;
 
@@ -26,14 +24,6 @@ public class MockInternalAuthToken implements IInternalAuthToken {
         this.dexClientId = dexClientId;
         this.creationTime = creationTime;
         this.owner = owner;
-    }
-
-    public MockInternalAuthToken(AuthToken tokenToCopy) {
-        this.tokenId = tokenToCopy.getTokenId();
-        this.description = tokenToCopy.getDescription();
-        this.creationTime = tokenToCopy.getCreationTime();
-        String loginId = tokenToCopy.getOwner().getLoginId();
-        this.owner = new InternalUser(loginId, loginId);
     }
 
     @Override

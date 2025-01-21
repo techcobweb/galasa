@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.JsonArray;
 
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -20,6 +21,7 @@ import dev.galasa.framework.api.common.resources.CPSNamespace;
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
@@ -31,12 +33,12 @@ public class AllNamespaceRoute extends CPSRoute {
     protected static final String path = "\\/namespace\\/?";
     private static final GalasaGson gson = new GalasaGson();
     
-    public AllNamespaceRoute(ResponseBuilder responseBuilder, IFramework framework) {
+    public AllNamespaceRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
         /* Regex to match endpoints: 
 		*  -> /cps/namespace
 		*  -> /cps/namespace/
 		*/
-		super(responseBuilder, path, framework);
+		super(responseBuilder, path, framework, env);
 	}
 
     @Override

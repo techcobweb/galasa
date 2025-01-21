@@ -5,11 +5,14 @@
  */
 package dev.galasa.framework.internal.rbac;
 
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.*;
 
+import dev.galasa.framework.mocks.MockAuthStoreService;
+import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.spi.rbac.Action;
 import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.rbac.Role;
@@ -20,7 +23,9 @@ public class TestRBACServiceImpl {
     
     @Test
     public void testRolesMapByIdContainsAdminRole() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         Map<String,Role> roleMap = service.getRolesMapById();
 
         Role roleGot = roleMap.get("2");
@@ -29,15 +34,18 @@ public class TestRBACServiceImpl {
         assertThat(roleGot.getDescription()).contains("Administrator access");
 
         assertThat(roleGot.getActionIds())
-            .hasSize(3)
+            .hasSize(4)
             .contains("USER_ROLE_UPDATE_ANY")
             .contains("SECRETS_GET")
-            .contains("GENERAL_API_ACCESS");
+            .contains("GENERAL_API_ACCESS")
+            .contains("CPS_PROPERTIES_SET");
     }
 
     @Test
     public void testRolesMapByIdContainsTesterRole() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         Map<String,Role> roleMap = service.getRolesMapById();
 
         Role roleGot = roleMap.get("1");
@@ -52,7 +60,9 @@ public class TestRBACServiceImpl {
 
     @Test
     public void testRolesMapByIdContainsDeactivateddRole() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         Map<String,Role> roleMap = service.getRolesMapById();
 
         Role roleGot = roleMap.get("0");
@@ -65,7 +75,9 @@ public class TestRBACServiceImpl {
 
     @Test 
     public void testActionsMapByIdContainsActionUserRoleUpdateAny() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         Map<String,Action> actionMap = service.getActionsMapById();
 
         Action action = actionMap.get("USER_ROLE_UPDATE_ANY");
@@ -75,7 +87,9 @@ public class TestRBACServiceImpl {
 
     @Test 
     public void testActionsMapByIdContainsActionSecretsGet() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         Map<String,Action> actionMap = service.getActionsMapById();
 
         Action action = actionMap.get("SECRETS_GET");
@@ -84,16 +98,31 @@ public class TestRBACServiceImpl {
 
     @Test 
     public void testActionsMapByIdContainsActionGeneralApiAccess() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         Map<String,Action> actionMap = service.getActionsMapById();
 
         Action action = actionMap.get("GENERAL_API_ACCESS");
         assertThat(action.getId()).isEqualTo("GENERAL_API_ACCESS");
     }
 
+    @Test 
+    public void testActionsMapByIdContainsActionCpsPropertiesSet() throws Exception {
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
+        Map<String,Action> actionMap = service.getActionsMapById();
+
+        Action action = actionMap.get("CPS_PROPERTIES_SET");
+        assertThat(action.getId()).isEqualTo("CPS_PROPERTIES_SET");
+    }
+
     @Test
     public void testActionsMapByNameContainsSecretsGet() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         Map<String,Action> actionMapById = service.getActionsMapById();
 
         Action action = actionMapById.get("SECRETS_GET");
@@ -103,44 +132,67 @@ public class TestRBACServiceImpl {
 
     @Test
     public void testServiceCanLookupAdminRoleById() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         Role roleGotBack = service.getRoleById("2");
         assertThat(roleGotBack.getName()).isEqualTo("admin");
     }
 
     @Test
     public void testServiceCanLookupGetSecretsActionById() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         Action actionGotBack = service.getActionById("SECRETS_GET");
         assertThat(actionGotBack.getId()).isEqualTo("SECRETS_GET");
     }
 
     @Test
     public void testServiceCanLookupGetSecretsActionByName() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         Action actionGotBack = service.getActionById("SECRETS_GET");
         assertThat(actionGotBack.getId()).isEqualTo("SECRETS_GET");
     }
 
     @Test
     public void testGetSecretsActionHasDescription() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         Action actionGotBack = service.getActionById("SECRETS_GET");
         assertThat(actionGotBack.getDescription()).contains("Able to get secret values");
     }
 
+    @Test 
+    public void testSetCpsPropertiesActionHasDescription() throws Exception {
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
+        Map<String,Action> actionMap = service.getActionsMapById();
+
+        Action action = actionMap.get("CPS_PROPERTIES_SET");
+        assertThat(action.getDescription()).isEqualTo("Able to set CPS properties");
+    }
+
     @Test
     public void testActionsAreSorted() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         Iterator<Action> walker = service.getActionsSortedByName().iterator();
         assertThat(walker.hasNext()).isTrue();
         // Only check the first one. Should be enough...
-        assertThat(walker.next().getId()).isEqualTo("GENERAL_API_ACCESS");
+        assertThat(walker.next().getId()).isEqualTo("CPS_PROPERTIES_SET");
     }
 
     @Test
     public void testRolesAreSorted() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         Iterator<Role> walker = service.getRolesSortedByName().iterator();
         assertThat(walker.hasNext()).isTrue();
         // Only check the first one (alphabetically). Should be enough...
@@ -149,7 +201,9 @@ public class TestRBACServiceImpl {
 
     @Test
     public void testDefaultRoleIsAdmin() throws Exception {
-        RBACService service = new RBACServiceImpl();
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        RBACService service = new RBACServiceImpl(mockAuthStoreService);
         String defaultRoleId = service.getDefaultRoleId();
         Role defaultRole = service.getRoleById(defaultRoleId);
         assertThat(defaultRole).isNotNull();

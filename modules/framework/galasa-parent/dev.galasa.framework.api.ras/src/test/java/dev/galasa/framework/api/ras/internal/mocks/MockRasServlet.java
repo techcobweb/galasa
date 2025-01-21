@@ -6,6 +6,7 @@
 package dev.galasa.framework.api.ras.internal.mocks;
 
 import dev.galasa.framework.IFileSystem;
+import dev.galasa.framework.api.common.mocks.FilledMockEnvironment;
 import dev.galasa.framework.api.common.mocks.IServletUnderTest;
 import dev.galasa.framework.api.ras.internal.RasServlet;
 import dev.galasa.framework.spi.IFramework;
@@ -16,6 +17,10 @@ import dev.galasa.framework.spi.IFramework;
  * so a subclass can do the injection instead of the injection framework.
  */
 public class MockRasServlet extends RasServlet implements IServletUnderTest {
+
+	public MockRasServlet() {
+		super.env = FilledMockEnvironment.createTestEnvironment();
+	}
 
 	@Override
 	public void setFramework(IFramework framework) {

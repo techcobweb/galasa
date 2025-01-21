@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -19,6 +20,7 @@ import dev.galasa.framework.api.common.resources.CPSProperty;
 import dev.galasa.framework.api.common.resources.GalasaPropertyName;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.RBACException;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 
@@ -28,12 +30,12 @@ public class AllPropertiesInNamespaceRoute extends CPSRoute {
 
     protected static final String path = "\\/namespace\\/([a-z][a-z0-9]+)\\/?";
     
-    public AllPropertiesInNamespaceRoute(ResponseBuilder responseBuilder, IFramework framework) {
+    public AllPropertiesInNamespaceRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
         /* Regex to match endpoints: 
 		*  -> /cps/namespace/<NamespaceName>
 		*  -> /cps/namespace/<NamespaceName>/
 		*/
-        super(responseBuilder, path, framework);
+        super(responseBuilder, path, framework, env);
     }
 
     @Override

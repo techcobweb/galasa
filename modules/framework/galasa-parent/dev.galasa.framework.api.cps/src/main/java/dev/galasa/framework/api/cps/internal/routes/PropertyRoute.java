@@ -14,6 +14,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -25,15 +26,17 @@ import dev.galasa.framework.api.common.resources.CPSProperty;
 import dev.galasa.framework.api.common.resources.GalasaPropertyName;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.RBACException;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 public class PropertyRoute extends CPSRoute{
 
     protected static final String path = "\\/([a-z][a-z0-9]+)/properties([?]?|[^/])+$";
 
-    public PropertyRoute(ResponseBuilder responseBuilder, IFramework framework) {
-        super(responseBuilder, path , framework);
+    public PropertyRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
+        super(responseBuilder, path , framework, env);
     }
 
 
@@ -83,6 +86,9 @@ public class PropertyRoute extends CPSRoute{
     public HttpServletResponse handlePostRequest(String pathInfo, QueryParameters queryParameters,
             HttpServletRequest request, HttpServletResponse response)
             throws  IOException, FrameworkException {
+
+        validateActionPermitted(CPS_PROPERTIES_SET.getAction(), request);
+
         String namespaceName = getNamespaceFromURL(pathInfo);
         checkRequestHasContent(request);
         ServletInputStream body = request.getInputStream();

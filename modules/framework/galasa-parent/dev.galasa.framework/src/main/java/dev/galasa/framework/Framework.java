@@ -64,6 +64,7 @@ public class Framework implements IFramework, IShuttableFramework {
     private ICredentialsStore                  credsStore;
     private IEventsService                     eventsService;
     private IAuthStore                         authStore;
+    private RBACService                        rbacService;
 
     private IConfigurationPropertyStoreService cpsFramework;
     @SuppressWarnings("unused")
@@ -553,7 +554,10 @@ public class Framework implements IFramework, IShuttableFramework {
 
     @Override
     public RBACService getRBACService() throws RBACException {
-        return new RBACServiceImpl();
+        if (this.rbacService == null) {
+            this.rbacService = new RBACServiceImpl(getAuthStoreService());
+        }
+        return this.rbacService;
     }
 
 }

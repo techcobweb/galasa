@@ -7,6 +7,7 @@ package dev.galasa.framework.api.resources.processors;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 import static dev.galasa.framework.api.common.resources.ResourceAction.*;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 import java.util.List;
 
@@ -23,13 +24,19 @@ import dev.galasa.framework.api.common.resources.CPSProperty;
 import dev.galasa.framework.api.common.resources.ResourceAction;
 import dev.galasa.framework.api.resources.validators.GalasaPropertyValidator;
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
+import dev.galasa.framework.spi.rbac.Action;
+import dev.galasa.framework.spi.rbac.CacheRBAC;
+import dev.galasa.framework.spi.rbac.RBACException;
+import dev.galasa.framework.spi.rbac.RBACService;
 
 public class GalasaPropertyProcessor extends AbstractGalasaResourceProcessor implements IGalasaResourceProcessor {
 
     private CPSFacade cps;
+    private CacheRBAC usersToActionsCache;
 
-    public GalasaPropertyProcessor(CPSFacade cps) {
+    public GalasaPropertyProcessor(CPSFacade cps, RBACService rbacService) {
         this.cps = cps;
+        this.usersToActionsCache = rbacService.getUsersActionsCache();
     }
 
     @Override
@@ -74,5 +81,22 @@ public class GalasaPropertyProcessor extends AbstractGalasaResourceProcessor imp
     private List<String> checkGalasaPropertyJsonStructure(JsonObject propertyJson, ResourceAction action) throws InternalServletException {
         GalasaPropertyValidator validator = new GalasaPropertyValidator(action);
         return checkGalasaResourceJsonStructure(validator, propertyJson);
+    }
+
+    @Override
+    public void validateActionPermissions(ResourceAction action, String loginId) throws InternalServletException {
+        try {
+            // Check if the user is allowed to set properties
+            if (action == APPLY || action == CREATE || action == UPDATE) {
+                Action propertiesSetAction = CPS_PROPERTIES_SET.getAction();
+                if (!usersToActionsCache.isActionPermitted(loginId, propertiesSetAction.getId())) {
+                    ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, propertiesSetAction.getId());
+                    throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
+                }
+            }
+        } catch (RBACException e) {
+            ServletError error = new ServletError(GAL5126_INTERNAL_RBAC_ERROR);
+            throw new InternalServletException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 }

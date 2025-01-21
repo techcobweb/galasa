@@ -19,7 +19,6 @@ import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
 import dev.galasa.framework.api.common.mocks.MockHttpServletResponse;
 import dev.galasa.framework.api.common.mocks.MockIConfigurationPropertyStoreService;
 import dev.galasa.framework.api.common.mocks.MockServletOutputStream;
-import dev.galasa.framework.spi.IConfigurationPropertyStoreService;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
@@ -27,6 +26,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 public class CpsServletTest extends BaseServletTest {
 
 	static final GalasaGson gson = new GalasaGson();
+	private static final Map<String, String> REQUIRED_HEADERS = new HashMap<>(Map.of("Authorization", "Bearer " + DUMMY_JWT));
 
 	MockCpsServlet servlet;
 	HttpServletRequest req;
@@ -47,19 +48,24 @@ public class CpsServletTest extends BaseServletTest {
 	protected void setServlet(String namespace){
 		this.servlet = new MockCpsServlet();
         servlet.setResponseBuilder(new ResponseBuilder(new MockEnvironment()));
-
-		if (namespace != null){
-			IConfigurationPropertyStoreService cpsstore = new MockIConfigurationPropertyStoreService(namespace);
-			IFramework framework = new MockFramework(cpsstore);
-			this.servlet.setFramework(framework);
+		
+		MockIConfigurationPropertyStoreService cpsStore;
+		if (namespace == null) {
+			cpsStore = new MockIConfigurationPropertyStoreService();
+			cpsStore.setThrowError(true);
+		} else {
+			cpsStore = new MockIConfigurationPropertyStoreService(namespace);
 		}
+
+		IFramework framework = new MockFramework(cpsStore);
+		this.servlet.setFramework(framework);
 	}
 	
 	protected void setServlet(String path,String namespace, Map<String, String[]> parameterMap){
 		setServlet(namespace);
 		ServletOutputStream outStream = new MockServletOutputStream();
 		PrintWriter writer = new PrintWriter(outStream);
-		this.req = new MockHttpServletRequest(parameterMap,path);
+		this.req = new MockHttpServletRequest(parameterMap, path, REQUIRED_HEADERS);
 		this.resp = new MockHttpServletResponse(writer, outStream);
 	}
 
@@ -67,21 +73,26 @@ public class CpsServletTest extends BaseServletTest {
 		setServlet(namespace);
 		ServletOutputStream outStream = new MockServletOutputStream();
         PrintWriter writer = new PrintWriter(outStream);
-		this.req = new MockHttpServletRequest(path, value, method);
+		this.req = new MockHttpServletRequest(path, value, method, REQUIRED_HEADERS);
 		this.resp = new MockHttpServletResponse(writer, outStream);
 	}
 
 	protected void setServlet( String path,String namespace, String value, String method, MockIConfigurationPropertyStoreService store){
+		setServlet(path, namespace, value, method, new MockFramework(store));
+	}
+
+	protected void setServlet(String path, String namespace, String requestContent, String method, MockFramework framework) {
 		setServlet(namespace);
 		ServletOutputStream outStream = new MockServletOutputStream();
         PrintWriter writer = new PrintWriter(outStream);
-		IFramework framework = new MockFramework(store);
 		this.servlet.setFramework(framework);
-		this.req = new MockHttpServletRequest(path, value, method);
+		this.req = new MockHttpServletRequest(path, requestContent, method, REQUIRED_HEADERS);
 		this.resp = new MockHttpServletResponse(writer, outStream);
 	}
+
 	protected void setServlet( String path,String namespace, String value, String method, MockIConfigurationPropertyStoreService store, Map<String,String> headerMap){
 		setServlet(path,namespace, value, method, store);
+		headerMap.putAll(REQUIRED_HEADERS);
 		this.req = new MockHttpServletRequest(path, value, method, headerMap);
 	}
 

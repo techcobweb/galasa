@@ -11,7 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dev.galasa.framework.api.common.BaseRoute;
+import dev.galasa.framework.api.common.PublicRoute;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.QueryParameters;
 
@@ -19,7 +19,7 @@ import dev.galasa.framework.spi.FrameworkException;
 
 import java.io.IOException;
 
-public class BootstrapExternalRoute extends BaseRoute {
+public class BootstrapExternalRoute extends PublicRoute {
 
     protected static final String path = "\\/external";
 

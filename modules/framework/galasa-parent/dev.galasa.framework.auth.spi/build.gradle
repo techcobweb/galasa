@@ -19,6 +19,7 @@ dependencies {
     compileOnly 'org.apache.tomcat:annotations-api'
 
     testImplementation(testFixtures(project(':dev.galasa.framework.api.common')))
+    testImplementation(testFixtures(project(':dev.galasa.framework')))
 
     testFixturesImplementation platform('dev.galasa:dev.galasa.platform:'+version)
     testFixturesImplementation 'javax.servlet:javax.servlet-api'

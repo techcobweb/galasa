@@ -27,10 +27,10 @@ import dev.galasa.framework.api.authentication.internal.TokenPayloadValidator;
 import dev.galasa.framework.api.beans.AuthToken;
 import dev.galasa.framework.api.beans.TokenPayload;
 import dev.galasa.framework.api.beans.User;
-import dev.galasa.framework.api.common.BaseRoute;
 import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.IBeanValidator;
 import dev.galasa.framework.api.common.JwtWrapper;
+import dev.galasa.framework.api.common.PublicRoute;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.InternalUser;
 import dev.galasa.framework.api.common.QueryParameters;
@@ -45,12 +45,14 @@ import dev.galasa.framework.spi.auth.IFrontEndClient;
 import dev.galasa.framework.spi.auth.IInternalAuthToken;
 import dev.galasa.framework.spi.auth.IInternalUser;
 import dev.galasa.framework.spi.auth.IUser;
+import dev.galasa.framework.spi.rbac.CacheRBAC;
 import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.rbac.RBACService;
+import dev.galasa.framework.spi.rbac.Role;
 import dev.galasa.framework.spi.utils.ITimeService;
 import dev.galasa.framework.spi.auth.AuthStoreException;
 
-public class AuthTokensRoute extends BaseRoute {
+public class AuthTokensRoute extends PublicRoute {
 
     private IAuthStoreService authStoreService;
     private IOidcProvider oidcProvider;
@@ -330,7 +332,7 @@ public class AuthTokensRoute extends BaseRoute {
 
     // This method is protected so we can unit test it easily.
     protected void recordUserJustLoggedIn(boolean isWebUI, String jwt, ITimeService timeService, Environment env, boolean isNewAccessTokenBeingCreated)
-            throws InternalServletException, AuthStoreException {
+            throws InternalServletException, AuthStoreException, RBACException {
 
         JwtWrapper jwtWrapper = new JwtWrapper(jwt, env);
         String loginId = jwtWrapper.getUsername();
@@ -344,7 +346,9 @@ public class AuthTokensRoute extends BaseRoute {
         user = authStoreService.getUserByLoginId(loginId);
 
         if (user == null) {
-            authStoreService.createUser(loginId, clientName, getDefaultRoleId() );
+            String roleId = getDefaultRoleId();
+            authStoreService.createUser(loginId, clientName, roleId);
+            addUserToRbacCache(loginId, roleId);
         } else {
 
             // Only update the document if the user has not created a new Galasa Access Token
@@ -360,6 +364,12 @@ public class AuthTokensRoute extends BaseRoute {
                 authStoreService.updateUser(user);
             }
         }
+    }
+
+    private void addUserToRbacCache(String loginId, String roleId) throws RBACException {
+        CacheRBAC cache = rbacService.getUsersActionsCache();
+        Role role = rbacService.getRoleById(roleId);
+        cache.addUser(loginId, role.getActionIds());
     }
 
     private String getDefaultRoleId() throws AuthStoreException {

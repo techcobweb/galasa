@@ -18,8 +18,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
-import dev.galasa.framework.api.common.BaseRoute;
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
+import dev.galasa.framework.api.common.ProtectedRoute;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.ResultNames;
@@ -28,13 +29,14 @@ import dev.galasa.framework.spi.IResultArchiveStoreDirectoryService;
 import dev.galasa.framework.spi.IRunResult;
 import dev.galasa.framework.spi.ResultArchiveStoreException;
 import dev.galasa.framework.spi.ras.RasTestClass;
+import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 
 /**
  * An abstract route used by all the Run-related routes.
  */
-public abstract class RunsRoute extends BaseRoute {
+public abstract class RunsRoute extends ProtectedRoute {
 
     static final GalasaGson gson = new GalasaGson();
 
@@ -51,8 +53,8 @@ public abstract class RunsRoute extends BaseRoute {
 
     private IFramework framework;
 
-    public RunsRoute(ResponseBuilder responseBuilder, String path , IFramework framework ) {
-        super(responseBuilder, path);
+    public RunsRoute(ResponseBuilder responseBuilder, String path, IFramework framework, Environment env) throws RBACException {
+        super(responseBuilder, path, framework.getRBACService(), env);
         this.framework = framework;
     }
 

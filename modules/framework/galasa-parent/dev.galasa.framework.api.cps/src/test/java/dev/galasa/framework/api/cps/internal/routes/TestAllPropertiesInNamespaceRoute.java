@@ -175,32 +175,6 @@ public class TestAllPropertiesInNamespaceRoute extends CpsServletTest {
      */
 
     @Test
-    public void TestGetNamespacesNoFrameworkReturnsError () throws Exception{
-		// Given...
-		setServlet("/namespace/framework",null ,new HashMap<String,String[]>());
-		MockCpsServlet servlet = getServlet();
-		HttpServletRequest req = getRequest();
-		HttpServletResponse resp = getResponse();
-		ServletOutputStream outStream = resp.getOutputStream();	
-				
-		// When...
-		servlet.init();
-		servlet.doGet(req,resp);
-
-		// Then...
-		// We expect an error back, because the API server couldn't find any Etcd store to query
-		assertThat(resp.getStatus()).isEqualTo(500);
-		assertThat(resp.getContentType()).isEqualTo("application/json");
-
-		checkErrorStructure(
-			outStream.toString(),
-			5000,
-			"GAL5000E: ",
-			"Error occurred when trying to access the endpoint"
-		);
-    }
-
-    @Test
 	public void TestGetNamespacesWithFrameworkNoDataReturnsNotFound() throws Exception{
 		// Given...
 		setServlet("/namespace/framework/","empty",new HashMap<String,String[]>());

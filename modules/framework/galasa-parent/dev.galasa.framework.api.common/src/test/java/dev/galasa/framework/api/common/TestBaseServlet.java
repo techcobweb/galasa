@@ -19,6 +19,7 @@ import dev.galasa.framework.api.common.mocks.MockEnvironment;
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
 import dev.galasa.framework.api.common.mocks.MockHttpServletResponse;
 import dev.galasa.framework.spi.FrameworkException;
+import dev.galasa.framework.spi.rbac.Action;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -68,6 +69,11 @@ public class TestBaseServlet extends BaseServletTest {
 
         private HttpServletResponse writeMockResponse(HttpServletRequest request, HttpServletResponse response) throws IOException {
             return mockResponseBuilder.buildResponse(request, response, HttpServletResponse.SC_OK);
+        }
+
+        @Override
+        public boolean isActionPermitted(Action action, HttpServletRequest request) throws InternalServletException {
+            return true;
         }
     }
 

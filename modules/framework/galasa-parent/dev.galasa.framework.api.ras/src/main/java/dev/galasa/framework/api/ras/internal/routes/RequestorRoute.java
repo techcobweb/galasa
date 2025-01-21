@@ -16,6 +16,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import dev.galasa.framework.api.ras.internal.common.RasQueryParameters;
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -23,6 +24,7 @@ import dev.galasa.framework.api.common.SupportedQueryParameterNames;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.ResultArchiveStoreException;
+import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 public class RequestorRoute extends RunsRoute {
@@ -37,12 +39,14 @@ public class RequestorRoute extends RunsRoute {
     private static final GalasaGson gson = new GalasaGson();
     private RasQueryParameters sortQueryParameterChecker;
 
-    public RequestorRoute(ResponseBuilder responseBuilder, IFramework framework) {
-        /* Regex to match endpoints: 
+    public RequestorRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
+
+       /* 
+        * Regex to match endpoints: 
 		*  -> /ras/requestors
 		*  -> /ras/requestors?
 		*/
-        super(responseBuilder, path, framework);
+        super(responseBuilder, path, framework, env);
     }
 
     @Override

@@ -87,11 +87,11 @@ public class AuthenticationServlet extends BaseServlet {
         rbacService = getRBACService(framework);
         
         addRoute(new AuthRoute(getResponseBuilder(), oidcProvider, authService, env, dssService));
-        addRoute(new AuthClientsRoute(getResponseBuilder(), authService));
+        addRoute(new AuthClientsRoute(getResponseBuilder(), authService, env, rbacService));
         addRoute(new AuthCallbackRoute(getResponseBuilder(), externalApiServerUrl, dssService));
         addRoute(new AuthTokensRoute(getResponseBuilder(), oidcProvider, authService, timeService, rbacService, env ));
 
-        addRoute(new AuthTokensDetailsRoute(getResponseBuilder(), authService));
+        addRoute(new AuthTokensDetailsRoute(getResponseBuilder(), authService, env, rbacService));
 
         logger.info("Galasa Authentication API initialised");
     }

@@ -22,8 +22,10 @@ import dev.galasa.framework.api.ras.internal.routes.RunLogRoute;
 import dev.galasa.framework.api.ras.internal.routes.RunQueryRoute;
 import dev.galasa.framework.api.ras.internal.routes.TestClassesRoute;
 import dev.galasa.framework.api.common.BaseServlet;
-
+import dev.galasa.framework.api.common.Environment;
+import dev.galasa.framework.api.common.SystemEnvironment;
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.RBACException;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -44,20 +46,27 @@ public class RasServlet extends BaseServlet {
 
 	protected IFileSystem fileSystem = new FileSystem();
 
+	protected Environment env = new SystemEnvironment();
+
 	@Override
 	public void init() throws ServletException {
 		logger.info("RasServlet initialising");
 
 		super.init();
 
-		addRoute(new RunDetailsRoute(getResponseBuilder(),framework));
-	   	addRoute(new RunLogRoute(getResponseBuilder(),framework));
-	   	addRoute(new RunArtifactsListRoute(getResponseBuilder(),fileSystem, framework));
-	   	addRoute(new RunQueryRoute(getResponseBuilder(),framework));
-	   	addRoute(new RunArtifactsDownloadRoute(getResponseBuilder(),fileSystem, framework));
-	   	addRoute(new ResultNamesRoute(getResponseBuilder(),framework));
-		addRoute(new RequestorRoute(getResponseBuilder(), framework));
-		addRoute(new TestClassesRoute(getResponseBuilder(), framework));
+		try {
+			addRoute(new RunDetailsRoute(getResponseBuilder(),framework, env));
+			addRoute(new RunLogRoute(getResponseBuilder(),framework, env));
+			addRoute(new RunArtifactsListRoute(getResponseBuilder(),fileSystem, framework, env));
+			addRoute(new RunQueryRoute(getResponseBuilder(),framework, env));
+			addRoute(new RunArtifactsDownloadRoute(getResponseBuilder(),fileSystem, framework, env));
+			addRoute(new ResultNamesRoute(getResponseBuilder(),framework, env));
+			addRoute(new RequestorRoute(getResponseBuilder(), framework, env));
+			addRoute(new TestClassesRoute(getResponseBuilder(), framework, env));
+		} catch (RBACException e) {
+			throw new ServletException("Failed to initialise the RAS servlet");
+		}
+		logger.info("RasServlet initialised");
 	}
 
 }

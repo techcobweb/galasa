@@ -6,6 +6,7 @@
 package dev.galasa.framework.api.secrets.internal.routes;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.SECRETS_GET;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.api.secrets.internal.SecretRequestValidator;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.creds.ICredentialsService;
+import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.ITimeService;
 
 public class SecretsRoute extends AbstractSecretsRoute {
@@ -46,8 +48,10 @@ public class SecretsRoute extends AbstractSecretsRoute {
         ResponseBuilder responseBuilder,
         ICredentialsService credentialsService,
         Environment env,
-        ITimeService timeService) {
-        super(responseBuilder, PATH_PATTERN, env, timeService);
+        ITimeService timeService,
+        RBACService rbacService
+    ) {
+        super(responseBuilder, PATH_PATTERN, env, timeService, rbacService);
         this.credentialsService = credentialsService;
     }
 
@@ -58,13 +62,16 @@ public class SecretsRoute extends AbstractSecretsRoute {
         HttpServletRequest request,
         HttpServletResponse response
     ) throws FrameworkException {
+
+        boolean shouldRedactSecretValues = !isActionPermitted(SECRETS_GET.getAction(), request);
+
         logger.info("handleGetRequest() entered. Getting secrets from the credentials store");
         List<GalasaSecret> secrets = new ArrayList<>();
         Map<String, ICredentials> retrievedCredentials = credentialsService.getAllCredentials();
 
         if (!retrievedCredentials.isEmpty()) {
             for (Entry<String, ICredentials> entry : retrievedCredentials.entrySet()) {
-                GalasaSecret secret = createGalasaSecretFromCredentials(entry.getKey(), entry.getValue());
+                GalasaSecret secret = createGalasaSecretFromCredentials(entry.getKey(), entry.getValue(), shouldRedactSecretValues);
                 secrets.add(secret);
             }
             logger.info("Secrets retrieved from credentials store OK");

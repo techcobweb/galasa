@@ -167,6 +167,8 @@ paths:
                 $ref: '#/components/schemas/DexClient'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
   /auth/tokens:
@@ -211,6 +213,8 @@ paths:
                     error_message: "E: Error occured when trying to execute request '/tokens'. Please check your request parameters or report the problem to your Galasa Ecosystem owner."        
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
@@ -277,6 +281,8 @@ paths:
               example: Successfully revoked token with ID 'tokenId'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '404':
           description: Could not find an existing auth token with the given ID
           content:
@@ -367,6 +373,8 @@ paths:
                   summary: An Error occurred when trying to get a user using the given user number.
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
     delete:
@@ -398,6 +406,8 @@ paths:
                   summary: An Error occurred when trying to delete a user using the given user number.
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
     put:
@@ -442,6 +452,8 @@ paths:
                   summary: An Error occurred when trying to update a user using the given user number.
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -475,6 +487,8 @@ paths:
                   $ref: '#/components/schemas/Namespace'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
   #--------------------------------------
@@ -538,6 +552,8 @@ paths:
                   $ref: '#/components/schemas/GalasaProperty'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '404':
           description: Bad Request
           content:
@@ -588,6 +604,8 @@ paths:
               example: Successfully created property propertyName in namespace
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '404':
           description: Bad Request
           content:
@@ -688,6 +706,8 @@ paths:
                   summary: Property found in write only namespace
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '404':
           description: Bad Request
           content:
@@ -747,6 +767,8 @@ paths:
               example: Successfully updated property propertyName in namespace
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '404':
           description: Bad Request
           content:
@@ -816,6 +838,8 @@ paths:
               example: Successfully deleted property propertyName in namespace
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '404':
           description: Bad Request
           content:
@@ -858,6 +882,8 @@ paths:
                   type: string
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
   /cps/namespace/{namespace}:
@@ -889,6 +915,8 @@ paths:
                   $ref: '#/components/schemas/GalasaProperty'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '404':
           description: Bad Request
           content:
@@ -963,6 +991,8 @@ paths:
                 $ref: '#/components/schemas/CpsProperty'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
   /cps/namespace/{namespace}/property/{property}:
@@ -1017,6 +1047,8 @@ paths:
                 $ref: '#/components/schemas/CpsProperty'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -1099,6 +1131,8 @@ paths:
                     error_message: "GAL5016E: Error occurred when trying to access namespace 'xyz'. The Namespace provided is invalid."
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -1139,6 +1173,8 @@ paths:
                 $ref: '#/components/schemas/Requestors'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -1175,6 +1211,8 @@ paths:
                 $ref: '#/components/schemas/ResultNames'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -1385,6 +1423,8 @@ paths:
                   summary: An Error occurred parsing duplicate parameter
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '404':
           description: Not Found
           content:
@@ -1452,6 +1492,8 @@ paths:
                   summary: An Error occurred when trying to delete a run using the given runId
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
     get:
@@ -1480,6 +1522,8 @@ paths:
                 $ref: '#/components/schemas/Run'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -1557,6 +1601,8 @@ paths:
                   summary: The run in the request has already completed and can not be cancelled
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           description: Internal Server Error
           content:
@@ -1611,6 +1657,8 @@ paths:
                 type: string
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -1647,6 +1695,8 @@ paths:
                 $ref: '#/components/schemas/ArtifactIndex'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '404':
           description: Not Found
           content:
@@ -1703,6 +1753,8 @@ paths:
               example: attachment; filename="cps.properties"
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '404':
           description: Not Found
           content:
@@ -1770,6 +1822,8 @@ paths:
                 $ref: '#/components/schemas/TestClasses'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -1805,6 +1859,8 @@ paths:
                 $ref: '#/components/schemas/TestRuns'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
     post:
       summary: Submit test runs
       description: |
@@ -1837,6 +1893,8 @@ paths:
                 $ref: '#/components/schemas/TestRuns'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
 ##################################################################################
 # Secrets API
 ##################################################################################
@@ -1864,6 +1922,8 @@ paths:
                   $ref: '#/components/schemas/GalasaSecret'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
@@ -1889,6 +1949,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '400':
           $ref: "#/components/responses/BadRequest"
         '500':
@@ -1923,6 +1985,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
     put:
@@ -1949,6 +2013,8 @@ paths:
           description: A new secret was created successfully
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '400':
           $ref: "#/components/responses/BadRequest"
         '500':
@@ -1968,6 +2034,8 @@ paths:
           description: No content response indicating that the given secret has been deleted
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -2043,11 +2111,14 @@ paths:
                         - GENERAL_API_ACCESS
                         - SECRETS_GET
                         - USER_ROLE_UPDATE_ANY
+                        - CPS_PROPERTIES_SET
 
         '404':
           $ref: '#/components/responses/NotFound'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -2091,10 +2162,13 @@ paths:
                       - GENERAL_API_ACCESS
                       - SECRETS_GET
                       - USER_ROLE_UPDATE_ANY
+                      - CPS_PROPERTIES_SET
         '404':
           $ref: '#/components/responses/NotFound'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -2120,6 +2194,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
 
   /rbac/actions/{action-id}:
     parameters:
@@ -2148,6 +2224,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
 
 ##################################################################################
 # Components
@@ -2162,6 +2240,12 @@ components:
             $ref: '#/components/schemas/APIError'
     Conflict:
       description: The requested resource already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/APIError'
+    Forbidden:
+      description: The user is not permitted to perform the requested operation
       content:
         application/json:
           schema:

@@ -24,14 +24,14 @@ import dev.galasa.framework.api.common.mocks.MockEnvironment;
 import dev.galasa.framework.api.common.mocks.MockHttpServletRequest;
 import dev.galasa.framework.api.common.mocks.MockHttpServletResponse;
 import dev.galasa.framework.mocks.FilledMockRBACService;
+import dev.galasa.framework.mocks.MockAuthStoreService;
+import dev.galasa.framework.mocks.MockFrontEndClient;
 import dev.galasa.framework.mocks.MockRBACService;
 import dev.galasa.framework.mocks.MockTimeService;
+import dev.galasa.framework.mocks.MockUser;
 import dev.galasa.framework.api.users.mocks.MockUsersServlet;
 import dev.galasa.framework.auth.spi.IAuthService;
 import dev.galasa.framework.auth.spi.internal.AuthService;
-import dev.galasa.framework.auth.spi.mocks.MockAuthStoreService;
-import dev.galasa.framework.auth.spi.mocks.MockFrontEndClient;
-import dev.galasa.framework.auth.spi.mocks.MockUser;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 
@@ -48,7 +48,7 @@ public class UsersRouteTest extends BaseServletTest {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService authStoreService = new MockAuthStoreService(mockTimeService);
         IAuthService authService = new AuthService(authStoreService, null);
-        MockRBACService rbacService = FilledMockRBACService.createTestRBACService();
+        MockRBACService rbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME);
 
         String baseUrl = "http://my.server/api";
 
@@ -120,7 +120,7 @@ public class UsersRouteTest extends BaseServletTest {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService authStoreService = new MockAuthStoreService(mockTimeService);
         IAuthService authService = new AuthService(authStoreService, null);
-        MockRBACService rbacService = FilledMockRBACService.createTestRBACService();
+        MockRBACService rbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME);
 
         String baseUrl = "http://my.server/api";
 

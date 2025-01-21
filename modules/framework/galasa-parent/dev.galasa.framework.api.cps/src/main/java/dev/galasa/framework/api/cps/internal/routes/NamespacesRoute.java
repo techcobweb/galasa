@@ -16,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -26,6 +27,7 @@ import dev.galasa.framework.api.common.resources.GalasaNamespace;
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 
@@ -38,12 +40,12 @@ public class NamespacesRoute extends CPSRoute {
     private static final GalasaGson gson = new GalasaGson();
 
 
-    public NamespacesRoute(ResponseBuilder responseBuilder, IFramework framework ) {
+    public NamespacesRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
 		/* Regex to match endpoints: 
 		*  -> /cps
 		*  -> /cps/
 		*/
-		super(responseBuilder, path, framework);
+		super(responseBuilder, path, framework, env);
 	}
 
     @Override
