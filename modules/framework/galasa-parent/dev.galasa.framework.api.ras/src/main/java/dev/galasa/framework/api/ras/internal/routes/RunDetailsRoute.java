@@ -65,7 +65,7 @@ public class RunDetailsRoute extends RunsRoute {
    }
 
    @Override
-   public HttpServletResponse handlePutRequest(String pathInfo, QueryParameters queryParams, HttpServletRequest request, HttpServletResponse response) throws DynamicStatusStoreException, FrameworkException, IOException {
+   public HttpServletResponse handlePutRequest(String pathInfo, HttpServletRequest request, HttpServletResponse response) throws DynamicStatusStoreException, FrameworkException, IOException {
       String runId = getRunIdFromPath(pathInfo);
       String runName = getRunNameFromRunId(runId);
 
@@ -76,7 +76,7 @@ public class RunDetailsRoute extends RunsRoute {
 
 
    @Override
-   public HttpServletResponse handleDeleteRequest(String pathInfo, QueryParameters queryParameters, HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException, FrameworkException {
+   public HttpServletResponse handleDeleteRequest(String pathInfo, HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException, FrameworkException {
       String runId = getRunIdFromPath(pathInfo);
       IRunResult run = getRunByRunId(runId);
       

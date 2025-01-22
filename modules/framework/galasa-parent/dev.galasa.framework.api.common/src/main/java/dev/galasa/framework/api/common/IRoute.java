@@ -27,13 +27,13 @@ public interface IRoute {
     HttpServletResponse handleGetRequest(String pathInfo, QueryParameters queryParams, HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException, FrameworkException;
 
-    HttpServletResponse handlePutRequest(String pathInfo, QueryParameters queryParameters, HttpServletRequest request , HttpServletResponse response)
+    HttpServletResponse handlePutRequest(String pathInfo, HttpServletRequest request , HttpServletResponse response)
         throws ServletException, IOException, FrameworkException;
 
-    HttpServletResponse handlePostRequest(String pathInfo, QueryParameters queryParameters, HttpServletRequest request , HttpServletResponse response)
+    HttpServletResponse handlePostRequest(String pathInfo, HttpServletRequest request , HttpServletResponse response)
         throws ServletException, IOException, FrameworkException;
 
-    HttpServletResponse handleDeleteRequest(String pathInfo, QueryParameters queryParameters, HttpServletRequest request ,HttpServletResponse response)
+    HttpServletResponse handleDeleteRequest(String pathInfo, HttpServletRequest request ,HttpServletResponse response)
     throws ServletException, IOException, FrameworkException;
 
     /**

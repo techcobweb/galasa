@@ -61,7 +61,7 @@ public class TestBaseRoute {
 
         // When...
          Throwable thrown = catchThrowable( () -> { 
-            route.handlePutRequest("",null,request,response);
+            route.handlePutRequest("",request,response);
          });
 
         // Then...
@@ -78,7 +78,7 @@ public class TestBaseRoute {
 
         // When...
          Throwable thrown = catchThrowable( () -> { 
-            route.handlePostRequest("",null,request,response);
+            route.handlePostRequest("",request,response);
          });
 
         // Then...
@@ -95,7 +95,7 @@ public class TestBaseRoute {
 
         // When...
          Throwable thrown = catchThrowable( () -> { 
-            route.handleDeleteRequest("",null,request,response);
+            route.handleDeleteRequest("",request,response);
          });
 
         // Then...

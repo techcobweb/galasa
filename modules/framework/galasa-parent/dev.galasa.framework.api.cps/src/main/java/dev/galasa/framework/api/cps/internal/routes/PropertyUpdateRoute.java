@@ -81,7 +81,7 @@ public class PropertyUpdateRoute extends CPSRoute {
      * Handle Put Request
      */
     @Override
-    public HttpServletResponse handlePutRequest(String pathInfo, QueryParameters queryParameters, HttpServletRequest request , HttpServletResponse response)
+    public HttpServletResponse handlePutRequest(String pathInfo, HttpServletRequest request , HttpServletResponse response)
             throws  IOException, FrameworkException {
 
         validateActionPermitted(CPS_PROPERTIES_SET.getAction(), request);
@@ -105,7 +105,8 @@ public class PropertyUpdateRoute extends CPSRoute {
     /*
      * Handle Delete Request
      */
-    public HttpServletResponse handleDeleteRequest(String pathInfo, QueryParameters queryParameters,
+    @Override
+    public HttpServletResponse handleDeleteRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response)
             throws FrameworkException {
         String namespace = getNamespaceFromURL(pathInfo);

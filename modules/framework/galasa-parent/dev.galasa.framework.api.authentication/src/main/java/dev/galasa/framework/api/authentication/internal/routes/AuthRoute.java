@@ -136,7 +136,7 @@ public class AuthRoute extends AbstractAuthRoute {
      * client ID, client secret, and refresh token.
      */
     @Override
-    public HttpServletResponse handlePostRequest(String pathInfo, QueryParameters queryParameters,
+    public HttpServletResponse handlePostRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, FrameworkException {
 
         logger.info("AuthRoute: handlePostRequest() entered.");

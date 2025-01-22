@@ -179,7 +179,7 @@ public class AuthTokensRoute extends PublicRoute {
      * client ID, client secret, and refresh token.
      */
     @Override
-    public HttpServletResponse handlePostRequest(String pathInfo, QueryParameters queryParameters,
+    public HttpServletResponse handlePostRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, FrameworkException {
 

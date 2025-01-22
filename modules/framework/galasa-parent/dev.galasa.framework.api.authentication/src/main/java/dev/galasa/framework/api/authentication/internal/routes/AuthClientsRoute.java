@@ -48,7 +48,7 @@ public class AuthClientsRoute extends ProtectedRoute {
      * the details of this new client.
      */
     @Override
-    public HttpServletResponse handlePostRequest(String pathInfo, QueryParameters queryParameters,
+    public HttpServletResponse handlePostRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, FrameworkException {
 
         logger.info("handlePostRequest() entered");

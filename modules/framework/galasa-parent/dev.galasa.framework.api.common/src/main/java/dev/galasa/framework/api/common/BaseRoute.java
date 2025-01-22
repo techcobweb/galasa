@@ -60,7 +60,7 @@ public abstract class BaseRoute implements IRoute {
     }
 
     @Override
-    public HttpServletResponse handlePutRequest(String pathInfo, QueryParameters queryParameters,
+    public HttpServletResponse handlePutRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException, FrameworkException {
         throwMethodNotAllowedException(request, pathInfo);
@@ -68,7 +68,7 @@ public abstract class BaseRoute implements IRoute {
     }
 
     @Override
-    public HttpServletResponse handlePostRequest(String pathInfo, QueryParameters queryParameters,
+    public HttpServletResponse handlePostRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, FrameworkException {
         throwMethodNotAllowedException(request, pathInfo);
@@ -76,7 +76,7 @@ public abstract class BaseRoute implements IRoute {
     }
 
     @Override
-    public HttpServletResponse handleDeleteRequest(String pathInfo, QueryParameters queryParameters,
+    public HttpServletResponse handleDeleteRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException, FrameworkException {
         throwMethodNotAllowedException(request, pathInfo);

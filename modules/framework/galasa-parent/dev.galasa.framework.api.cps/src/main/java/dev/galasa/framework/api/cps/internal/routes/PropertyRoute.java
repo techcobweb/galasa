@@ -83,7 +83,7 @@ public class PropertyRoute extends CPSRoute{
      * Property Create
      */
     @Override
-    public HttpServletResponse handlePostRequest(String pathInfo, QueryParameters queryParameters,
+    public HttpServletResponse handlePostRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response)
             throws  IOException, FrameworkException {
 

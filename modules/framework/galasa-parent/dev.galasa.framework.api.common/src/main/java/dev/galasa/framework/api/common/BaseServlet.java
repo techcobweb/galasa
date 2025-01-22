@@ -174,13 +174,13 @@ public class BaseServlet extends HttpServlet {
                     route.handleGetRequest(pathInfo, queryParameters, req, res);
                     break;
                 case POST :
-                    route.handlePostRequest(pathInfo, queryParameters, req, res);
+                    route.handlePostRequest(pathInfo, req, res);
                     break;
                 case PUT:
-                    route.handlePutRequest(pathInfo, queryParameters, req, res);
+                    route.handlePutRequest(pathInfo, req, res);
                     break;
                 case DELETE:
-                    route.handleDeleteRequest(pathInfo, queryParameters, req, res);
+                    route.handleDeleteRequest(pathInfo, req, res);
                     break;
                 default:
                     isBadMethod = true ;
