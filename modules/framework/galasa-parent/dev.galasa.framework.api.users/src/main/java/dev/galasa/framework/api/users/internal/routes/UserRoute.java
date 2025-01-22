@@ -17,6 +17,7 @@ import dev.galasa.framework.spi.auth.IInternalAuthToken;
 import dev.galasa.framework.api.beans.generated.UserData;
 import dev.galasa.framework.api.beans.generated.UserUpdateData;
 import dev.galasa.framework.api.common.Environment;
+import dev.galasa.framework.api.common.HttpRequestContext;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -25,11 +26,9 @@ import dev.galasa.framework.auth.spi.IAuthService;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.auth.AuthStoreException;
 import dev.galasa.framework.spi.auth.IUser;
-import dev.galasa.framework.spi.rbac.CacheRBAC;
+import dev.galasa.framework.spi.rbac.BuiltInAction;
 import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.rbac.RBACService;
-
-import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 /**
  * Handles REST calls directed at a specific user record.
@@ -51,24 +50,22 @@ public class UserRoute extends AbstractUsersRoute {
 
     private UserUpdateRequestValidator updateRequestValidator = new UserUpdateRequestValidator();
 
-    private CacheRBAC usersActionsCache;
-
     public UserRoute(ResponseBuilder responseBuilder, Environment env,
             IAuthService authService, RBACService rbacService) {
         super(responseBuilder, path, authService , env, rbacService);
         this.pathPattern = getPathRegex();
         this.beanTransformer = new BeanTransformer(baseServletUrl, rbacService);
-        this.usersActionsCache = rbacService.getUsersActionsCache();
     }
 
     @Override
     public HttpServletResponse handleDeleteRequest(
         String pathInfo,
-        HttpServletRequest request,
+        HttpRequestContext requestContext,
         HttpServletResponse response
     ) throws FrameworkException {
 
         logger.info("handleDeleteRequest() entered");
+        HttpServletRequest request = requestContext.getRequest();
 
         IUser user = getUser(pathInfo);
 
@@ -81,12 +78,14 @@ public class UserRoute extends AbstractUsersRoute {
     @Override
     public HttpServletResponse handlePutRequest(
         String pathInfo,
-        HttpServletRequest request,
+        HttpRequestContext requestContext,
         HttpServletResponse response
     ) throws FrameworkException, IOException {
 
-        validateActionPermitted(USER_ROLE_UPDATE_ANY.getAction(), request);
+        validateActionPermitted(BuiltInAction.USER_ROLE_UPDATE_ANY, requestContext.getUsername());
         logger.info("handlePutRequest() entered");
+
+        HttpServletRequest request = requestContext.getRequest();
 
         IUser originalUser = getUser(pathInfo);
 
@@ -114,11 +113,12 @@ public class UserRoute extends AbstractUsersRoute {
     public HttpServletResponse handleGetRequest(
         String pathInfo,
         QueryParameters queryParams,
-        HttpServletRequest request,
+        HttpRequestContext requestContext,
         HttpServletResponse response
     ) throws FrameworkException, IOException {
 
         logger.info("handleGetRequest() entered");
+        HttpServletRequest request = requestContext.getRequest();
 
         IUser userRecordFound = getUser(pathInfo);
 
@@ -148,8 +148,8 @@ public class UserRoute extends AbstractUsersRoute {
         }
 
         if (isStoreUpdateRequired) {
-            usersActionsCache.invalidateUser(user.getLoginId());
             authStoreService.updateUser(user);
+            rbacService.invalidateUser(user.getLoginId());
         }
 
         return user;
@@ -169,9 +169,7 @@ public class UserRoute extends AbstractUsersRoute {
             }
 
             authStoreService.deleteUser(user);
-
-            CacheRBAC rbacCache = rbacService.getUsersActionsCache();
-            rbacCache.invalidateUser(loginId);
+            rbacService.invalidateUser(loginId);
 
             logger.info("The user with the given loginId was deleted OK");
 

@@ -9,7 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import dev.galasa.framework.spi.FrameworkException;
-import dev.galasa.framework.spi.rbac.Action;
+import dev.galasa.framework.spi.rbac.BuiltInAction;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 import java.io.IOException;
@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
-import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 public class BaseServlet extends HttpServlet {
 
@@ -36,6 +35,17 @@ public class BaseServlet extends HttpServlet {
     private final Map<Pattern, IRoute> routes = new HashMap<>();
 
     private ResponseBuilder responseBuilder = new ResponseBuilder();
+
+    protected Environment env;
+
+    public BaseServlet() {
+        this(new SystemEnvironment());
+    }
+
+    public BaseServlet(Environment env) {
+        this.env = env;
+    }
+
     protected void addRoute(IRoute route) {
         Pattern path = route.getPathRegex();
         logger.info("Base servlet adding route " + path);
@@ -158,36 +168,38 @@ public class BaseServlet extends HttpServlet {
         }
         queryParameters.checkForUnsupportedQueryParameters(supportedQueryParameterNames);
         
-        Action apiAccessAction = GENERAL_API_ACCESS.getAction();
-        if (!route.isActionPermitted(apiAccessAction, req)) {
-            ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, apiAccessAction.getId());
+        HttpRequestContext requestContext = new HttpRequestContext(req, env);
+
+        if (!route.isActionPermitted(BuiltInAction.GENERAL_API_ACCESS, requestContext.getUsername())) {
+            String actionId = BuiltInAction.GENERAL_API_ACCESS.getAction().getId();
+            ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, actionId);
             throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
         }
 
         boolean isBadMethod = false ;
-        if (requestMethod == null ) {
-            isBadMethod = true ;
+        if (requestMethod == null) {
+            isBadMethod = true;
         } else {
 
             switch(requestMethod) {
                 case GET: 
-                    route.handleGetRequest(pathInfo, queryParameters, req, res);
+                    route.handleGetRequest(pathInfo, queryParameters, requestContext, res);
                     break;
-                case POST :
-                    route.handlePostRequest(pathInfo, req, res);
+                case POST:
+                    route.handlePostRequest(pathInfo, requestContext, res);
                     break;
                 case PUT:
-                    route.handlePutRequest(pathInfo, req, res);
+                    route.handlePutRequest(pathInfo, requestContext, res);
                     break;
                 case DELETE:
-                    route.handleDeleteRequest(pathInfo, req, res);
+                    route.handleDeleteRequest(pathInfo, requestContext, res);
                     break;
                 default:
-                    isBadMethod = true ;
+                    isBadMethod = true;
             }
         }
 
-        if( isBadMethod ) {
+        if (isBadMethod) {
             // The request was sent with an unsupported method, so throw an error
             ServletError error = new ServletError(GAL5405_METHOD_NOT_ALLOWED, pathInfo, requestMethodStr);
             throw new InternalServletException(error, HttpServletResponse.SC_METHOD_NOT_ALLOWED);     

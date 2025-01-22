@@ -40,9 +40,15 @@ public class UsersServlet extends BaseServlet {
 
     private Log logger = LogFactory.getLog(getClass());
 
-    protected Environment env = new SystemEnvironment();
-
     private IAuthServiceFactory factory;
+
+    public UsersServlet() {
+        this(new SystemEnvironment());
+    }
+
+    public UsersServlet(Environment env) {
+        super(env);
+    }
 
     @Override
     public void init() throws ServletException {

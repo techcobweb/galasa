@@ -37,12 +37,20 @@ public class SecretsServlet extends BaseServlet {
     @Reference
     protected IFramework framework;
 
-    protected Environment env = new SystemEnvironment();
-    protected ITimeService timeService = new SystemTimeService();
+    private ITimeService timeService;
 
     private static final long serialVersionUID = 1L;
 
     private Log logger = LogFactory.getLog(this.getClass());
+
+    public SecretsServlet() {
+        this(new SystemEnvironment(), new SystemTimeService());
+    }
+
+    public SecretsServlet(Environment env, ITimeService timeService) {
+        super(env);
+        this.timeService = timeService;
+    }
  
     @Override
     public void init() throws ServletException {
@@ -51,8 +59,8 @@ public class SecretsServlet extends BaseServlet {
         try {
             ICredentialsService credentialsService = framework.getCredentialsService();
             RBACService rbacService = framework.getRBACService();
-            addRoute(new SecretsRoute(getResponseBuilder(), credentialsService, env, timeService, rbacService));
-            addRoute(new SecretDetailsRoute(getResponseBuilder(), credentialsService, env, timeService, rbacService));
+            addRoute(new SecretsRoute(getResponseBuilder(), credentialsService, timeService, rbacService));
+            addRoute(new SecretDetailsRoute(getResponseBuilder(), credentialsService, timeService, rbacService));
         } catch (CredentialsException | RBACException e) {
             throw new ServletException("Failed to initialise the Secrets servlet");
         }

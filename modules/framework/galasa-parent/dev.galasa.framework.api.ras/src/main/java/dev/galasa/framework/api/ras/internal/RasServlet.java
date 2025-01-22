@@ -46,7 +46,13 @@ public class RasServlet extends BaseServlet {
 
 	protected IFileSystem fileSystem = new FileSystem();
 
-	protected Environment env = new SystemEnvironment();
+    public RasServlet() {
+        this(new SystemEnvironment());
+    }
+
+    public RasServlet(Environment env) {
+		super(env);
+    }
 
 	@Override
 	public void init() throws ServletException {
@@ -55,14 +61,14 @@ public class RasServlet extends BaseServlet {
 		super.init();
 
 		try {
-			addRoute(new RunDetailsRoute(getResponseBuilder(),framework, env));
-			addRoute(new RunLogRoute(getResponseBuilder(),framework, env));
-			addRoute(new RunArtifactsListRoute(getResponseBuilder(),fileSystem, framework, env));
-			addRoute(new RunQueryRoute(getResponseBuilder(),framework, env));
-			addRoute(new RunArtifactsDownloadRoute(getResponseBuilder(),fileSystem, framework, env));
-			addRoute(new ResultNamesRoute(getResponseBuilder(),framework, env));
-			addRoute(new RequestorRoute(getResponseBuilder(), framework, env));
-			addRoute(new TestClassesRoute(getResponseBuilder(), framework, env));
+			addRoute(new RunDetailsRoute(getResponseBuilder(), framework));
+			addRoute(new RunLogRoute(getResponseBuilder(), framework));
+			addRoute(new RunArtifactsListRoute(getResponseBuilder(), fileSystem, framework));
+			addRoute(new RunQueryRoute(getResponseBuilder(), framework));
+			addRoute(new RunArtifactsDownloadRoute(getResponseBuilder(), fileSystem, framework));
+			addRoute(new ResultNamesRoute(getResponseBuilder(), framework));
+			addRoute(new RequestorRoute(getResponseBuilder(), framework));
+			addRoute(new TestClassesRoute(getResponseBuilder(), framework));
 		} catch (RBACException e) {
 			throw new ServletException("Failed to initialise the RAS servlet");
 		}

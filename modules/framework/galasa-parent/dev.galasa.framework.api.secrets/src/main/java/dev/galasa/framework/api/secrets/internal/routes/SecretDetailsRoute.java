@@ -7,7 +7,6 @@ package dev.galasa.framework.api.secrets.internal.routes;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 import static dev.galasa.framework.api.common.resources.GalasaSecretType.*;
-import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -24,7 +23,7 @@ import dev.galasa.framework.api.beans.generated.SecretRequest;
 import dev.galasa.framework.api.beans.generated.SecretRequestpassword;
 import dev.galasa.framework.api.beans.generated.SecretRequesttoken;
 import dev.galasa.framework.api.beans.generated.SecretRequestusername;
-import dev.galasa.framework.api.common.Environment;
+import dev.galasa.framework.api.common.HttpRequestContext;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
@@ -39,6 +38,7 @@ import dev.galasa.framework.spi.creds.CredentialsUsername;
 import dev.galasa.framework.spi.creds.CredentialsUsernamePassword;
 import dev.galasa.framework.spi.creds.CredentialsUsernameToken;
 import dev.galasa.framework.spi.creds.ICredentialsService;
+import dev.galasa.framework.spi.rbac.BuiltInAction;
 import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.ITimeService;
 
@@ -58,11 +58,10 @@ public class SecretDetailsRoute extends AbstractSecretsRoute {
     public SecretDetailsRoute(
         ResponseBuilder responseBuilder,
         ICredentialsService credentialsService,
-        Environment env,
         ITimeService timeService,
         RBACService rbacService
     ) {
-        super(responseBuilder, PATH_PATTERN, env, timeService, rbacService);
+        super(responseBuilder, PATH_PATTERN, timeService, rbacService);
         this.credentialsService = credentialsService;
     }
 
@@ -70,11 +69,13 @@ public class SecretDetailsRoute extends AbstractSecretsRoute {
     public HttpServletResponse handleGetRequest(
         String pathInfo,
         QueryParameters queryParams,
-        HttpServletRequest request,
+        HttpRequestContext requestContext,
         HttpServletResponse response
     ) throws FrameworkException {
 
-        boolean shouldRedactSecretValues = !isActionPermitted(SECRETS_GET.getAction(), request);
+        HttpServletRequest request = requestContext.getRequest();
+
+        boolean shouldRedactSecretValues = !isActionPermitted(BuiltInAction.SECRETS_GET_UNREDACTED_VALUES, requestContext.getUsername());
 
         logger.info("handleGetRequest() entered. Getting secret with the given name");
         String secretName = getSecretNameFromPath(pathInfo);
@@ -89,14 +90,16 @@ public class SecretDetailsRoute extends AbstractSecretsRoute {
     @Override
     public HttpServletResponse handlePutRequest(
         String pathInfo,
-        HttpServletRequest request,
+        HttpRequestContext requestContext,
         HttpServletResponse response
     ) throws FrameworkException, IOException {
         logger.info("handlePutRequest() entered. Validating request payload");
+
+        HttpServletRequest request = requestContext.getRequest();
         checkRequestHasContent(request);
 
         String secretName = getSecretNameFromPath(pathInfo);
-        String lastUpdatedByUser = getUsernameFromRequestJwt(request);
+        String lastUpdatedByUser = requestContext.getUsername();
         SecretRequest secretPayload = parseRequestBody(request, SecretRequest.class);
 
         ICredentials existingSecret = credentialsService.getCredentials(secretName);
@@ -129,10 +132,13 @@ public class SecretDetailsRoute extends AbstractSecretsRoute {
     @Override
     public HttpServletResponse handleDeleteRequest(
         String pathInfo,
-        HttpServletRequest request,
+        HttpRequestContext requestContext,
         HttpServletResponse response
     ) throws FrameworkException {
         logger.info("handleDeleteRequest() entered");
+
+        HttpServletRequest request = requestContext.getRequest();
+
         // The provided name is implicitly validated by the route's regex pattern
         String secretName = getSecretNameFromPath(pathInfo);
         deleteSecret(secretName);
