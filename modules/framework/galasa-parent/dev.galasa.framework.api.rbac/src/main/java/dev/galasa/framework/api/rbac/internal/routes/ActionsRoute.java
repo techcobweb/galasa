@@ -5,7 +5,6 @@
  */
 package dev.galasa.framework.api.rbac.internal.routes;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +31,6 @@ public class ActionsRoute extends AbstractRBACRoute {
 
     private Log logger = LogFactory.getLog(getClass());
 
-    private static final List<String> supportedQueryParameters = new ArrayList<String>();
-
     public ActionsRoute(
         ResponseBuilder responseBuilder,
         RBACService rbacService,
@@ -54,9 +51,6 @@ public class ActionsRoute extends AbstractRBACRoute {
         String baseUrl = request.getRequestURL().toString();
 
         logger.info("handleGetRequest() entered. Getting actions. "+baseUrl);
-
-        // TODO: This check should really be in the servlet, checking all routes, but that's a big change, so just leaving it here for now.
-        queryParams.checkForUnsupportedQueryParameters(supportedQueryParameters);
 
         Collection<Action> actions = getRBACService().getActionsSortedByName();
 

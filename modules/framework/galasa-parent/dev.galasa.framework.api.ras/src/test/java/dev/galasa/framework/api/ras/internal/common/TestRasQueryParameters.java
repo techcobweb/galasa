@@ -87,8 +87,9 @@ public class TestRasQueryParameters extends RasServletTest{
         mockRasResultNames.add("EnvFail");
         mockRasResultNames.add("UNKNOWN");
         Map<String,String[]> mockURLQuery = new HashMap<String,String[]>();
-        RasQueryParameters params = new RasQueryParameters(new QueryParameters(mockURLQuery));
         mockURLQuery.put("result", new String[]{"Passed,Failed,garbage"} );
+        RasQueryParameters params = new RasQueryParameters(new QueryParameters(mockURLQuery));
+
 
         // When...
         Throwable thrown = catchThrowable( () -> {
@@ -224,9 +225,10 @@ public class TestRasQueryParameters extends RasServletTest{
     @Test
     public void testGetStatusesFromParametersIfStatusParameterIsInvalidThrowsException() throws Exception {
         // Given...
-        Map<String,String[]> mockURLQuery = new HashMap<String,String[]>();
-        RasQueryParameters params = new RasQueryParameters(new QueryParameters(mockURLQuery));
+        Map<String,String[]> mockURLQuery = new HashMap<String,String[]>();        
         mockURLQuery.put("status", new String[]{"building,generating,garbage"} );
+
+        RasQueryParameters params = new RasQueryParameters(new QueryParameters(mockURLQuery));
 
         // When...
         Throwable thrown = catchThrowable( () -> {

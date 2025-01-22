@@ -40,7 +40,7 @@ public class AuthTokensDetailsRoute extends ProtectedRoute {
     }
 
     @Override
-    public HttpServletResponse handleDeleteRequest(String pathInfo, QueryParameters queryParameters,
+    public HttpServletResponse handleDeleteRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response)
             throws FrameworkException {
 

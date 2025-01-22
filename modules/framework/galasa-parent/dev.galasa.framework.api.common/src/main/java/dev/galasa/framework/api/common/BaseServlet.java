@@ -36,7 +36,6 @@ public class BaseServlet extends HttpServlet {
     private final Map<Pattern, IRoute> routes = new HashMap<>();
 
     private ResponseBuilder responseBuilder = new ResponseBuilder();
-
     protected void addRoute(IRoute route) {
         Pattern path = route.getPathRegex();
         logger.info("Base servlet adding route " + path);
@@ -139,6 +138,7 @@ public class BaseServlet extends HttpServlet {
         return routeMatched;
     }
 
+
     private void handleRoute(
         IRoute route,
         String pathInfo,
@@ -146,9 +146,18 @@ public class BaseServlet extends HttpServlet {
         HttpServletRequest req,
         HttpServletResponse res
     ) throws ServletException, IOException, FrameworkException {
+
         String requestMethodStr = req.getMethod();
         HttpMethod requestMethod = HttpMethod.getFromString(requestMethodStr);
 
+        // Check that the user hasn't supplied extra query parameters...
+        // There shouldn't be any on any call except GET
+        SupportedQueryParameterNames supportedQueryParameterNames = SupportedQueryParameterNames.NO_QUERY_PARAMETERS_SUPPORTED ;
+        if (requestMethod == HttpMethod.GET) {
+            supportedQueryParameterNames = route.getSupportedQueryParameterNames();
+        }
+        queryParameters.checkForUnsupportedQueryParameters(supportedQueryParameterNames);
+        
         Action apiAccessAction = GENERAL_API_ACCESS.getAction();
         if (!route.isActionPermitted(apiAccessAction, req)) {
             ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, apiAccessAction.getId());
@@ -165,13 +174,13 @@ public class BaseServlet extends HttpServlet {
                     route.handleGetRequest(pathInfo, queryParameters, req, res);
                     break;
                 case POST :
-                    route.handlePostRequest(pathInfo, queryParameters, req, res);
+                    route.handlePostRequest(pathInfo, req, res);
                     break;
                 case PUT:
-                    route.handlePutRequest(pathInfo, queryParameters, req, res);
+                    route.handlePutRequest(pathInfo, req, res);
                     break;
                 case DELETE:
-                    route.handleDeleteRequest(pathInfo, queryParameters, req, res);
+                    route.handleDeleteRequest(pathInfo, req, res);
                     break;
                 default:
                     isBadMethod = true ;

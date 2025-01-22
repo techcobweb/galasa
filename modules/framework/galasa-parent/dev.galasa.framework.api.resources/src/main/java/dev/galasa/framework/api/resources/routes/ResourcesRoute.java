@@ -72,7 +72,7 @@ public class ResourcesRoute  extends ProtectedRoute {
     }
 
     @Override
-     public HttpServletResponse handlePostRequest(String pathInfo, QueryParameters queryParameters, 
+     public HttpServletResponse handlePostRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, FrameworkException {  
         logger.info("ResourcesRoute - handlePostRequest() entered");
 

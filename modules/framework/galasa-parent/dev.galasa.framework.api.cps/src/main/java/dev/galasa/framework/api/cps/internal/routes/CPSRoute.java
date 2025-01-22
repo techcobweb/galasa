@@ -29,6 +29,7 @@ import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.ProtectedRoute;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
+import dev.galasa.framework.api.common.SupportedQueryParameterNames;
 import dev.galasa.framework.api.common.resources.CPSFacade;
 import dev.galasa.framework.api.common.resources.CPSNamespace;
 import dev.galasa.framework.api.common.resources.CPSProperty;
@@ -49,6 +50,15 @@ import static dev.galasa.framework.api.common.ServletErrorMessage.*;
  */
 public abstract class CPSRoute extends ProtectedRoute {
 
+    public static final String QUERY_PARAMETER_PREFIX = "prefix";
+    public static final String QUERY_PARAMETER_INFIX = "infix";
+    public static final String QUERY_PARAMETER_SUFFIX = "suffix";
+    public static final SupportedQueryParameterNames SUPPORTED_QUERY_PARAMETER_NAMES = new SupportedQueryParameterNames(
+        QUERY_PARAMETER_PREFIX,
+        QUERY_PARAMETER_INFIX,
+        QUERY_PARAMETER_SUFFIX
+    );
+    
     static final ResourceNameValidator nameValidator = new ResourceNameValidator();
     static final GalasaGson gson = new GalasaGson();
 

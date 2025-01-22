@@ -37,7 +37,6 @@ public abstract class BaseRoute implements IRoute {
     private final ResponseBuilder responseBuilder;
 
     private final Pattern pathRegex;
-
     public BaseRoute(ResponseBuilder responseBuilder, String path) {
         this.pathRegex = Pattern.compile(path);
 		this.responseBuilder = responseBuilder;
@@ -61,7 +60,7 @@ public abstract class BaseRoute implements IRoute {
     }
 
     @Override
-    public HttpServletResponse handlePutRequest(String pathInfo, QueryParameters queryParameters,
+    public HttpServletResponse handlePutRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException, FrameworkException {
         throwMethodNotAllowedException(request, pathInfo);
@@ -69,7 +68,7 @@ public abstract class BaseRoute implements IRoute {
     }
 
     @Override
-    public HttpServletResponse handlePostRequest(String pathInfo, QueryParameters queryParameters,
+    public HttpServletResponse handlePostRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, FrameworkException {
         throwMethodNotAllowedException(request, pathInfo);
@@ -77,7 +76,7 @@ public abstract class BaseRoute implements IRoute {
     }
 
     @Override
-    public HttpServletResponse handleDeleteRequest(String pathInfo, QueryParameters queryParameters,
+    public HttpServletResponse handleDeleteRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException, FrameworkException {
         throwMethodNotAllowedException(request, pathInfo);
@@ -253,5 +252,10 @@ public abstract class BaseRoute implements IRoute {
             contentTypes.add(new AcceptContentType(type, quality));
         }
         return contentTypes;
+    }
+
+    @Override
+    public SupportedQueryParameterNames getSupportedQueryParameterNames() {
+        return SupportedQueryParameterNames.NO_QUERY_PARAMETERS_SUPPORTED;
     }
 }

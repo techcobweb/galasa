@@ -87,7 +87,6 @@ public class SecretsRoute extends AbstractSecretsRoute {
     @Override
     public HttpServletResponse handlePostRequest(
         String pathInfo,
-        QueryParameters queryParams,
         HttpServletRequest request,
         HttpServletResponse response
     ) throws FrameworkException, IOException {

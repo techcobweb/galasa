@@ -8,7 +8,6 @@ package dev.galasa.framework.api.ras.internal.routes;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +20,7 @@ import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
+import dev.galasa.framework.api.common.SupportedQueryParameterNames;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.ResultArchiveStoreException;
@@ -32,6 +32,14 @@ public class TestClassesRoute extends RunsRoute {
 
     protected static final String path = "\\/testclasses\\/?";
 
+    public static final String QUERY_PARAMETER_SORT = "sort";
+    public static final SupportedQueryParameterNames SUPPORTED_QUERY_PARAMETER_NAMES = new SupportedQueryParameterNames(
+        QUERY_PARAMETER_SORT
+    );
+
+    private static final GalasaGson gson = new GalasaGson();
+    private RasQueryParameters sortQueryParameterChecker;
+
     public TestClassesRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
         /* Regex to match endpoints: 
 		*  -> /ras/testclasses
@@ -40,8 +48,10 @@ public class TestClassesRoute extends RunsRoute {
         super(responseBuilder, path, framework, env);
     }
 
-    static final GalasaGson gson = new GalasaGson();
-    private RasQueryParameters sortQueryParameterChecker;
+    @Override
+    public SupportedQueryParameterNames getSupportedQueryParameterNames() {
+        return SUPPORTED_QUERY_PARAMETER_NAMES;
+    }
 
     @Override
     public HttpServletResponse handleGetRequest(String pathInfo, QueryParameters queryParams,HttpServletRequest req, HttpServletResponse response)

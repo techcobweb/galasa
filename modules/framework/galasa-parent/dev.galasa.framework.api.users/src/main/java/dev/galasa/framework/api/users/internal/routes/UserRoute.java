@@ -64,7 +64,6 @@ public class UserRoute extends AbstractUsersRoute {
     @Override
     public HttpServletResponse handleDeleteRequest(
         String pathInfo,
-        QueryParameters queryParams,
         HttpServletRequest request,
         HttpServletResponse response
     ) throws FrameworkException {
@@ -82,7 +81,6 @@ public class UserRoute extends AbstractUsersRoute {
     @Override
     public HttpServletResponse handlePutRequest(
         String pathInfo,
-        QueryParameters queryParams,
         HttpServletRequest request,
         HttpServletResponse response
     ) throws FrameworkException, IOException {

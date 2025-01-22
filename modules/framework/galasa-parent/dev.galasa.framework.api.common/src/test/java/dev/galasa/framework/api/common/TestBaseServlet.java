@@ -35,6 +35,11 @@ public class TestBaseServlet extends BaseServletTest {
         }
 
         @Override
+        public SupportedQueryParameterNames getSupportedQueryParameterNames() {
+            return SupportedQueryParameterNames.NO_QUERY_PARAMETERS_SUPPORTED;
+        }
+
+        @Override
         public HttpServletResponse handleGetRequest(String pathInfo, QueryParameters queryParams,
                 HttpServletRequest request, HttpServletResponse response
         ) throws ServletException, IOException, FrameworkException {
@@ -42,21 +47,21 @@ public class TestBaseServlet extends BaseServletTest {
         }
 
         @Override
-        public HttpServletResponse handlePutRequest(String pathInfo, QueryParameters queryParameters,
+        public HttpServletResponse handlePutRequest(String pathInfo,
                 HttpServletRequest request, HttpServletResponse response
         ) throws ServletException, IOException, FrameworkException {
             return writeMockResponse(request, response);
         }
 
         @Override
-        public HttpServletResponse handlePostRequest(String pathInfo, QueryParameters queryParameters,
+        public HttpServletResponse handlePostRequest(String pathInfo,
                 HttpServletRequest request, HttpServletResponse response
         ) throws ServletException, IOException, FrameworkException {
             return writeMockResponse(request, response);
         }
 
         @Override
-        public HttpServletResponse handleDeleteRequest(String pathInfo, QueryParameters queryParameters,
+        public HttpServletResponse handleDeleteRequest(String pathInfo,
                 HttpServletRequest request, HttpServletResponse response
         ) throws ServletException, IOException, FrameworkException {
             return writeMockResponse(request, response);

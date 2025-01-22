@@ -13,7 +13,7 @@ import org.apache.commons.logging.LogFactory;
 
 import dev.galasa.framework.api.cps.internal.routes.AddPropertyInNamespaceRoute;
 import dev.galasa.framework.api.cps.internal.routes.AllNamespaceRoute;
-import dev.galasa.framework.api.cps.internal.routes.AllPropertiesInNamesapceFilteredRoute;
+import dev.galasa.framework.api.cps.internal.routes.AllPropertiesInNamespaceFilteredRoute;
 import dev.galasa.framework.api.cps.internal.routes.AllPropertiesInNamespaceRoute;
 import dev.galasa.framework.api.cps.internal.routes.NamespacesRoute;
 import dev.galasa.framework.api.cps.internal.routes.PropertyRoute;
@@ -65,7 +65,7 @@ public class CpsServlet extends BaseServlet {
 			addRoute(new PropertyRoute(getResponseBuilder(), framework, env));
 			addRoute(new AllNamespaceRoute(getResponseBuilder(), framework, env));
 			addRoute(new AllPropertiesInNamespaceRoute(getResponseBuilder(), framework, env));
-			addRoute(new AllPropertiesInNamesapceFilteredRoute(getResponseBuilder(), framework, env));
+			addRoute(new AllPropertiesInNamespaceFilteredRoute(getResponseBuilder(), framework, env));
 			addRoute(new AddPropertyInNamespaceRoute(getResponseBuilder(), framework, env));
 		} catch (RBACException e) {
 			throw new ServletException("Failed to initialise CPS servlet");

@@ -43,6 +43,7 @@ public class GroupRunsRoute extends GroupRuns{
         this.env = env;
     }
 
+    @Override
     public HttpServletResponse handleGetRequest(String groupName, QueryParameters queryParams, HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException, FrameworkException{
         List<IRun> runs = getRuns(groupName.substring(1));
@@ -55,7 +56,8 @@ public class GroupRunsRoute extends GroupRuns{
         }
     }
 
-    public HttpServletResponse handlePostRequest(String groupName, QueryParameters queryParameters, HttpServletRequest request , HttpServletResponse response)
+    @Override
+    public HttpServletResponse handlePostRequest(String groupName, HttpServletRequest request , HttpServletResponse response)
     throws ServletException, IOException, FrameworkException {
         String requestor;
         checkRequestHasContent(request);

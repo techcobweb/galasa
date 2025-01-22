@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,6 +36,7 @@ import dev.galasa.framework.api.common.InternalUser;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
+import dev.galasa.framework.api.common.SupportedQueryParameterNames;
 import dev.galasa.framework.auth.spi.IAuthService;
 import dev.galasa.framework.auth.spi.IDexGrpcClient;
 import dev.galasa.framework.spi.FrameworkException;
@@ -59,9 +59,10 @@ public class AuthTokensRoute extends PublicRoute {
     private IDexGrpcClient dexGrpcClient;
     private Environment env;
 
-    private static final String ID_TOKEN_KEY = "id_token";
-    private static final String REFRESH_TOKEN_KEY = "refresh_token";
-    public static final String QUERY_PARAM_LOGIN_ID = "loginId";
+
+    private static final String POST_BODY_FIELD_ID_TOKEN_KEY = "id_token";
+    private static final String POST_BODY_FIELD_REFRESH_TOKEN_KEY = "refresh_token";
+
 
     // Regex to match /auth/tokens and /auth/tokens/ only
     private static final String PATH_PATTERN = "\\/tokens\\/?";
@@ -70,6 +71,11 @@ public class AuthTokensRoute extends PublicRoute {
     private static final String WEB_UI_CLIENT = "web-ui";
 
     private static final IBeanValidator<TokenPayload> validator = new TokenPayloadValidator();
+
+    public static final String QUERY_PARAM_LOGIN_ID = "loginId";
+    public static final SupportedQueryParameterNames SUPPORTED_QUERY_PARAMETER_NAMES = new SupportedQueryParameterNames(
+        QUERY_PARAM_LOGIN_ID
+    );
 
     private ITimeService timeService;
     private  RBACService rbacService;
@@ -89,6 +95,11 @@ public class AuthTokensRoute extends PublicRoute {
         this.rbacService = rbacService;
 
         this.timeService = timeService;
+    }
+
+    @Override
+    public SupportedQueryParameterNames getSupportedQueryParameterNames() {
+        return SUPPORTED_QUERY_PARAMETER_NAMES ;
     }
 
     /**
@@ -168,7 +179,7 @@ public class AuthTokensRoute extends PublicRoute {
      * client ID, client secret, and refresh token.
      */
     @Override
-    public HttpServletResponse handlePostRequest(String pathInfo, QueryParameters queryParameters,
+    public HttpServletResponse handlePostRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, FrameworkException {
 
@@ -186,13 +197,13 @@ public class AuthTokensRoute extends PublicRoute {
             JsonObject tokenResponseBodyJson = sendTokenPost(requestPayload);
 
             // Return the JWT and refresh token as the servlet's response
-            if (tokenResponseBodyJson != null && tokenResponseBodyJson.has(ID_TOKEN_KEY)
-                    && tokenResponseBodyJson.has(REFRESH_TOKEN_KEY)) {
+            if (tokenResponseBodyJson != null && tokenResponseBodyJson.has(POST_BODY_FIELD_ID_TOKEN_KEY)
+                    && tokenResponseBodyJson.has(POST_BODY_FIELD_REFRESH_TOKEN_KEY)) {
                 logger.info("Bearer and refresh tokens successfully received from issuer.");
 
-                String jwt = tokenResponseBodyJson.get(ID_TOKEN_KEY).getAsString();
+                String jwt = tokenResponseBodyJson.get(POST_BODY_FIELD_ID_TOKEN_KEY).getAsString();
                 responseJson.addProperty("jwt", jwt);
-                responseJson.addProperty(REFRESH_TOKEN_KEY, tokenResponseBodyJson.get(REFRESH_TOKEN_KEY).getAsString());
+                responseJson.addProperty(POST_BODY_FIELD_REFRESH_TOKEN_KEY, tokenResponseBodyJson.get(POST_BODY_FIELD_REFRESH_TOKEN_KEY).getAsString());
 
                 // If we're refreshing an existing token, then we don't want to create a new
                 // entry in the tokens database.

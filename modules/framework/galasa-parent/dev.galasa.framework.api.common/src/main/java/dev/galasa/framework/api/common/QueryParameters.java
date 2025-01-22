@@ -8,6 +8,7 @@ package dev.galasa.framework.api.common;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.time.*;
@@ -24,13 +25,25 @@ import static javax.servlet.http.HttpServletResponse.*;
  */
 public class QueryParameters {
 
+	/**
+	 * A map of the query parameters.
+	 * 
+	 * We convert all the keys to lower-case so they can compare OK.
+	 */
     Map<String,String[]> params ;
 
 	/**
 	 * @param paramMap The query parameters, probably coming from the request.
 	 */
     public QueryParameters( Map<String,String[]> paramMap ) {
-        this.params = paramMap;
+
+		// Take a deep clone of the map, so we can transform it as we accept it.
+        this.params = new HashMap<String,String[]>();
+
+		// Run through the parameter map making sure all query parameters are lower-cased
+		for (Map.Entry<String,String[]> entry : paramMap.entrySet() ) {
+			this.params.put( entry.getKey().toLowerCase() , entry.getValue() );
+		}
     }
 
 	/**
@@ -42,7 +55,7 @@ public class QueryParameters {
 	 */
     public String getSingleString(String queryParameterName, String defaultValue ) throws InternalServletException {
 		String returnedValue = defaultValue ;
-		String[] paramValues = params.get(queryParameterName);
+		String[] paramValues = params.get(queryParameterName.toLowerCase());
 		if (paramValues != null && paramValues.length >0) {
 
 			if (paramValues.length >1) {
@@ -71,7 +84,7 @@ public class QueryParameters {
 	//  */
     public List<String> getMultipleString(String queryParameterName, List<String> defaultValues ) {
 		List<String> returnedValues = defaultValues ;
-		String[] paramValues = params.get(queryParameterName);
+		String[] paramValues = params.get(queryParameterName.toLowerCase());
 		if (paramValues != null && paramValues.length > 0) {
 			returnedValues = Arrays.asList(paramValues[0].split(","));
 		}
@@ -150,10 +163,11 @@ public class QueryParameters {
 		return returnedValue;
 	}
 
-	public boolean isParameterPresent(String queryParameter) {		
-        return params.containsKey(queryParameter)
-            && params.get(queryParameter) != null 
-            && params.get(queryParameter)[0] != "";
+	public boolean isParameterPresent(String queryParameter) {	
+		String queryParameterLookingFor = queryParameter.toLowerCase();	
+        return params.containsKey(queryParameterLookingFor)
+            && params.get(queryParameterLookingFor) != null 
+            && params.get(queryParameterLookingFor)[0] != "";
     }
 
 	public boolean checkAtLeastOneQueryParameterPresent(String... queryParameters ) throws InternalServletException {
@@ -161,7 +175,7 @@ public class QueryParameters {
 		boolean result = false;
 		int paramswithvalue = 0 ;
 		for (String param : queryParameters){
-			if ((this.params.containsKey(param)) && (this.params.get(param) != null ) && (this.params.get(param)[0] != "" )) {
+			if (isParameterPresent(param)) {
 				paramswithvalue +=1;
 			}
 		}
@@ -175,7 +189,7 @@ public class QueryParameters {
         return this.params.size();
     }
 
-	public void checkForUnsupportedQueryParameters( List<String> supportedParamNames ) throws InternalServletException {
+	public void checkForUnsupportedQueryParameters( SupportedQueryParameterNames supportedParamNames ) throws InternalServletException {
 
 		List<String> unsupportedParamNames = getUnsupportedQueryParameters(supportedParamNames);
 		if (!unsupportedParamNames.isEmpty()) {
@@ -183,12 +197,15 @@ public class QueryParameters {
 		}
 	}
 
-	protected List<String> getUnsupportedQueryParameters(List<String> supportedParamNames ) throws InternalServletException {
+	protected List<String> getUnsupportedQueryParameters(SupportedQueryParameterNames supportedParamNames ) throws InternalServletException {
 		List<String> unsupportedParamNames = new ArrayList<String>();
 
 		for (String paramName : params.keySet()) {
-			String trimmedParamName = paramName.trim();
-			if (!supportedParamNames.contains(trimmedParamName)) {
+			// query parameters are case insensitive... 
+			// See https://www.rfc-editor.org/rfc/rfc3986#page-11 section 6.2.2.1.  Case Normalization
+			// So need converting to lower case prior to any comparison.
+			String trimmedParamName = paramName.trim().toLowerCase();
+			if (!supportedParamNames.isSupported(trimmedParamName)) {
 				// This parameter is not supported.
 				unsupportedParamNames.add(trimmedParamName);
 			}
@@ -196,10 +213,10 @@ public class QueryParameters {
 		return unsupportedParamNames;
 	}
 
-	private void raiseUnsupportedQueryParameterError( List<String> unsupportedParamNames, List<String> supportedParamNames ) throws InternalServletException {
+	private void raiseUnsupportedQueryParameterError( List<String> unsupportedParamNames, SupportedQueryParameterNames supportedParamNames ) throws InternalServletException {
 
 		String renderedUnsupportedParamNames = listToString(unsupportedParamNames);
-		String renderedSupportedParamNames = listToString(supportedParamNames);
+		String renderedSupportedParamNames = supportedParamNames.toString();
 		
 		ServletError error = new ServletError(GAL5412_UNSUPPORTED_QUERY_PARAMETERS, renderedUnsupportedParamNames , renderedSupportedParamNames);
 		throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);

@@ -25,39 +25,16 @@ public class TestQueryParameters {
         paramsToTest.put("size",new String[] { "big" });
         QueryParameters params = new QueryParameters(paramsToTest);
 
-        List<String> supportedParamNames = List.of("animal","colour");
+        SupportedQueryParameterNames supportedParamNames = new SupportedQueryParameterNames("animal","colour");
 
         List<String> unusupportedParamNames = params.getUnsupportedQueryParameters(supportedParamNames); // size is not supported.
 
         assertThat(unusupportedParamNames).hasSize(1).contains("size");
     }
 
-    @Test
-    public void testQueryParametersCanCreateAQuotedList() throws Exception {
-
-        Map<String,String[]> paramsToTest = new HashMap<String,String[]>();
-        
-        QueryParameters params = new QueryParameters(paramsToTest);
-
-        String renderedList = params.listToString(List.of("cat","dog"));
-
-        assertThat(renderedList).isEqualTo("'cat','dog'");
-    }
 
 
-    @Test
-    public void testQueryParametersCanCreateASortedQuotedList() throws Exception {
 
-        Map<String,String[]> paramsToTest = new HashMap<String,String[]>();
-        
-        QueryParameters params = new QueryParameters(paramsToTest);
-
-        String renderedList = params.listToString(List.of("cat","dog"));
-        assertThat(renderedList).isEqualTo("'cat','dog'");
-
-        renderedList = params.listToString(List.of("dog","cat"));
-        assertThat(renderedList).isEqualTo("'cat','dog'");
-    }
 
     @Test
     public void testQueryParametersCanGiveAListOfUnusedQueryParametersWhenOneParamIsUsed() throws Exception {
@@ -70,7 +47,7 @@ public class TestQueryParameters {
         QueryParameters params = new QueryParameters(paramsToTest);
 
         // When...
-        InternalServletException ex = catchThrowableOfType( ()->params.checkForUnsupportedQueryParameters(List.of("animal")) , InternalServletException.class);
+        InternalServletException ex = catchThrowableOfType( ()->params.checkForUnsupportedQueryParameters(new SupportedQueryParameterNames("animal")) , InternalServletException.class);
 
         assertThat(ex).hasMessageContaining("'animal'","'colour','size'");
     }

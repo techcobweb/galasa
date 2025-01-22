@@ -89,7 +89,6 @@ public class SecretDetailsRoute extends AbstractSecretsRoute {
     @Override
     public HttpServletResponse handlePutRequest(
         String pathInfo,
-        QueryParameters queryParams,
         HttpServletRequest request,
         HttpServletResponse response
     ) throws FrameworkException, IOException {
@@ -130,7 +129,6 @@ public class SecretDetailsRoute extends AbstractSecretsRoute {
     @Override
     public HttpServletResponse handleDeleteRequest(
         String pathInfo,
-        QueryParameters queryParams,
         HttpServletRequest request,
         HttpServletResponse response
     ) throws FrameworkException {

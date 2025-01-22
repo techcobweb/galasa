@@ -30,7 +30,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
     @Test
     public void TestPathRegexExpectedPathReturnsTrue(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "/namespace/name/prefix/prop/suffix/erty";
 
         //When...
@@ -43,7 +43,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
     @Test
     public void TestPathRegexExpectedPathWithTrailingSlashReturnsTrue(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "/namespace/name/prefix/prop/suffix/erty/";
 
         //When...
@@ -56,7 +56,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
 	@Test
     public void TestPathRegexExpectedPathWithAtSymbolReturnsTrue(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "/namespace/name/prefix/Galasadelivery@ibm.com/suffix/erty/";
 
         //When...
@@ -69,7 +69,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
     @Test
     public void TestPathRegexNoSuffixInPathReturnsFalse(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "/namespace/name/prefix/prop/suffix";
 
         //When...
@@ -82,7 +82,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
     @Test
     public void TestPathRegexIncompletePathReturnsFalse(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "/namespace/name/";
 
         //When...
@@ -95,7 +95,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
 	@Test
     public void TestPathRegexHalfPathReturnsFalse(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "/namespace/";
 
         //When...
@@ -108,7 +108,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
     @Test
     public void TestPathRegexLowerCasePathReturnsFalse(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "/thisisapath";
 
         //When...
@@ -121,7 +121,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
     @Test
     public void TestPathRegexUpperCasePathReturnsFalse(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "/ALLCAPITALS";
 
         //When...
@@ -134,7 +134,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
     @Test
     public void TestPathRegexNumberPathReturnsFalse(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "/1234";
 
         //When...
@@ -147,7 +147,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
     @Test
     public void TestPathRegexUnexpectedPathReturnsTrue(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "/incorrect-?ID_1234";
 
         //When...
@@ -160,7 +160,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
     @Test
     public void TestPathRegexEmptyPathReturnsFalse(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "";
 
         //When...
@@ -173,7 +173,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
     @Test
     public void TestPathRegexDotPathReturnsFalse(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "/random.String";
 
         //When...
@@ -186,7 +186,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
     @Test
     public void TestPathRegexSpecialCharacterPathReturnsFalse(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "/?";
 
         //When...
@@ -199,7 +199,7 @@ public class TestAllPropertiesInNamespaceFilteredRoute extends CpsServletTest {
     @Test
     public void TestPathRegexMultipleForwardSlashPathReturnsFalse(){
         //Given...
-        String expectedPath = AllPropertiesInNamesapceFilteredRoute.path;
+        String expectedPath = AllPropertiesInNamespaceFilteredRoute.path;
         String inputPath = "//////";
 
         //When...

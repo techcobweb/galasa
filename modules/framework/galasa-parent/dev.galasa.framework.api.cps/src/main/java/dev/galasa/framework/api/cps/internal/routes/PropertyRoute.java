@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +19,7 @@ import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
+import dev.galasa.framework.api.common.SupportedQueryParameterNames;
 import dev.galasa.framework.api.common.resources.CPSFacade;
 import dev.galasa.framework.api.common.resources.CPSNamespace;
 import dev.galasa.framework.api.common.resources.CPSProperty;
@@ -37,6 +37,12 @@ public class PropertyRoute extends CPSRoute{
 
     public PropertyRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
         super(responseBuilder, path , framework, env);
+    }
+
+
+    @Override 
+    public SupportedQueryParameterNames getSupportedQueryParameterNames() {
+        return SUPPORTED_QUERY_PARAMETER_NAMES ;
     }
 
     /*
@@ -61,9 +67,9 @@ public class PropertyRoute extends CPSRoute{
                 ServletError error = new ServletError(GAL5016_INVALID_NAMESPACE_ERROR, namespaceName);
                 throw new InternalServletException(error, HttpServletResponse.SC_NOT_FOUND);
             }
-            String prefix = queryParams.getSingleString("prefix", null);
-            String suffix = queryParams.getSingleString("suffix", null);
-            List<String> infixes = queryParams.getMultipleString("infix", null);
+            String prefix = queryParams.getSingleString(QUERY_PARAMETER_PREFIX, null);
+            String suffix = queryParams.getSingleString(QUERY_PARAMETER_SUFFIX, null);
+            List<String> infixes = queryParams.getMultipleString(QUERY_PARAMETER_INFIX, null);
             Map<GalasaPropertyName, CPSProperty> propertiesMap = getProperties(namespace, prefix, suffix, infixes);
             properties = buildResponseBody(propertiesMap);
         }catch (FrameworkException f){
@@ -77,7 +83,7 @@ public class PropertyRoute extends CPSRoute{
      * Property Create
      */
     @Override
-    public HttpServletResponse handlePostRequest(String pathInfo, QueryParameters queryParameters,
+    public HttpServletResponse handlePostRequest(String pathInfo,
             HttpServletRequest request, HttpServletResponse response)
             throws  IOException, FrameworkException {
 

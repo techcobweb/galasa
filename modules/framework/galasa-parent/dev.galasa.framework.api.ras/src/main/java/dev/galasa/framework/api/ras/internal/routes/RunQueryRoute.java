@@ -15,6 +15,7 @@ import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
+import dev.galasa.framework.api.common.SupportedQueryParameterNames;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.TestRunLifecycleStatus;
 import dev.galasa.framework.api.ras.internal.common.RasQueryParameters;
@@ -63,6 +64,32 @@ public class RunQueryRoute extends RunsRoute {
         "testclass", "testName"
     );
 
+	public static final String QUERY_PARAMETER_SORT = "sort";
+	public static final String QUERY_PARAMETER_RESULT = "result";
+	public static final String QUERY_PARAMETER_STATUS = "status";
+	public static final String QUERY_PARAMETER_BUNDLE = "bundle";
+	public static final String QUERY_PARAMETER_REQUESTOR = "requestor";
+	public static final String QUERY_PARAMETER_FROM = "from";
+	public static final String QUERY_PARAMETER_TO = "to";
+	public static final String QUERY_PARAMETER_TESTNAME = "testname";
+	public static final String QUERY_PARAMETER_PAGE = "page";
+	public static final String QUERY_PARAMETER_SIZE = "size";
+	public static final String QUERY_PARAMETER_GROUP = "group";
+	public static final String QUERY_PARAMETER_INCLUDECURSOR = "includecursor";
+	public static final String QUERY_PARAMETER_CURSOR = "cursor";
+	public static final String QUERY_PARAMETER_RUNNAME = "runname";
+	public static final String QUERY_PARAMETER_RUNID = "runid";
+    public static final SupportedQueryParameterNames SUPPORTED_QUERY_PARAMETER_NAMES = new SupportedQueryParameterNames(
+		QUERY_PARAMETER_SORT, QUERY_PARAMETER_RESULT, QUERY_PARAMETER_STATUS,
+		QUERY_PARAMETER_BUNDLE, QUERY_PARAMETER_REQUESTOR, QUERY_PARAMETER_FROM,
+		QUERY_PARAMETER_TO, QUERY_PARAMETER_TESTNAME, QUERY_PARAMETER_PAGE,
+		QUERY_PARAMETER_SIZE, QUERY_PARAMETER_GROUP, QUERY_PARAMETER_INCLUDECURSOR,
+		QUERY_PARAMETER_CURSOR, QUERY_PARAMETER_RUNNAME, QUERY_PARAMETER_RUNID
+	);
+
+
+	private static final GalasaGson gson = new GalasaGson();
+
 	public RunQueryRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
 		/* Regex to match endpoints:
 		*  -> /ras/runs
@@ -70,14 +97,19 @@ public class RunQueryRoute extends RunsRoute {
 		*  -> /ras/runs?{querystring}
 		*/
 		super(responseBuilder, path, framework, env);
-
 	}
 
-	static final GalasaGson gson = new GalasaGson();
+	@Override 
+	public SupportedQueryParameterNames getSupportedQueryParameterNames() {
+		return SUPPORTED_QUERY_PARAMETER_NAMES;
+	}
 
 	@Override
 	public HttpServletResponse handleGetRequest(String pathInfo, QueryParameters generalQueryParams, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException, FrameworkException {
 		RasQueryParameters queryParams = new RasQueryParameters(generalQueryParams);
+
+
+
 		String outputString = retrieveResults(queryParams);
 		return getResponseBuilder().buildResponse(req, res, "application/json", outputString, HttpServletResponse.SC_OK);
 	}

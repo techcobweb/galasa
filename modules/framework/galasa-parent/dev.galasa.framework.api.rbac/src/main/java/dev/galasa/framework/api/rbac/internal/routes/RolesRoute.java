@@ -18,6 +18,7 @@ import dev.galasa.framework.api.beans.generated.RBACRole;
 import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
+import dev.galasa.framework.api.common.SupportedQueryParameterNames;
 import dev.galasa.framework.api.rbac.RoleTransform;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.rbac.RBACService;
@@ -43,7 +44,14 @@ public class RolesRoute extends AbstractRBACRoute {
     }
 
     public static final String QUERY_PARAMETER_NAME_NAME = "name";
-    private static final List<String> supportedQueryParameters = List.of(QUERY_PARAMETER_NAME_NAME);
+    public static final SupportedQueryParameterNames SUPPORTED_QUERY_PARAMETER_NAMES = new SupportedQueryParameterNames(
+        QUERY_PARAMETER_NAME_NAME
+    );
+
+    @Override
+    public SupportedQueryParameterNames getSupportedQueryParameterNames() {
+        return SUPPORTED_QUERY_PARAMETER_NAMES;
+    }
 
     @Override
     public HttpServletResponse handleGetRequest(
@@ -54,9 +62,6 @@ public class RolesRoute extends AbstractRBACRoute {
     ) throws FrameworkException {
 
         logger.info("handleGetRequest() entered. Getting roles");
-
-        // TODO: This check should really be in the servlet, checking all routes, but that's a big change, so just leaving it here for now.
-        queryParams.checkForUnsupportedQueryParameters(supportedQueryParameters);
 
         Collection<Role> roles ;
 
