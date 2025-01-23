@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 
 import dev.galasa.ICredentialsUsernamePassword;
 import dev.galasa.cicsts.CicstsManagerException;
+import dev.galasa.cicsts.ICicsRegion;
 import dev.galasa.cicsts.ICicsTerminal;
 import dev.galasa.cicsts.internal.properties.DefaultLogonGmText;
 import dev.galasa.cicsts.internal.properties.DefaultLogonInitialText;
@@ -18,6 +19,7 @@ import dev.galasa.framework.spi.IConfidentialTextService;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.creds.CredentialsException;
 import dev.galasa.framework.spi.creds.ICredentialsService;
+import dev.galasa.zos.IZosImage;
 import dev.galasa.zos3270.Zos3270Exception;
 
 public class CicstsDefaultLogonProvider implements ICicsRegionLogonProvider {
@@ -63,11 +65,12 @@ public class CicstsDefaultLogonProvider implements ICicsRegionLogonProvider {
                 checkForInitialText(cicsTerminal);
             }
 
-            cicsTerminal.type("LOGON APPLID(" + cicsTerminal.getCicsRegion().getApplid() + ")").enter().wfk();
+            ICicsRegion region = cicsTerminal.getCicsRegion();
+            cicsTerminal.type(region.getZosImage().getVtamLogonString(region.getApplid())).enter().wfk();
 
             waitForGmText(cicsTerminal);
 
-            logger.debug("Logged onto " + cicsTerminal.getCicsRegion());
+            logger.debug("Logged onto " + region);
 
             // If loginCredentialsTag is provided, attempt to sign-in
             // via CESL

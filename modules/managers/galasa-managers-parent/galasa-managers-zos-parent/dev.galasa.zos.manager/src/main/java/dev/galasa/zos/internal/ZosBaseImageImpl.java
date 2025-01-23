@@ -6,6 +6,7 @@
 package dev.galasa.zos.internal;
 
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 
 import javax.validation.constraints.NotNull;
 
@@ -18,6 +19,7 @@ import dev.galasa.zos.IZosImage;
 import dev.galasa.zos.ZosManagerException;
 import dev.galasa.zos.internal.properties.ImageCodePage;
 import dev.galasa.zos.internal.properties.ImageSysname;
+import dev.galasa.zos.internal.properties.ImageVtamLogon;
 
 public abstract class ZosBaseImageImpl implements IZosImage {
 
@@ -26,6 +28,7 @@ public abstract class ZosBaseImageImpl implements IZosImage {
 
     private final String        imageId;
     private final String        sysname;
+    private final String        vtamLogonString;
     private final String        clusterId;
     private final String        sysplexID;
     private final String        defaultCredentialsId;
@@ -50,6 +53,7 @@ public abstract class ZosBaseImageImpl implements IZosImage {
         try {
             this.codePage = ImageCodePage.get(this.imageId);
             this.sysname = ImageSysname.get(this.imageId);
+            this.vtamLogonString = ImageVtamLogon.get(imageId);
             this.sysplexID = AbstractManager.nulled(this.cps.getProperty("image." + this.imageId, "sysplex"));
             this.defaultCredentialsId = AbstractManager.defaultString(this.cps.getProperty("image", "credentials", this.imageId), "ZOS");
         } catch(Exception e) {
@@ -84,6 +88,11 @@ public abstract class ZosBaseImageImpl implements IZosImage {
     @Override
     public @NotNull String getSysname() {
         return this.sysname;
+    }
+
+    @Override
+    public @NotNull String getVtamLogonString(String applid) {
+        return MessageFormat.format(this.vtamLogonString, applid);
     }
 
     @Override
