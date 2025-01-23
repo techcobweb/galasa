@@ -177,7 +177,7 @@ public class Zos3270IVT {
 	// 	terminal.disconnect();
 	// 	terminal.connect();
 
-	// 	terminal.wfk().type("logon applid(" + cbsaApplid + ")").enter().wfk().waitForTextInField("Signon to CICS");
+	// 	terminal.wfk().type(image.getVtamLogonString(cbsaApplid)).enter().wfk().waitForTextInField("Signon to CICS");
 	// 	terminal.wfk().type(credentials.getUsername()).tab().tab().type(credentials.getPassword()).enter().wfk();
 
 	// 	// access CBSA and look up customer with ID 1
