@@ -19,7 +19,8 @@ public enum BuiltInAction {
     SECRETS_SET                   (new ActionImpl("SECRETS_SET", "Secrets set", "Able to set secrets")),
     SECRETS_DELETE                (new ActionImpl("SECRETS_DELETE", "Secrets delete", "Able to delete secrets")),
     CPS_PROPERTIES_SET            (new ActionImpl("CPS_PROPERTIES_SET", "CPS properties set", "Able to set CPS properties")),
-    CPS_PROPERTIES_DELETE         (new ActionImpl("CPS_PROPERTIES_DELETE", "CPS properties delete", "Able to delete CPS properties"));
+    CPS_PROPERTIES_DELETE         (new ActionImpl("CPS_PROPERTIES_DELETE", "CPS properties delete", "Able to delete CPS properties")),
+    RUNS_DELETE_OTHER_USERS       (new ActionImpl("RUNS_DELETE_OTHER_USERS", "Runs delete other users", "Able to delete runs submitted by other users"));
 
     private Action action;
     private static List<Action> allActions = Stream.of(values())

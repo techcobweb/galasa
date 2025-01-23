@@ -37,14 +37,15 @@ public class TestRBACServiceImpl {
         assertThat(roleGot.getDescription()).contains("Administrator access");
 
         assertThat(roleGot.getActionIds())
-            .hasSize(7)
+            .hasSize(8)
             .contains("USER_ROLE_UPDATE_ANY")
             .contains("SECRETS_GET_UNREDACTED_VALUES")
             .contains("GENERAL_API_ACCESS")
             .contains("CPS_PROPERTIES_DELETE")
             .contains("CPS_PROPERTIES_SET")
             .contains("SECRETS_SET")
-            .contains("SECRETS_DELETE");
+            .contains("SECRETS_DELETE")
+            .contains("RUNS_DELETE_OTHER_USERS");
     }
 
     @Test
@@ -150,6 +151,19 @@ public class TestRBACServiceImpl {
     }
 
     @Test 
+    public void testActionsMapByIdContainsActionRunsDeleteOtherUsers() throws Exception {
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService);
+        Map<String,Action> actionMap = service.getActionsMapById();
+
+        Action action = actionMap.get("RUNS_DELETE_OTHER_USERS");
+        assertThat(action.getId()).isEqualTo("RUNS_DELETE_OTHER_USERS");
+    }
+
+    @Test 
     public void testActionsMapByIdContainsActionGeneralApiAccess() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
@@ -242,6 +256,17 @@ public class TestRBACServiceImpl {
         RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService);
         Action actionGotBack = service.getActionById("CPS_PROPERTIES_DELETE");
         assertThat(actionGotBack.getId()).isEqualTo("CPS_PROPERTIES_DELETE");
+    }
+
+    @Test
+    public void testServiceCanLookupRunsDeleteOtherUsersActionById() throws Exception {
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService);
+        Action actionGotBack = service.getActionById("RUNS_DELETE_OTHER_USERS");
+        assertThat(actionGotBack.getId()).isEqualTo("RUNS_DELETE_OTHER_USERS");
     }
 
     @Test
