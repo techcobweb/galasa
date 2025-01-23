@@ -174,7 +174,6 @@ public class GalasaSecretProcessor extends AbstractGalasaResourceProcessor imple
     public void validateActionPermissions(ResourceAction action, String loginId) throws InternalServletException {
         try {
             // TODO: This code is identical to the validateActionPermitted in the ProtectedRoute class - needs to be refactored
-            // Check if the user is allowed to set secrets
             Action requestedAction = null;
             switch (action) {
                 case APPLY:

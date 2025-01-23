@@ -7,7 +7,6 @@ package dev.galasa.framework.api.resources.processors;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 import static dev.galasa.framework.api.common.resources.ResourceAction.*;
-import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 import java.util.List;
 
@@ -25,6 +24,7 @@ import dev.galasa.framework.api.common.resources.ResourceAction;
 import dev.galasa.framework.api.resources.validators.GalasaPropertyValidator;
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
 import dev.galasa.framework.spi.rbac.Action;
+import dev.galasa.framework.spi.rbac.BuiltInAction;
 import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.rbac.RBACService;
 
@@ -85,13 +85,21 @@ public class GalasaPropertyProcessor extends AbstractGalasaResourceProcessor imp
     public void validateActionPermissions(ResourceAction action, String loginId) throws InternalServletException {
         try {
             // TODO: This code is identical to the validateActionPermitted in the ProtectedRoute class - needs to be refactored
-            // Check if the user is allowed to set properties
-            if (action == APPLY || action == CREATE || action == UPDATE) {
-                Action propertiesSetAction = CPS_PROPERTIES_SET.getAction();
-                if (!rbacService.isActionPermitted(loginId, propertiesSetAction.getId())) {
-                    ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, propertiesSetAction.getId());
-                    throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
-                }
+            Action requestedAction = null;
+            switch (action) {
+                case APPLY:
+                case CREATE:
+                case UPDATE:
+                    requestedAction = BuiltInAction.CPS_PROPERTIES_SET.getAction();
+                    break;
+                case DELETE:
+                    requestedAction = BuiltInAction.CPS_PROPERTIES_DELETE.getAction();
+                    break;
+            }
+   
+            if (!rbacService.isActionPermitted(loginId, requestedAction.getId())) {
+                ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, requestedAction.getId());
+                throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
             }
         } catch (RBACException e) {
             ServletError error = new ServletError(GAL5126_INTERNAL_RBAC_ERROR);

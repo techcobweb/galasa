@@ -493,4 +493,27 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         assertThat(thrown).isNotNull();
         checkErrorStructure(thrown.getMessage(), 5125, "GAL5125E", "CPS_PROPERTIES_SET");
     }
+
+    @Test
+    public void testValidateDeletePermissionsWithMissingPropertiesDeleteReturnsForbidden() throws Exception {
+        // Given...
+        List<Action> permittedActions = List.of(GENERAL_API_ACCESS.getAction());
+        MockRBACService mockRbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, permittedActions);
+
+        MockIConfigurationPropertyStoreService cpsService = new MockIConfigurationPropertyStoreService();
+        MockFramework mockFramework = new MockFramework(cpsService);
+        mockFramework.setRBACService(mockRbacService);
+
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+
+        // When...
+        InternalServletException thrown = catchThrowableOfType(() -> {
+            propertyProcessor.validateActionPermissions(DELETE, JWT_USERNAME);
+        }, InternalServletException.class);
+
+        // Then...
+        assertThat(thrown).isNotNull();
+        checkErrorStructure(thrown.getMessage(), 5125, "GAL5125E", "CPS_PROPERTIES_DELETE");
+    }
 }
