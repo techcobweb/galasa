@@ -175,12 +175,21 @@ public class GalasaSecretProcessor extends AbstractGalasaResourceProcessor imple
         try {
             // TODO: This code is identical to the validateActionPermitted in the ProtectedRoute class - needs to be refactored
             // Check if the user is allowed to set secrets
-            if (action == APPLY || action == CREATE || action == UPDATE) {
-                Action secretsSetAction = BuiltInAction.SECRETS_SET.getAction();
-                if (!rbacService.isActionPermitted(loginId, secretsSetAction.getId())) {
-                    ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, secretsSetAction.getId());
-                    throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
-                }
+            Action requestedAction = null;
+            switch (action) {
+                case APPLY:
+                case CREATE:
+                case UPDATE:
+                    requestedAction = BuiltInAction.SECRETS_SET.getAction();
+                    break;
+                case DELETE:
+                    requestedAction = BuiltInAction.SECRETS_DELETE.getAction();
+                    break;
+            }
+   
+            if (!rbacService.isActionPermitted(loginId, requestedAction.getId())) {
+                ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, requestedAction.getId());
+                throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
             }
         } catch (RBACException e) {
             ServletError error = new ServletError(GAL5126_INTERNAL_RBAC_ERROR);

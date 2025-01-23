@@ -833,4 +833,25 @@ public class GalasaSecretProcessorTest extends ResourcesServletTest {
         assertThat(thrown).isNotNull();
         checkErrorStructure(thrown.getMessage(), 5125, "GAL5125E", "SECRETS_SET");
     }
+
+    @Test
+    public void testValidateDeletePermissionsWithMissingSecretDeleteReturnsForbidden() throws Exception {
+        // Given...
+        Instant lastUpdatedTime = Instant.EPOCH;
+        MockTimeService mockTimeService = new MockTimeService(lastUpdatedTime);
+        MockCredentialsService mockCreds = new MockCredentialsService(new HashMap<>());
+        List<Action> permittedActions = List.of(GENERAL_API_ACCESS.getAction());
+        MockRBACService mockRbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, permittedActions);
+
+        GalasaSecretProcessor secretProcessor = new GalasaSecretProcessor(mockCreds, mockTimeService, mockRbacService);
+
+        // When...
+        InternalServletException thrown = catchThrowableOfType(() -> {
+            secretProcessor.validateActionPermissions(DELETE, JWT_USERNAME);
+        }, InternalServletException.class);
+
+        // Then...
+        assertThat(thrown).isNotNull();
+        checkErrorStructure(thrown.getMessage(), 5125, "GAL5125E", "SECRETS_DELETE");
+    }
 }

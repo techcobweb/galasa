@@ -17,6 +17,7 @@ public enum BuiltInAction {
     USER_ROLE_UPDATE_ANY          (new ActionImpl("USER_ROLE_UPDATE_ANY", "User role update any", "Able to update the role of any user")),
     SECRETS_GET_UNREDACTED_VALUES (new ActionImpl("SECRETS_GET_UNREDACTED_VALUES", "Get secret values", "Able to get unredacted secret values")),
     SECRETS_SET                   (new ActionImpl("SECRETS_SET", "Secrets set", "Able to set secrets")),
+    SECRETS_DELETE                (new ActionImpl("SECRETS_DELETE", "Secrets delete", "Able to delete secrets")),
     CPS_PROPERTIES_SET            (new ActionImpl("CPS_PROPERTIES_SET", "CPS properties set", "Able to set CPS properties"));
 
     private Action action;

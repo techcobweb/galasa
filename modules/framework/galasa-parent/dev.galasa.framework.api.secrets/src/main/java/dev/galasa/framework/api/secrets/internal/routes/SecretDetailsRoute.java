@@ -138,6 +138,7 @@ public class SecretDetailsRoute extends AbstractSecretsRoute {
         HttpServletResponse response
     ) throws FrameworkException {
         logger.info("handleDeleteRequest() entered");
+        validateActionPermitted(BuiltInAction.SECRETS_DELETE, requestContext.getUsername());
 
         HttpServletRequest request = requestContext.getRequest();
 
