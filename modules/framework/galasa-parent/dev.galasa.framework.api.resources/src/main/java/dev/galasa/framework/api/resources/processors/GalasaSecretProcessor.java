@@ -29,16 +29,14 @@ import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.api.common.resources.GalasaSecretType;
 import dev.galasa.framework.api.common.resources.ResourceAction;
 import dev.galasa.framework.api.common.resources.Secret;
+import dev.galasa.framework.api.common.RBACValidator;
 import dev.galasa.framework.api.resources.validators.GalasaSecretValidator;
 import dev.galasa.framework.spi.creds.CredentialsToken;
 import dev.galasa.framework.spi.creds.CredentialsUsername;
 import dev.galasa.framework.spi.creds.CredentialsUsernamePassword;
 import dev.galasa.framework.spi.creds.CredentialsUsernameToken;
 import dev.galasa.framework.spi.creds.ICredentialsService;
-import dev.galasa.framework.spi.rbac.Action;
 import dev.galasa.framework.spi.rbac.BuiltInAction;
-import dev.galasa.framework.spi.rbac.RBACException;
-import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.ITimeService;
 
 /**
@@ -54,9 +52,9 @@ public class GalasaSecretProcessor extends AbstractGalasaResourceProcessor imple
     public GalasaSecretProcessor(
         ICredentialsService credentialsService,
         ITimeService timeService,
-        RBACService rbacService
+        RBACValidator rbacValidator
     ) {
-        super(rbacService);
+        super(rbacValidator);
         this.credentialsService = credentialsService;
         this.timeService = timeService;
     }
@@ -172,27 +170,7 @@ public class GalasaSecretProcessor extends AbstractGalasaResourceProcessor imple
 
     @Override
     public void validateActionPermissions(ResourceAction action, String loginId) throws InternalServletException {
-        try {
-            // TODO: This code is identical to the validateActionPermitted in the ProtectedRoute class - needs to be refactored
-            Action requestedAction = null;
-            switch (action) {
-                case APPLY:
-                case CREATE:
-                case UPDATE:
-                    requestedAction = BuiltInAction.SECRETS_SET.getAction();
-                    break;
-                case DELETE:
-                    requestedAction = BuiltInAction.SECRETS_DELETE.getAction();
-                    break;
-            }
-   
-            if (!rbacService.isActionPermitted(loginId, requestedAction.getId())) {
-                ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, requestedAction.getId());
-                throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
-            }
-        } catch (RBACException e) {
-            ServletError error = new ServletError(GAL5126_INTERNAL_RBAC_ERROR);
-            throw new InternalServletException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
+        BuiltInAction requestedAction = getResourceActionAsBuiltInAction(action, BuiltInAction.SECRETS_SET, BuiltInAction.SECRETS_DELETE);
+        rbacValidator.validateActionPermitted(requestedAction, loginId);
     }
 }

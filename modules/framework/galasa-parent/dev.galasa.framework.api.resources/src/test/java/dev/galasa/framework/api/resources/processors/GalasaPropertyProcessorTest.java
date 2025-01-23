@@ -20,6 +20,7 @@ import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.mocks.MockFramework;
 import dev.galasa.framework.api.common.mocks.MockIConfigurationPropertyStoreService;
 import dev.galasa.framework.api.common.resources.CPSFacade;
+import dev.galasa.framework.api.common.RBACValidator;
 import dev.galasa.framework.api.resources.ResourcesServletTest;
 import dev.galasa.framework.api.resources.mocks.MockResourcesServlet;
 import dev.galasa.framework.mocks.FilledMockRBACService;
@@ -41,7 +42,9 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
 
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -62,7 +65,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -83,7 +87,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -108,7 +113,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -132,7 +138,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -156,7 +163,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -180,7 +188,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -204,7 +213,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -228,7 +238,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -252,7 +263,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -276,7 +288,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -300,7 +313,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -325,7 +339,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "galasa-dev/v1alpha1");
 
         //When...
@@ -351,7 +366,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         String jsonString = "{\"apiVersion\": \"galasa-dev/v1alpha1\",\n\"kind\": \"GalasaProperty\",\"metadata\": {},\"data\": {}}";
         JsonObject propertyJson = JsonParser.parseString(jsonString).getAsJsonObject();
 
@@ -379,7 +395,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         JsonObject propertyJson = generatePropertyJson(namespace, propertyname, value, "");
 
         //When...
@@ -404,7 +421,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         MockResourcesServlet servlet = getServlet();
         IFramework mockFramework = servlet.getFramework();
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
         String jsonString = "{\"apiVersion\":\"galasa-dev/v1alpha1\","+namespace+"."+propertyname+":"+value+"}";
         JsonObject propertyJson = JsonParser.parseString(jsonString).getAsJsonObject();
 
@@ -436,7 +454,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         mockFramework.setRBACService(mockRbacService);
 
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
 
         // When...
         InternalServletException thrown = catchThrowableOfType(() -> {
@@ -459,7 +478,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         mockFramework.setRBACService(mockRbacService);
 
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
 
         // When...
         InternalServletException thrown = catchThrowableOfType(() -> {
@@ -482,7 +502,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         mockFramework.setRBACService(mockRbacService);
 
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
 
         // When...
         InternalServletException thrown = catchThrowableOfType(() -> {
@@ -505,7 +526,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         mockFramework.setRBACService(mockRbacService);
 
         CPSFacade cps = new CPSFacade(mockFramework);
-        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+        RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, rbacValidator);
 
         // When...
         InternalServletException thrown = catchThrowableOfType(() -> {
