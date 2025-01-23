@@ -35,6 +35,10 @@ import dev.galasa.framework.spi.creds.CredentialsUsername;
 import dev.galasa.framework.spi.creds.CredentialsUsernamePassword;
 import dev.galasa.framework.spi.creds.CredentialsUsernameToken;
 import dev.galasa.framework.spi.creds.ICredentialsService;
+import dev.galasa.framework.spi.rbac.Action;
+import dev.galasa.framework.spi.rbac.BuiltInAction;
+import dev.galasa.framework.spi.rbac.RBACException;
+import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.ITimeService;
 
 /**
@@ -47,7 +51,12 @@ public class GalasaSecretProcessor extends AbstractGalasaResourceProcessor imple
     private ICredentialsService credentialsService;
     private ITimeService timeService;
 
-    public GalasaSecretProcessor(ICredentialsService credentialsService, ITimeService timeService) {
+    public GalasaSecretProcessor(
+        ICredentialsService credentialsService,
+        ITimeService timeService,
+        RBACService rbacService
+    ) {
+        super(rbacService);
         this.credentialsService = credentialsService;
         this.timeService = timeService;
     }
@@ -162,8 +171,20 @@ public class GalasaSecretProcessor extends AbstractGalasaResourceProcessor imple
     }
 
     @Override
-    public void validateActionPermissions(ResourceAction action, String username) throws InternalServletException {
-        // TODO: Implement SECRETS_SET and SECRETS_DELETE as part of story https://github.com/galasa-dev/projectmanagement/issues/2110
-        // Do nothing for now...
+    public void validateActionPermissions(ResourceAction action, String loginId) throws InternalServletException {
+        try {
+            // TODO: This code is identical to the validateActionPermitted in the ProtectedRoute class - needs to be refactored
+            // Check if the user is allowed to set secrets
+            if (action == APPLY || action == CREATE || action == UPDATE) {
+                Action secretsSetAction = BuiltInAction.SECRETS_SET.getAction();
+                if (!rbacService.isActionPermitted(loginId, secretsSetAction.getId())) {
+                    ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, secretsSetAction.getId());
+                    throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
+                }
+            }
+        } catch (RBACException e) {
+            ServletError error = new ServletError(GAL5126_INTERNAL_RBAC_ERROR);
+            throw new InternalServletException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 }

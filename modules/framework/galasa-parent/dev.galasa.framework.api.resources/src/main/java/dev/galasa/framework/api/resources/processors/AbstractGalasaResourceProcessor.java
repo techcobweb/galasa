@@ -15,11 +15,18 @@ import com.google.gson.JsonObject;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.resources.GalasaResourceValidator;
 import dev.galasa.framework.api.common.resources.ResourceAction;
+import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 public abstract class AbstractGalasaResourceProcessor {
     protected static final Set<ResourceAction> updateActions = Set.of(APPLY, UPDATE);
     protected static final GalasaGson gson = new GalasaGson();
+    
+    protected RBACService rbacService;
+
+    public AbstractGalasaResourceProcessor(RBACService rbacService) {
+        this.rbacService = rbacService;
+    }
 
     protected List<String> checkGalasaResourceJsonStructure(GalasaResourceValidator<JsonObject> validator, JsonObject propertyJson) throws InternalServletException {
         validator.validate(propertyJson);

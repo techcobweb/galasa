@@ -37,11 +37,12 @@ public class TestRBACServiceImpl {
         assertThat(roleGot.getDescription()).contains("Administrator access");
 
         assertThat(roleGot.getActionIds())
-            .hasSize(4)
+            .hasSize(5)
             .contains("USER_ROLE_UPDATE_ANY")
             .contains("SECRETS_GET_UNREDACTED_VALUES")
             .contains("GENERAL_API_ACCESS")
-            .contains("CPS_PROPERTIES_SET");
+            .contains("CPS_PROPERTIES_SET")
+            .contains("SECRETS_SET");
     }
 
     @Test
@@ -108,6 +109,19 @@ public class TestRBACServiceImpl {
     }
 
     @Test 
+    public void testActionsMapByIdContainsActionSecretsSet() throws Exception {
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService);
+        Map<String,Action> actionMap = service.getActionsMapById();
+
+        Action action = actionMap.get("SECRETS_SET");
+        assertThat(action.getId()).isEqualTo("SECRETS_SET");
+    }
+
+    @Test 
     public void testActionsMapByIdContainsActionGeneralApiAccess() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
@@ -145,6 +159,20 @@ public class TestRBACServiceImpl {
         Action action = actionMapById.get("SECRETS_GET_UNREDACTED_VALUES");
 
         assertThat(action.getId()).isEqualTo("SECRETS_GET_UNREDACTED_VALUES");
+    }
+
+    @Test
+    public void testActionsMapByNameContainsSecretsSet() throws Exception {
+        MockTimeService mockTimeService = new MockTimeService(Instant.now());
+        MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService);
+        Map<String,Action> actionMapById = service.getActionsMapById();
+
+        Action action = actionMapById.get("SECRETS_SET");
+
+        assertThat(action.getId()).isEqualTo("SECRETS_SET");
     }
 
     @Test

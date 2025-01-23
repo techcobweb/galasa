@@ -16,6 +16,7 @@ public enum BuiltInAction {
     GENERAL_API_ACCESS            (new ActionImpl("GENERAL_API_ACCESS", "General API access", "Able to access the REST API" )),
     USER_ROLE_UPDATE_ANY          (new ActionImpl("USER_ROLE_UPDATE_ANY", "User role update any", "Able to update the role of any user")),
     SECRETS_GET_UNREDACTED_VALUES (new ActionImpl("SECRETS_GET_UNREDACTED_VALUES", "Get secret values", "Able to get unredacted secret values")),
+    SECRETS_SET                   (new ActionImpl("SECRETS_SET", "Secrets set", "Able to set secrets")),
     CPS_PROPERTIES_SET            (new ActionImpl("CPS_PROPERTIES_SET", "CPS properties set", "Able to set CPS properties"));
 
     private Action action;

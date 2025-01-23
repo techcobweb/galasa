@@ -31,11 +31,10 @@ import dev.galasa.framework.spi.rbac.RBACService;
 public class GalasaPropertyProcessor extends AbstractGalasaResourceProcessor implements IGalasaResourceProcessor {
 
     private CPSFacade cps;
-    private RBACService rbacService;
 
     public GalasaPropertyProcessor(CPSFacade cps, RBACService rbacService) {
+        super(rbacService);
         this.cps = cps;
-        this.rbacService = rbacService;
     }
 
     @Override
@@ -85,6 +84,7 @@ public class GalasaPropertyProcessor extends AbstractGalasaResourceProcessor imp
     @Override
     public void validateActionPermissions(ResourceAction action, String loginId) throws InternalServletException {
         try {
+            // TODO: This code is identical to the validateActionPermitted in the ProtectedRoute class - needs to be refactored
             // Check if the user is allowed to set properties
             if (action == APPLY || action == CREATE || action == UPDATE) {
                 Action propertiesSetAction = CPS_PROPERTIES_SET.getAction();

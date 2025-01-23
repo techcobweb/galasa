@@ -7,6 +7,7 @@ package dev.galasa.framework.api.resources.processors;
 
 import static org.assertj.core.api.Assertions.*;
 import static dev.galasa.framework.api.common.resources.ResourceAction.*;
+import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 import java.util.List;
 
@@ -15,10 +16,16 @@ import org.junit.Test;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import dev.galasa.framework.api.common.InternalServletException;
+import dev.galasa.framework.api.common.mocks.MockFramework;
+import dev.galasa.framework.api.common.mocks.MockIConfigurationPropertyStoreService;
 import dev.galasa.framework.api.common.resources.CPSFacade;
 import dev.galasa.framework.api.resources.ResourcesServletTest;
 import dev.galasa.framework.api.resources.mocks.MockResourcesServlet;
+import dev.galasa.framework.mocks.FilledMockRBACService;
+import dev.galasa.framework.mocks.MockRBACService;
 import dev.galasa.framework.spi.IFramework;
+import dev.galasa.framework.spi.rbac.Action;
 
 public class GalasaPropertyProcessorTest extends ResourcesServletTest {
 
@@ -416,5 +423,74 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
             "[metadata, data]"
         );
         checkPropertyNotInNamespace(namespace,propertyname,value);
-    } 
+    }
+
+    @Test
+    public void testValidateCreatePermissionsWithMissingPropertiesSetReturnsForbidden() throws Exception {
+        // Given...
+        List<Action> permittedActions = List.of(GENERAL_API_ACCESS.getAction());
+        MockRBACService mockRbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, permittedActions);
+
+        MockIConfigurationPropertyStoreService cpsService = new MockIConfigurationPropertyStoreService();
+        MockFramework mockFramework = new MockFramework(cpsService);
+        mockFramework.setRBACService(mockRbacService);
+
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+
+        // When...
+        InternalServletException thrown = catchThrowableOfType(() -> {
+            propertyProcessor.validateActionPermissions(CREATE, JWT_USERNAME);
+        }, InternalServletException.class);
+
+        // Then...
+        assertThat(thrown).isNotNull();
+        checkErrorStructure(thrown.getMessage(), 5125, "GAL5125E", "CPS_PROPERTIES_SET");
+    }
+
+    @Test
+    public void testValidateApplyPermissionsWithMissingPropertiesSetReturnsForbidden() throws Exception {
+        // Given...
+        List<Action> permittedActions = List.of(GENERAL_API_ACCESS.getAction());
+        MockRBACService mockRbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, permittedActions);
+
+        MockIConfigurationPropertyStoreService cpsService = new MockIConfigurationPropertyStoreService();
+        MockFramework mockFramework = new MockFramework(cpsService);
+        mockFramework.setRBACService(mockRbacService);
+
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+
+        // When...
+        InternalServletException thrown = catchThrowableOfType(() -> {
+            propertyProcessor.validateActionPermissions(APPLY, JWT_USERNAME);
+        }, InternalServletException.class);
+
+        // Then...
+        assertThat(thrown).isNotNull();
+        checkErrorStructure(thrown.getMessage(), 5125, "GAL5125E", "CPS_PROPERTIES_SET");
+    }
+
+    @Test
+    public void testValidateUpdatePermissionsWithMissingPropertiesSetReturnsForbidden() throws Exception {
+        // Given...
+        List<Action> permittedActions = List.of(GENERAL_API_ACCESS.getAction());
+        MockRBACService mockRbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, permittedActions);
+
+        MockIConfigurationPropertyStoreService cpsService = new MockIConfigurationPropertyStoreService();
+        MockFramework mockFramework = new MockFramework(cpsService);
+        mockFramework.setRBACService(mockRbacService);
+
+        CPSFacade cps = new CPSFacade(mockFramework);
+        GalasaPropertyProcessor propertyProcessor = new GalasaPropertyProcessor(cps, mockFramework.getRBACService());
+
+        // When...
+        InternalServletException thrown = catchThrowableOfType(() -> {
+            propertyProcessor.validateActionPermissions(UPDATE, JWT_USERNAME);
+        }, InternalServletException.class);
+
+        // Then...
+        assertThat(thrown).isNotNull();
+        checkErrorStructure(thrown.getMessage(), 5125, "GAL5125E", "CPS_PROPERTIES_SET");
+    }
 }
