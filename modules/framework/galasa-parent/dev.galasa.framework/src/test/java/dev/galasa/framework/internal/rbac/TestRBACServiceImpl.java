@@ -13,6 +13,7 @@ import org.junit.*;
 
 import dev.galasa.framework.mocks.MockAuthStoreService;
 import dev.galasa.framework.mocks.MockEnvironment;
+import dev.galasa.framework.mocks.MockIDynamicStatusStoreService;
 import dev.galasa.framework.mocks.MockTimeService;
 import dev.galasa.framework.spi.rbac.Action;
 import dev.galasa.framework.spi.rbac.RBACService;
@@ -26,7 +27,9 @@ public class TestRBACServiceImpl {
     public void testRolesMapByIdContainsAdminRole() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService , new MockEnvironment());
         Map<String,Role> roleMap = service.getRolesMapById();
 
         Role roleGot = roleMap.get("2");
@@ -46,7 +49,9 @@ public class TestRBACServiceImpl {
     public void testRolesMapByIdContainsTesterRole() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Map<String,Role> roleMap = service.getRolesMapById();
 
         Role roleGot = roleMap.get("1");
@@ -63,7 +68,9 @@ public class TestRBACServiceImpl {
     public void testRolesMapByIdContainsDeactivateddRole() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Map<String,Role> roleMap = service.getRolesMapById();
 
         Role roleGot = roleMap.get("0");
@@ -78,7 +85,9 @@ public class TestRBACServiceImpl {
     public void testActionsMapByIdContainsActionUserRoleUpdateAny() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Map<String,Action> actionMap = service.getActionsMapById();
 
         Action action = actionMap.get("USER_ROLE_UPDATE_ANY");
@@ -90,7 +99,9 @@ public class TestRBACServiceImpl {
     public void testActionsMapByIdContainsActionSecretsGet() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Map<String,Action> actionMap = service.getActionsMapById();
 
         Action action = actionMap.get("SECRETS_GET_UNREDACTED_VALUES");
@@ -101,7 +112,9 @@ public class TestRBACServiceImpl {
     public void testActionsMapByIdContainsActionGeneralApiAccess() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Map<String,Action> actionMap = service.getActionsMapById();
 
         Action action = actionMap.get("GENERAL_API_ACCESS");
@@ -112,7 +125,9 @@ public class TestRBACServiceImpl {
     public void testActionsMapByIdContainsActionCpsPropertiesSet() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment() );
         Map<String,Action> actionMap = service.getActionsMapById();
 
         Action action = actionMap.get("CPS_PROPERTIES_SET");
@@ -123,7 +138,9 @@ public class TestRBACServiceImpl {
     public void testActionsMapByNameContainsSecretsGet() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Map<String,Action> actionMapById = service.getActionsMapById();
 
         Action action = actionMapById.get("SECRETS_GET_UNREDACTED_VALUES");
@@ -135,7 +152,9 @@ public class TestRBACServiceImpl {
     public void testServiceCanLookupAdminRoleById() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Role roleGotBack = service.getRoleById("2");
         assertThat(roleGotBack.getName()).isEqualTo("admin");
     }
@@ -144,7 +163,9 @@ public class TestRBACServiceImpl {
     public void testServiceCanLookupGetSecretsActionById() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Action actionGotBack = service.getActionById("SECRETS_GET_UNREDACTED_VALUES");
         assertThat(actionGotBack.getId()).isEqualTo("SECRETS_GET_UNREDACTED_VALUES");
     }
@@ -153,7 +174,9 @@ public class TestRBACServiceImpl {
     public void testServiceCanLookupGetSecretsActionByName() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Action actionGotBack = service.getActionById("SECRETS_GET_UNREDACTED_VALUES");
         assertThat(actionGotBack.getId()).isEqualTo("SECRETS_GET_UNREDACTED_VALUES");
     }
@@ -162,7 +185,9 @@ public class TestRBACServiceImpl {
     public void testGetSecretsActionHasDescription() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Action actionGotBack = service.getActionById("SECRETS_GET_UNREDACTED_VALUES");
         assertThat(actionGotBack.getDescription()).contains("Able to get unredacted secret values");
     }
@@ -171,7 +196,9 @@ public class TestRBACServiceImpl {
     public void testSetCpsPropertiesActionHasDescription() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Map<String,Action> actionMap = service.getActionsMapById();
 
         Action action = actionMap.get("CPS_PROPERTIES_SET");
@@ -182,7 +209,9 @@ public class TestRBACServiceImpl {
     public void testActionsAreSorted() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Iterator<Action> walker = service.getActionsSortedByName().iterator();
         assertThat(walker.hasNext()).isTrue();
         // Only check the first one. Should be enough...
@@ -193,7 +222,9 @@ public class TestRBACServiceImpl {
     public void testRolesAreSorted() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Iterator<Role> walker = service.getRolesSortedByName().iterator();
         assertThat(walker.hasNext()).isTrue();
         // Only check the first one (alphabetically). Should be enough...
@@ -204,7 +235,9 @@ public class TestRBACServiceImpl {
     public void testDefaultRoleIsDeactivated() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, new MockEnvironment());
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
+
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         String defaultRoleId = service.getDefaultRoleId();
         Role defaultRole = service.getRoleById(defaultRoleId);
         assertThat(defaultRole).isNotNull();
@@ -214,9 +247,10 @@ public class TestRBACServiceImpl {
     public void testDefaultRoleIsSetByEnvVariable() throws Exception {
         MockTimeService mockTimeService = new MockTimeService(Instant.now());
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
+        MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
         MockEnvironment env = new MockEnvironment();
         env.setenv("GALASA_DEFAULT_USER_ROLE", "tester");
-        RBACService service = new RBACServiceImpl(mockAuthStoreService, env);
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, env);
         String defaultRoleId = service.getDefaultRoleId();
         Role defaultRole = service.getRoleById(defaultRoleId);
         assertThat(defaultRole).isNotNull();

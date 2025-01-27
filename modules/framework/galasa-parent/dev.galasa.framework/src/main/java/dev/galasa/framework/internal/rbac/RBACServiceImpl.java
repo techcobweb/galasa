@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 
 import dev.galasa.framework.spi.Environment;
+import dev.galasa.framework.spi.IDynamicStatusStoreService;
 import dev.galasa.framework.spi.auth.IAuthStoreService;
 import dev.galasa.framework.spi.rbac.Action;
 import dev.galasa.framework.spi.rbac.BuiltInAction;
@@ -81,11 +82,12 @@ public class RBACServiceImpl implements RBACService {
         }
     }
 
+
     private Environment env;
     private final Log logger = LogFactory.getLog(getClass());
 
-    public RBACServiceImpl( @NotNull IAuthStoreService authStoreService, @NotNull Environment env ) {
-        userActionsCache = new CacheRBACImpl(authStoreService, this);
+    public RBACServiceImpl(IDynamicStatusStoreService dssService, IAuthStoreService authStoreService , @NotNull Environment env ) {
+        userActionsCache = new CacheRBACImpl(dssService, authStoreService, this);
         this.env = env ;
     }
 
