@@ -34,10 +34,6 @@ public class CacheRBACImpl implements CacheRBAC {
     public synchronized boolean isActionPermitted(String loginId, String actionId) throws RBACException {
         IUser user = getUserFromAuthStore(loginId);
         String userRoleId = user.getRoleId();
-        if (userRoleId == null) {
-            userRoleId = rbacService.getDefaultRoleId();
-            user.setRoleId(userRoleId);
-        }
         Role userRole = rbacService.getRoleById(userRoleId);
 
         // Check if the user is allowed to perform the given action

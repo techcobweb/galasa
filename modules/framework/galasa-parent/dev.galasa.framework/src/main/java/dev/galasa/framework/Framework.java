@@ -80,7 +80,14 @@ public class Framework implements IFramework, IShuttableFramework {
 
     private IRun                               run;
 
+    private Environment env ;
+
     public Framework() {
+        this( new SystemEnvironment() );
+    }
+
+    protected Framework(Environment env) {
+        this.env = env ;
         this.random = new Random();
     }
 
@@ -555,7 +562,7 @@ public class Framework implements IFramework, IShuttableFramework {
     @Override
     public RBACService getRBACService() throws RBACException {
         if (this.rbacService == null) {
-            this.rbacService = new RBACServiceImpl(getAuthStoreService());
+            this.rbacService = new RBACServiceImpl(getAuthStoreService(),env);
         }
         return this.rbacService;
     }
