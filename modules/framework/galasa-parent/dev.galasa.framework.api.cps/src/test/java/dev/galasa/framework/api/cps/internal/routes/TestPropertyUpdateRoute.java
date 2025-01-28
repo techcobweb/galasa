@@ -12,7 +12,6 @@ import dev.galasa.framework.mocks.MockRBACService;
 import dev.galasa.framework.spi.rbac.Action;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
 import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 import java.util.HashMap;
@@ -421,7 +420,7 @@ public class TestPropertyUpdateRoute extends CpsServletTest{
 			outStream.toString(),
 			5404,
 			"GAL5404E: ",
-			"Error occurred when trying to identify the endpoint '/framework/properties/.badproperty'. Please check your endpoint URL or report the problem to your Galasa Ecosystem owner."
+			"Error occurred when trying to identify the endpoint '/framework/properties/.badproperty'."
 		);
     }
 
