@@ -38,7 +38,7 @@ public class TestRBACServiceImpl {
         assertThat(roleGot.getDescription()).contains("Administrator access");
 
         assertThat(roleGot.getActionIds())
-            .hasSize(8)
+            .hasSize(9)
             .contains("USER_ROLE_UPDATE_ANY")
             .contains("SECRETS_GET_UNREDACTED_VALUES")
             .contains("GENERAL_API_ACCESS")
@@ -46,6 +46,7 @@ public class TestRBACServiceImpl {
             .contains("CPS_PROPERTIES_SET")
             .contains("SECRETS_SET")
             .contains("SECRETS_DELETE")
+            .contains("USER_DELETE_OTHER")
             .contains("RUNS_DELETE_OTHER_USERS");
     }
 
@@ -118,7 +119,7 @@ public class TestRBACServiceImpl {
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
         MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
 
-        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService);
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Map<String,Action> actionMap = service.getActionsMapById();
 
         Action action = actionMap.get("SECRETS_SET");
@@ -131,7 +132,7 @@ public class TestRBACServiceImpl {
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
         MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
 
-        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService);
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Map<String,Action> actionMap = service.getActionsMapById();
 
         Action action = actionMap.get("CPS_PROPERTIES_DELETE");
@@ -144,7 +145,7 @@ public class TestRBACServiceImpl {
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
         MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
 
-        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService);
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Map<String,Action> actionMap = service.getActionsMapById();
 
         Action action = actionMap.get("SECRETS_DELETE");
@@ -157,7 +158,7 @@ public class TestRBACServiceImpl {
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
         MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
 
-        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService);
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Map<String,Action> actionMap = service.getActionsMapById();
 
         Action action = actionMap.get("RUNS_DELETE_OTHER_USERS");
@@ -243,7 +244,7 @@ public class TestRBACServiceImpl {
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
         MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
 
-        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService);
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Action actionGotBack = service.getActionById("SECRETS_SET");
         assertThat(actionGotBack.getId()).isEqualTo("SECRETS_SET");
     }
@@ -254,7 +255,7 @@ public class TestRBACServiceImpl {
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
         MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
 
-        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService);
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Action actionGotBack = service.getActionById("CPS_PROPERTIES_DELETE");
         assertThat(actionGotBack.getId()).isEqualTo("CPS_PROPERTIES_DELETE");
     }
@@ -265,7 +266,7 @@ public class TestRBACServiceImpl {
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
         MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
 
-        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService);
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Action actionGotBack = service.getActionById("RUNS_DELETE_OTHER_USERS");
         assertThat(actionGotBack.getId()).isEqualTo("RUNS_DELETE_OTHER_USERS");
     }
@@ -276,7 +277,7 @@ public class TestRBACServiceImpl {
         MockAuthStoreService mockAuthStoreService = new MockAuthStoreService(mockTimeService);
         MockIDynamicStatusStoreService mockDssService = new MockIDynamicStatusStoreService();
 
-        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService);
+        RBACService service = new RBACServiceImpl(mockDssService, mockAuthStoreService, new MockEnvironment());
         Action actionGotBack = service.getActionById("SECRETS_DELETE");
         assertThat(actionGotBack.getId()).isEqualTo("SECRETS_DELETE");
     }
