@@ -7,6 +7,7 @@ package dev.galasa.framework.api.common;
 
 import org.junit.Test;
 
+import static dev.galasa.framework.api.common.ServletErrorMessage.GALxxx_NEXT_MESSAGE_NUMBER_TO_USE;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.EnumSet;
@@ -22,7 +23,7 @@ public class TestServletErrorMessage {
     }
 
     @Test
-    public void TestAllErrorMessageNumbersAreUnique() throws Exception {
+    public void testAllErrorMessageNumbersAreUnique() throws Exception {
 
         Map<Integer,ServletErrorMessage> messagesLookedAtSoFar = new HashMap<>();
 
@@ -44,5 +45,26 @@ public class TestServletErrorMessage {
         String errorMsg = buff.toString();
         assertThat(errorMsg).isBlank();
     }
+
+    @Test
+    public void testNextMessageNumberToAllocateIsHighestSoFar() {
+
+        int highestMsgNumber = 0 ;
+        for( ServletErrorMessage msg : EnumSet.allOf(ServletErrorMessage.class)) {
+            int msgNumber = msg.getTemplateNumber();
+            if (msgNumber>highestMsgNumber) {
+                highestMsgNumber = msgNumber;
+            }
+        }
+        assertThat(highestMsgNumber)
+            .as("Highest message number in use is higher than the GALxxx_NEXT_MESSAGE_NUMBER_TO_USE marker value."+
+                " Edit the GALxxx_NEXT_MESSAGE_NUMBER_TO_USE value to be higher than that.")
+            .isLessThan(GALxxx_NEXT_MESSAGE_NUMBER_TO_USE);
+    }
+
+
+
+
+
 
 }

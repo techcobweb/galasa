@@ -162,10 +162,12 @@ public enum ServletErrorMessage {
     GAL5125_ACTION_NOT_PERMITTED                      (5125, "E: Insufficient privileges to perform the requested operation. Check with your Galasa systems administrator that you have been assigned the correct role with the ''{0}'' action before trying again."),
     GAL5126_INTERNAL_RBAC_ERROR                       (5126, "E: Error occurred when trying to access the Role Based Access Control service. Report the problem to your Galasa systems administrator."),
 
-    // Next one to allocate is: 5127
     ;
 
-
+    // >>>
+    // >>> Note: Please keep this up to date, to save us wondering what to allocate next... 
+    // >>>
+    public static final int GALxxx_NEXT_MESSAGE_NUMBER_TO_USE = 5413 ;
 
 
     private String template ;
