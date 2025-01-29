@@ -166,6 +166,9 @@ public enum ServletErrorMessage {
 
     // >>>
     // >>> Note: Please keep this up to date, to save us wondering what to allocate next... 
+    // >>>       otherwise you have to find a 'gap' in the range.
+    // >>>       Unit tests guarantee that this number is 'free' to use for a new error message.
+    // >>>       If you do use this number for a new error template, please incriment this value.
     // >>>
     public static final int GALxxx_NEXT_MESSAGE_NUMBER_TO_USE = 5413 ;
 

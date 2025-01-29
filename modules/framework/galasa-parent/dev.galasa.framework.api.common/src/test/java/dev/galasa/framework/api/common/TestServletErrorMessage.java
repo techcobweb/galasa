@@ -18,8 +18,9 @@ public class TestServletErrorMessage {
 
     @Test
     public void TestCanGetAMessageOutOfTheList() throws Exception {
-        // Given...
+        // Given... we force the class to load.
         ServletErrorMessage msg = ServletErrorMessage.GAL5002_INVALID_RUN_ID;
+        assertThat(msg).isNotNull();
     }
 
     @Test
