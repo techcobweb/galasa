@@ -19,6 +19,9 @@ import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.auth.spi.IAuthService;
 import dev.galasa.framework.spi.FrameworkException;
+import dev.galasa.framework.spi.auth.IInternalAuthToken;
+import dev.galasa.framework.spi.auth.IInternalUser;
+import dev.galasa.framework.spi.rbac.BuiltInAction;
 import dev.galasa.framework.spi.rbac.RBACService;
 
 public class AuthTokensDetailsRoute extends ProtectedRoute {
@@ -43,9 +46,11 @@ public class AuthTokensDetailsRoute extends ProtectedRoute {
             throws FrameworkException {
 
         HttpServletRequest request = requestContext.getRequest();
+        String requestorUserLoginId = requestContext.getUsername();
 
         String tokenId = getTokenIdFromUrl(pathInfo);
-        authService.revokeToken(tokenId);
+
+        authService.revokeToken(tokenId,requestorUserLoginId);
 
         String responseBody = "Successfully revoked token with ID '" + tokenId + "'";
         return getResponseBuilder().buildResponse(request, response, "text/plain", responseBody, HttpServletResponse.SC_OK);

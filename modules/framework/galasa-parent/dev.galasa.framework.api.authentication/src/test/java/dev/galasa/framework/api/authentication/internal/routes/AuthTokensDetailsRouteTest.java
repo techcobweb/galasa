@@ -150,7 +150,7 @@ public class AuthTokensDetailsRouteTest extends BaseServletTest {
         MockAuthStoreService authStoreService = new MockAuthStoreService(tokens);
 
         // Throw an exception to simulate an auth store failure
-        authStoreService.setThrowException(true);
+        authStoreService.setThrowExceptionOnDeleteToken(true);
 
         MockAuthenticationServlet servlet = new MockAuthenticationServlet(null, mockDexGrpcClient, new MockFramework(authStoreService));
 

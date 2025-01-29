@@ -21,6 +21,7 @@ public enum BuiltInAction {
     SECRETS_DELETE                (new ActionImpl("SECRETS_DELETE", "Secrets delete", "Able to delete secrets")),
     CPS_PROPERTIES_SET            (new ActionImpl("CPS_PROPERTIES_SET", "CPS properties set", "Able to set CPS properties")),
     CPS_PROPERTIES_DELETE         (new ActionImpl("CPS_PROPERTIES_DELETE", "CPS properties delete", "Able to delete CPS properties")),
+    TOKEN_DELETE_OTHER_USERS      (new ActionImpl("TOKEN_DELETE_OTHER_USERS", "Delete a personal access token owned by other users", "Able to delete a personal access token not owned by yourself.")),
     RUNS_DELETE_OTHER_USERS       (new ActionImpl("RUNS_DELETE_OTHER_USERS", "Runs delete other users", "Able to delete runs submitted by other users"));
 
     private Action action;
