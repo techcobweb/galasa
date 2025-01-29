@@ -8,6 +8,7 @@ package dev.galasa.framework.auth.spi.internal;
 import static dev.galasa.framework.api.common.ServletErrorMessage.GAL5064_FAILED_TO_REVOKE_TOKEN;
 import static dev.galasa.framework.api.common.ServletErrorMessage.GAL5066_ERROR_NO_SUCH_TOKEN_EXISTS;
 import static dev.galasa.framework.api.common.ServletErrorMessage.GAL5125_ACTION_NOT_PERMITTED;
+import static dev.galasa.framework.api.common.ServletErrorMessage.GAL5126_INTERNAL_RBAC_ERROR;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,6 +24,7 @@ import dev.galasa.framework.spi.auth.IAuthStoreService;
 import dev.galasa.framework.spi.auth.IInternalAuthToken;
 import dev.galasa.framework.spi.auth.IInternalUser;
 import dev.galasa.framework.spi.rbac.BuiltInAction;
+import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.rbac.RBACService;
 
 public class AuthService implements IAuthService {
@@ -81,10 +83,17 @@ public class AuthService implements IAuthService {
                 if( requestingUserLoginId != null) {
                     if( !requestingUserLoginId.equals(tokenOwnerLoginId)) {
                         // The user is not deleting their own token, they are deleting someone else's
-                        String actionId = BuiltInAction.TOKEN_DELETE_OTHER_USERS.getAction().getId();
-                        if (rbacService.isActionPermitted(requestingUserLoginId,actionId)) {
-                            ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, actionId);
-                            throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
+                        String usersEditOtherActionId = BuiltInAction.USER_EDIT_OTHER.getAction().getId();
+                        try {
+                            if (!rbacService.isActionPermitted(requestingUserLoginId,usersEditOtherActionId)) {
+                                // Oh no! The current user is not allowed to delete this token.
+                                ServletError error = new ServletError(GAL5125_ACTION_NOT_PERMITTED, usersEditOtherActionId);
+                                throw new InternalServletException(error, HttpServletResponse.SC_FORBIDDEN);
+                            }
+                        } catch(RBACException ex) {
+                            // Internal problem with the RBAC service.
+                            ServletError error = new ServletError(GAL5126_INTERNAL_RBAC_ERROR);
+                            throw new InternalServletException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex);
                         }
                     }
                 }

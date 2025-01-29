@@ -19,9 +19,6 @@ import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.auth.spi.IAuthService;
 import dev.galasa.framework.spi.FrameworkException;
-import dev.galasa.framework.spi.auth.IInternalAuthToken;
-import dev.galasa.framework.spi.auth.IInternalUser;
-import dev.galasa.framework.spi.rbac.BuiltInAction;
 import dev.galasa.framework.spi.rbac.RBACService;
 
 public class AuthTokensDetailsRoute extends ProtectedRoute {
