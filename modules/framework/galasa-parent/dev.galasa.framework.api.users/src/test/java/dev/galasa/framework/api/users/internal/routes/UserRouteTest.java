@@ -43,9 +43,12 @@ import dev.galasa.framework.spi.auth.IUser;
 import dev.galasa.framework.spi.rbac.Action;
 import dev.galasa.framework.spi.rbac.BuiltInAction;
 import dev.galasa.framework.spi.utils.GalasaGsonBuilder;
-import io.grpc.netty.shaded.io.netty.handler.codec.http.HttpResponseStatus;
+
 
 public class UserRouteTest extends BaseServletTest {
+
+
+    public static final int HTTP_FORBIDDEN = 403 ;
 
     Map<String, String> headerMap = Map.of("Authorization", "Bearer " + BaseServletTest.DUMMY_JWT);
 
@@ -522,7 +525,7 @@ public class UserRouteTest extends BaseServletTest {
         servlet.doDelete(mockRequest, servletResponse);
 
         int statusCode = servletResponse.getStatus();
-        assertThat(statusCode).isEqualTo(HttpResponseStatus.FORBIDDEN.code());
+        assertThat(statusCode).isEqualTo(HTTP_FORBIDDEN);
 
         // Now check a few things about the payload which was returned.
         // It should contain the rendered json of the updated user record.
@@ -532,6 +535,8 @@ public class UserRouteTest extends BaseServletTest {
         }
         assertThat(payloadGotBack).contains("GAL5088E","not permitted for a user to delete their own user record");
     }
+
+
 
     @Test
     public void testDeleteOtherUserIsDeniedIfRequestorHasNoPermissionsToDeleteOther() throws Exception {
@@ -572,7 +577,7 @@ public class UserRouteTest extends BaseServletTest {
         servlet.doDelete(mockRequest, servletResponse);
 
         int statusCode = servletResponse.getStatus();
-        assertThat(statusCode).isEqualTo(HttpResponseStatus.FORBIDDEN.code());
+        assertThat(statusCode).isEqualTo(HTTP_FORBIDDEN);
 
         // Now check a few things about the payload which was returned.
         // It should contain the rendered json of the updated user record.

@@ -18,9 +18,10 @@ import dev.galasa.framework.auth.spi.internal.DexGrpcClient;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.rbac.RBACService;
-import io.grpc.netty.shaded.io.netty.handler.codec.http.HttpResponseStatus;
 
 public class AuthServiceFactory implements IAuthServiceFactory {
+
+    public static final int HTTP_FORBIDDEN = 403 ;
 
     private IFramework framework;
     private Environment env;
@@ -52,7 +53,7 @@ public class AuthServiceFactory implements IAuthServiceFactory {
             rbacService = framework.getRBACService();
         } catch(RBACException rbacEx) {
             ServletError error = new ServletError(ServletErrorMessage.GAL5126_INTERNAL_RBAC_ERROR);
-            throw new InternalServletException(error, HttpResponseStatus.INTERNAL_SERVER_ERROR.code(), rbacEx);
+            throw new InternalServletException(error, HTTP_FORBIDDEN, rbacEx);
         }
         return rbacService;
     }
@@ -63,7 +64,7 @@ public class AuthServiceFactory implements IAuthServiceFactory {
         if (envValue == null) {
             logger.error("Required environment variable '" + envName + "' has not been set.");
             ServletError error = new ServletError(ServletErrorMessage.GAL5126_INTERNAL_RBAC_ERROR);
-            throw new InternalServletException(error, HttpResponseStatus.INTERNAL_SERVER_ERROR.code());
+            throw new InternalServletException(error, HTTP_FORBIDDEN);
         }
         return envValue;
     }
