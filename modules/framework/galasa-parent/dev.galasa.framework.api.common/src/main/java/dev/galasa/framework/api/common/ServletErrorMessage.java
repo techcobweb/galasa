@@ -161,6 +161,7 @@ public enum ServletErrorMessage {
     GAL5124_ROLE_ID_NOT_FOUND_FOR_USER                (5124, "E: A user has a role which cannot be found in the system. Inconsistent data. Report this issue to your Galasa systems administrator."),
     GAL5125_ACTION_NOT_PERMITTED                      (5125, "E: Insufficient privileges to perform the requested operation. Check with your Galasa systems administrator that you have been assigned the correct role with the ''{0}'' action before trying again."),
     GAL5126_INTERNAL_RBAC_ERROR                       (5126, "E: Error occurred when trying to access the Role Based Access Control service. Report the problem to your Galasa systems administrator."),
+    GAL5413_USER_CANNOT_UPDATE_OWN_USER_ROLE          (5413, "E: A user is not allowed to update their own role. Ask a Galasa service administrator to change your role instead."),
 
     ;
 
@@ -170,7 +171,7 @@ public enum ServletErrorMessage {
     // >>>       Unit tests guarantee that this number is 'free' to use for a new error message.
     // >>>       If you do use this number for a new error template, please incriment this value.
     // >>>
-    public static final int GALxxx_NEXT_MESSAGE_NUMBER_TO_USE = 5413 ;
+    public static final int GALxxx_NEXT_MESSAGE_NUMBER_TO_USE = 5414 ;
 
 
     private String template ;
