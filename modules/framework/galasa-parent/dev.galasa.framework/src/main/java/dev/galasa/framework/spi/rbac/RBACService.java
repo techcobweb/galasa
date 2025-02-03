@@ -25,9 +25,11 @@ public interface RBACService {
      * The actual 'owner' role isn't set into their user record, but is just made to appear as
      * the owner role.
      * 
-     * Users with the owner role :
-     * - cannot have their user record deleted
-     * - cannot have their user role changed
+     * Users with the `owner` role cannot have their user record deleted, or their role changed
+     * by the REST API or the command-line tool. They are a special form of administrator who has
+     * more rights than a general user with `admin` rights. To change the list of users holding the 
+     * `owner` role, edit the `values.yaml` file in the helm chart and run the helm upgrade command to
+     * push the new configuration to Kubernetes.
      * 
      * Nobody is able to set someone else's user role to be 'owner'
      * 
