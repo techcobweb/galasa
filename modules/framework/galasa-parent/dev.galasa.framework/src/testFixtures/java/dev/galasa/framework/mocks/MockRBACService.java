@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import dev.galasa.framework.internal.rbac.CacheRBAC;
 import dev.galasa.framework.spi.rbac.Action;
-import dev.galasa.framework.spi.rbac.CacheRBAC;
 import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.rbac.Role;

@@ -172,7 +172,7 @@ function setup_galasa_dev() {
     info "Setting environment variables"
     export GALASA_OBR_VERSION=$GALASA_VERSION
     export GALASA_BOOT_JAR_VERSION=$GALASA_VERSION
-    export GALASA_OWNER_LOGIN_IDS="tester"
+    export GALASA_OWNER_LOGIN_IDS="owner"
     export GALASA_EXTERNAL_API_URL="http://localhost:8080"
     export GALASA_USERNAME_CLAIMS="preferred_username,name,sub"
     export GALASA_ALLOWED_ORIGINS="*"
@@ -188,7 +188,6 @@ function setup_galasa_dev() {
     # In the test environment, when we log in for the first time, we want our userid to be given admin rights.
     export GALASA_DEFAULT_USER_ROLE="admin"
 }
-
 
 
 
@@ -409,6 +408,10 @@ staticPasswords:
 - email: "deactivated@example.com"
   hash: "${DEX_ADMIN_PASSWORD}"
   username: "deactivated"
+  userID: "08a8684b-db88-4b73-90a9-3cd1661f5466"
+- email: "owner@example.com"
+  hash: "${DEX_ADMIN_PASSWORD}"
+  username: "owner"
   userID: "08a8684b-db88-4b73-90a9-3cd1661f5466"
 
 EOF
