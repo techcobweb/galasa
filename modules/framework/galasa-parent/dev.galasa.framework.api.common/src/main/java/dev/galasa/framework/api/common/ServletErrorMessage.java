@@ -68,6 +68,10 @@ public enum ServletErrorMessage {
     //Galasa Property...
     GAL5023_UNABLE_TO_CAST_TO_GALASAPROPERTY          (5023, "E: Error occurred trying to interpret resource ''{0}''. This could indicate a mis-match between client and server levels. Check the level with your Ecosystem administrator. You may have to upgrade/downgrade your client program."),
     GAL5024_INVALID_GALASAPROPERTY                    (5024, "E: Error occurred because the Galasa Property is invalid. ''{0}''"),
+    GAL5415_INVALID_GALASAPROPERTY_EMPTY_METADATA     (5415, "E: Error occurred because the Galasa Property is invalid. The 'metadata' field cannot be empty. The fields 'name' and 'namespace' are mandatory for the type GalasaProperty."),
+    GAL5416_INVALID_GALASAPROPERTY_NULL_VALUE         (5416, "E: Error occurred because the Galasa Property is invalid. The 'value' field cannot be null. The field 'value' is mandatory for the type GalasaProperty."),
+    GAL5417_INVALID_GALASAPROPERTY_DATA_FIELD_MISSING (5417, "E: Error occurred because the Galasa Property is invalid. The 'data' field cannot be empty. The field 'value' is mandatory for the type GalasaProperty."),
+
     GAL5031_EMPTY_NAMESPACE                           (5031, "E: Invalid namespace. Namespace is empty."),
     GAL5032_INVALID_FIRST_CHARACTER_NAMESPACE         (5032, "E: Invalid namespace name. ''{0}'' must not start with the ''{1}'' character. Allowable first characters are 'a'-'z' or 'A'-'Z'."),
     GAL5033_INVALID_NAMESPACE_INVALID_MIDDLE_CHAR     (5033, "E: Invalid namespace name. ''{0}'' must not contain the ''{1}'' character. Allowable characters after the first character are 'a'-'z', 'A'-'Z', '0'-'9'."),
@@ -173,7 +177,7 @@ public enum ServletErrorMessage {
     // >>>       Unit tests guarantee that this number is 'free' to use for a new error message.
     // >>>       If you do use this number for a new error template, please incriment this value.
     // >>>
-    public static final int GALxxx_NEXT_MESSAGE_NUMBER_TO_USE = 5415 ;
+    public static final int GALxxx_NEXT_MESSAGE_NUMBER_TO_USE = 5418 ;
 
 
     private String template ;
