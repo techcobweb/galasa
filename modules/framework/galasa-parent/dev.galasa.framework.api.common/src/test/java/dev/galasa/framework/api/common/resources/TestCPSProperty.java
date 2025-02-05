@@ -243,7 +243,7 @@ public class TestCPSProperty extends BaseServletTest {
     }
 
     @Test
-    public void testCPSPropertyBlankValueIsInvalid() throws InternalServletException{
+    public void testCPSPropertyBlankValueIsValid() throws InternalServletException{
         //Given...
         String namespace = "framework";
         String propertyName = "property";
