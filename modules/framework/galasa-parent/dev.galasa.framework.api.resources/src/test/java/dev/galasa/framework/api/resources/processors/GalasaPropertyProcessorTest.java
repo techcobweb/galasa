@@ -373,10 +373,8 @@ public class GalasaPropertyProcessorTest extends ResourcesServletTest {
         //Then...
         assertThat(errors).isNotNull();
         assertThat(errors.size()).isEqualTo(2);
-        assertThat(errors.get(0)).contains("GAL5024E: Error occurred because the Galasa Property is invalid.",
-            "The 'metadata' field cannot be empty. The fields 'name' and 'namespace' are mandatory for the type GalasaProperty.");
-        assertThat(errors.get(1)).contains("GAL5024E: Error occurred because the Galasa Property is invalid.",
-            "The 'data' field cannot be empty. The field 'value' is mandatory for the type GalasaProperty.");
+        assertThat(errors.get(0)).contains("GAL5415E");
+        assertThat(errors.get(1)).contains("GAL5417E");
         checkPropertyNotInNamespace(namespace,propertyname,value);
     }
 
