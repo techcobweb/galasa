@@ -1,6 +1,3 @@
-
-
-
 // Tell gradle where it should look to find the plugins and dependencies it needs to build.
 pluginManagement {
     repositories {
@@ -16,5 +13,11 @@ pluginManagement {
 }
 
 // Tell gradle to build the sub-projects in child folders
-include 'dev.galasa.ivts.core'
 include 'dev.galasa.ivts.obr'
+
+include 'dev.galasa.ivts'
+include 'dev.galasa.ivts:dev.galasa.ivts.artifact'
+include 'dev.galasa.ivts:dev.galasa.ivts.core'
+include 'dev.galasa.ivts:dev.galasa.ivts.docker'
+include 'dev.galasa.ivts:dev.galasa.ivts.http'
+

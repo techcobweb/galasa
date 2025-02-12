@@ -4,10 +4,13 @@ This module contains the Galasa Installation Verification Tests (IVTs) that are 
 
 ## IVTs in this module
 
-The IVTs are currently in the process of being migrated from within the Managers module to this module. IVTs were previously stored in their own bundles within the Managers module in the same subdirectory as the Manager bundle they tested. However, they are now being moved to this module and added as a submodule of the 'dev.galasa.ivts' bundle to simplify the project's testing.
+The IVTs are currently in the process of being migrated from within the Managers module to this module. IVTs were previously stored in their own bundles within the Managers module in the same subdirectory as the Manager bundle they tested. However, they are now being moved to this module and added as subprojects of the 'dev.galasa.ivts' bundle to simplify the project's testing.
 
 IVTs that have been moved over and are within this module are:
 * CoreManagerIVT: Tests the Core Manager
+* ArtifactManagerIVT: Tests the Artifact Manager
+* HttpManagerIVT: Tests the HTTP Manager
+* DockerManagerIVT: Tests the Docker Manager
 
 ## How this module is used
 
@@ -28,8 +31,8 @@ To find out how to initialise your local environment, see [Initialising your loc
 As an example, to run the `CoreManagerIVT` locally, run the following command:
 ```
 galasactl runs submit local \
---obr mvn:dev.galasa.ivts/dev.galasa.ivts.obr/0.40.0/obr \
---class dev.galasa.ivts.core/dev.galasa.ivts.core.CoreManagerIVT \
+--obr mvn:dev.galasa/dev.galasa.ivts.obr/0.40.0/obr \
+--class dev.galasa.ivts/dev.galasa.ivts.core.CoreManagerIVT \
 --log -
 ```
 

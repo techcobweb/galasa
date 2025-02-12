@@ -123,10 +123,10 @@ function clean_ivts() {
 
 function build_ivts() {
     h2 "Building the ivts source using gradle."
-    cd $BASEDIR/dev.galasa.ivts
+    cd $BASEDIR/galasa-ivts-parent
     rc=$?
     check_exit_code $rc "Failed to cd to the ivts source folder"
-    gradle build check publish -PtargetMaven=${TARGET_MAVEN_FOLDER} -PsourceMaven=${SOURCE_MAVEN}
+    gradle clean build check publish -PtargetMaven=${TARGET_MAVEN_FOLDER} -PsourceMaven=${SOURCE_MAVEN}
     rc=$?
     check_exit_code $rc "Failed to build the ivts module source"
     success "OK"

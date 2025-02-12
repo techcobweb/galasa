@@ -1,10 +1,9 @@
-   
 // This section tells gradle which gradle plugins to use to build this project.
 plugins {
     id 'base'
     id 'maven-publish'
-    id 'dev.galasa.obr' version '0.40.0'
-    id 'dev.galasa.testcatalog' version '0.40.0'
+    id 'dev.galasa.obr'
+    id 'dev.galasa.testcatalog'
 }
 
 // Set the variables which will control what the built OSGi bundle will be called
@@ -12,7 +11,7 @@ plugins {
 
 // What are the dependencies of the obr ? 
 dependencies {
-    bundle project(':dev.galasa.ivts.core')
+    bundle project(':dev.galasa.ivts')
 }
 
 def testcatalog = file('build/testcatalog.json')
