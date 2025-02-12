@@ -28,14 +28,14 @@ permissions:
 jobs:
 
   log-unchanged:
-    name: Managers is unchanged
+    name: Docs content is unchanged
     if: ${{ inputs.changed == 'false' }}
     runs-on: ubuntu-latest
 
     steps:
       - name: Log this module is unchanged
         run: |
-          echo "The managers module is unchanged"
+          echo "The docs content is unchanged"
   
   build-docs:
     outputs:
