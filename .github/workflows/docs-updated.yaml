@@ -89,64 +89,64 @@ jobs:
           overwrite: true
     
 
-  deploy-docs-pr-preview-to-github-pages:
+  # deploy-docs-pr-preview-to-github-pages:
 
-    # Add a dependency to the build job
-    needs: build-docs
+  #   # Add a dependency to the build job
+  #   needs: build-docs
 
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-      contents: write
-      pull-requests: write
+  #   # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+  #   permissions:
+  #     pages: write      # to deploy to Pages
+  #     id-token: write   # to verify the deployment originates from an appropriate source
+  #     contents: write
+  #     pull-requests: write
 
-    # Specify runner + deployment step
-    runs-on: ubuntu-latest
-    steps:
+  #   # Specify runner + deployment step
+  #   runs-on: ubuntu-latest
+  #   steps:
 
-      - uses: actions/checkout@v4
-        name: checkout
+  #     - uses: actions/checkout@v4
+  #       name: checkout
 
-      - name: Copy the scripts somewhere we can use them once we switch branches
-        run: |- 
-          mkdir -p ${{ github.workspace }}/../scripts
-          cp ${{ github.workspace }}/.github/scripts/* ${{ github.workspace }}/../scripts
-          chmod +x ${{ github.workspace }}/../scripts/*.sh
+  #     - name: Copy the scripts somewhere we can use them once we switch branches
+  #       run: |- 
+  #         mkdir -p ${{ github.workspace }}/../scripts
+  #         cp ${{ github.workspace }}/.github/scripts/* ${{ github.workspace }}/../scripts
+  #         chmod +x ${{ github.workspace }}/../scripts/*.sh
 
-      - name: checkout the github pages branch
-        run: |-
-          git fetch
-          git checkout -t origin/gh-pages
-          echo "Branch:"
-          git branch
+  #     - name: checkout the github pages branch
+  #       run: |-
+  #         git fetch
+  #         git checkout -t origin/gh-pages
+  #         echo "Branch:"
+  #         git branch
 
-      - name: Debug the variables for this job.
-        run: |-
-          echo "1: ${{ needs.build-docs.outputs.artifact_name }}"
-          echo "2: ${{ needs.build-docs.outputs.galasa_version }}"
-          echo "3: ${{ github.workspace }}"
+  #     - name: Debug the variables for this job.
+  #       run: |-
+  #         echo "1: ${{ needs.build-docs.outputs.artifact_name }}"
+  #         echo "2: ${{ needs.build-docs.outputs.galasa_version }}"
+  #         echo "3: ${{ github.workspace }}"
 
-      - name: Delete the docs which were there before
-        run: |-
-          rm -fr ${{ github.workspace }}/${{ needs.build-docs.outputs.artifact_name }}
-          mkdir -p ${{ github.workspace }}/${{ needs.build-docs.outputs.artifact_name }}
+  #     - name: Delete the docs which were there before
+  #       run: |-
+  #         rm -fr ${{ github.workspace }}/${{ needs.build-docs.outputs.artifact_name }}
+  #         mkdir -p ${{ github.workspace }}/${{ needs.build-docs.outputs.artifact_name }}
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.build-docs.outputs.artifact_name }}
-          path: ${{ github.workspace }}/${{ needs.build-docs.outputs.artifact_name }}
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: ${{ needs.build-docs.outputs.artifact_name }}
+  #         path: ${{ github.workspace }}/${{ needs.build-docs.outputs.artifact_name }}
 
-      - name: Sign into github
-        run: |-
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_GITHUB_ACCESS_TOKEN }}@github.com/${{ github.repository }}
+  #     - name: Sign into github
+  #       run: |-
+  #         git config user.name github-actions[bot]
+  #         git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+  #         git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_GITHUB_ACCESS_TOKEN }}@github.com/${{ github.repository }}
 
-      - name: executing check-in script
-        run: ${{ github.workspace }}/../scripts/update-gh-pages.sh --commit-message "Added docs preview of branch ${{ github.ref_name }}"
+  #     - name: executing check-in script
+  #       run: ${{ github.workspace }}/../scripts/update-gh-pages.sh --commit-message "Added docs preview of branch ${{ github.ref_name }}"
 
-      - name: Echo the link to try it out
-        run: |-
-          echo "https://techcobweb.github.io/galasa/${{ needs.build-docs.outputs.artifact_name }}"
+  #     - name: Echo the link to try it out
+  #       run: |-
+  #         echo "https://techcobweb.github.io/galasa/${{ needs.build-docs.outputs.artifact_name }}"
         

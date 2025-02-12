@@ -91,7 +91,7 @@ jobs:
       changed: ${{ needs.get-changed-modules.outputs.platform_changed }}
 
   pr-build-docs:
-    name: Build the 'platform' module
+    name: Build the 'docs' content
     needs: [get-changed-modules]
     uses: ./.github/workflows/pr-docs-updated.yaml
     secrets: inherit
