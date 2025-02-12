@@ -11,12 +11,28 @@ IVTs that have been moved over and are within this module are:
 * ArtifactManagerIVT: Tests the Artifact Manager
 * HttpManagerIVT: Tests the HTTP Manager
 * DockerManagerIVT: Tests the Docker Manager
+* CECIManagerIVT: Tests the CECI Manager
+* CedaManagerIVT: Tests the CEDA Manager
+* CEMTManagerIVT: Tests the CEMT Manager
+* CICSTSManagerIVT: Tests the CICS TS Manager
+* SdvManagerIVT: Tests the SDV Manager
+* ZosManagerIVT: Tests the z/OS Manager
+* ZosManagerBatchIVT: Tests the z/OS Batch Manager
+* ZosManagerFileDatasetIVT, ZosManagerFileIVT, ZosManagerFileVSAMIVT: Tests the z/OS File Manager
+* ZosManagerTSOCommandIVT: Tests the z/OS TSO Command Manager
+* Zos3270IVT: Tests the z/OS 3270 Terminal Manager
 
 ## How this module is used
 
 The IVTs contained in this module are built as part of the GitHub Actions build process which builds the test cases, OBR and a test catalog, which altogether represent a test stream called 'ivts'. See the build process in the [.github directory](../../.github/workflows/ivts.yaml).
 
 This test stream is referenced in the CPS properties of a Galasa service which can then run tests from the stream remotely in the Galasa service with `galasactl runs submit`. These tests are run on a daily basis to test the functionality of the Managers and check for any regressions.
+
+IVTs in this module are organised into two parent bundles:
+- `dev.galasa.ivts`: IVTs that do not require mainframe resources to run
+- `dev.galasa.zos.ivts`: IVTs that require mainframe resources to run
+
+Each of these bundles contains a set of subprojects, where each subproject is a bundle of its own containing IVTs for a certain manager.
 
 ## Building locally
 
