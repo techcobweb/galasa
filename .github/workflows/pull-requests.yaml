@@ -45,6 +45,7 @@ jobs:
       managers_changed: ${{ steps.get-changed-modules.outputs.MANAGERS_CHANGED }}
       ivts_changed: 'true'
       obr_changed: ${{ steps.get-changed-modules.outputs.OBR_CHANGED }}
+      docs_changed: ${{ steps.get-changed-modules.outputs.DOCS_CHANGED }}
 
     steps:
       - name: Checkout Code
@@ -88,6 +89,14 @@ jobs:
     secrets: inherit
     with:
       changed: ${{ needs.get-changed-modules.outputs.platform_changed }}
+
+  pr-build-docs:
+    name: Build the 'docs' content
+    needs: [get-changed-modules]
+    uses: ./.github/workflows/pr-docs-updated.yaml
+    secrets: inherit
+    with:
+      changed: ${{ needs.get-changed-modules.outputs.docs_changed }}
 
   pr-build-buildutils:
     name: Build the 'buildutils' module
@@ -174,7 +183,7 @@ jobs:
   # This job is set in the branch protection rules as required to merge a Pull Request.
   end-pull-request-build:
     name: Pull Request build was successful
-    needs: [pr-build-obr, pr-build-ivts, detect-secrets]
+    needs: [pr-build-obr, pr-build-ivts, detect-secrets, pr-build-docs]
     runs-on: ubuntu-latest
 
     steps:

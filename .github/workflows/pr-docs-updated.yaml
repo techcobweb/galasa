@@ -1,0 +1,171 @@
+name: Build PR documentation and publish to preview site
+
+on:
+  workflow_call:
+    inputs:
+      changed:
+        description: 'True if this module has been changed and should be rebuilt'
+        required: true
+        type: string
+
+# on:
+#   pull_request:
+#     branches: '*'
+  # push:
+  #   # Whenever a new tag is created/release is created...
+  #   tags:
+  #     - 'v[0-9]+.[0-9]+.[0-9]+'
+  #   # Or a branch gets pushed...
+  #   branches:
+  #     - '*'         # matches every branch that doesn't contain a '/'
+  #     - '*/*'       # matches every branch containing a single '/'
+  #     - '**'        # matches every branch
+  #     - '!gh-pages' # exclude pushes to gh-pages branch always.
+permissions:
+  contents: write
+# env:
+
+jobs:
+
+  log-unchanged:
+    name: Docs content is unchanged
+    if: ${{ inputs.changed == 'false' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log this module is unchanged
+        run: |
+          echo "The docs content is unchanged"
+  
+  build-docs:
+    outputs:
+      galasa_version: ${{ steps.vars.outputs.galasa_version }}
+      artifact_name: ${{ steps.vars.outputs.artifact_name }}
+    runs-on: ubuntu-latest
+    if: ${{ inputs.changed == 'true' }}
+    steps:
+
+      - uses: actions/checkout@v4
+        name: checkout code
+        with:
+          sparse-checkout: |
+            docs
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      - id: vars
+        run: |
+          echo "cache_id=$(date --utc '+%V')" >> $GITHUB_OUTPUT
+          echo "galasa_version=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "artifact_name=galasa-docs-pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+ 
+      - uses: actions/cache@v4
+        with:
+          key: mkdocs-material-${{ steps.vars.outputs.cache_id }}
+          path: .cache
+          restore-keys: |
+            mkdocs-material-${{ steps.vars.outputs.cache_id }}
+
+      - name: Install python packages
+        run: |
+          pip install mkdocs-material 
+
+      - name: build documentation
+        id:  build-docs
+        working-directory: ${{ github.workspace }}/docs
+        run: |
+          mkdocs build --clean \
+          --no-strict --theme material \
+          --site-dir ${{ github.workspace }}/build/site --verbose
+
+      # - name: dirty the build so it always publishes while we debug the flows.
+      #   working-directory: ${{ github.workspace }}/docs
+      #   run: |-
+      #     date > ${{ github.workspace }}/build/site/date.txt
+      #     echo ${{ github.run_id }}-${{ github.run_attempt }} >> ${{ github.workspace }}/build/site/build-stamp.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.vars.outputs.artifact_name }}
+          path: ${{ github.workspace }}/build/site
+          overwrite: true
+
+  # deploy-docs-pr-preview-to-github-pages:
+
+  #   # Add a dependency to the build job
+  #   needs: build-docs
+
+  #   if: ${{ inputs.changed == 'true' }}
+
+  #   # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+  #   permissions:
+  #     pages: write      # to deploy to Pages
+  #     id-token: write   # to verify the deployment originates from an appropriate source
+  #     contents: write
+  #     pull-requests: write
+
+  #   # Specify runner + deployment step
+  #   runs-on: ubuntu-latest
+  #   steps:
+
+  #     - uses: actions/checkout@v4
+  #       name: checkout
+
+  #     - name: Copy the scripts somewhere we can use them once we switch branches
+  #       run: |- 
+  #         mkdir -p ${{ github.workspace }}/../scripts
+  #         cp ${{ github.workspace }}/.github/scripts/* ${{ github.workspace }}/../scripts
+  #         chmod +x ${{ github.workspace }}/../scripts/*.sh
+
+  #     - name: checkout the github pages branch
+  #       run: |-
+  #         git fetch
+  #         git checkout -t origin/gh-pages
+  #         echo "Branch:"
+  #         git branch
+          
+  #     # - name: Debug the variables for this job.
+  #     #   run: |-
+  #     #     echo "1: ${{ needs.build-docs.outputs.artifact_name }}"
+  #     #     echo "2: ${{ needs.build-docs.outputs.galasa_version }}"
+  #     #     echo "3: ${{ github.workspace }}"
+
+  #     - name: Delete the docs which were there before
+  #       run: |-
+  #         rm -fr ${{ github.workspace }}/drafts/${{ needs.build-docs.outputs.artifact_name }}
+  #         mkdir -p ${{ github.workspace }}/drafts/${{ needs.build-docs.outputs.artifact_name }}
+
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: ${{ needs.build-docs.outputs.artifact_name }}
+  #         path: ${{ github.workspace }}/drafts/${{ needs.build-docs.outputs.artifact_name }}
+
+  #     # - name: debug folder structure
+  #     #   run: |-
+  #     #     tree 
+
+  #     - name: Sign into github
+  #       run: |-
+  #         git config user.name github-actions[bot]
+  #         git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+  #         git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_GITHUB_ACCESS_TOKEN }}@github.com/${{ github.repository }}
+
+  #     - name: executing check-in script
+  #       run: ${{ github.workspace }}/../scripts/update-gh-pages.sh --commit-message "Added drafts docs for pr \#${{ github.event.number }} ${{ github.event.pull_request.title }}"
+
+  #     - name: Echo the link to try it out
+  #       run: |-
+  #         echo "https://techcobweb.github.io/galasa/drafts/${{ needs.build-docs.outputs.artifact_name }}"
+
+  #     - name: Comment PR with execution number
+  #       uses: thollander/actions-comment-pull-request@v3
+  #       with:
+  #         message: |
+  #           Preview of documentation for this PR is at https://techcobweb.github.io/galasa/drafts/${{ needs.build-docs.outputs.artifact_name }}
+  #         comment-tag: draft-docs-available
+
+        
+
+      
