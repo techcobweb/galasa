@@ -58,6 +58,12 @@ jobs:
     uses: ./.github/workflows/buildutils.yaml
     secrets: inherit
 
+  build-docs:
+    name: Build the 'docs' content
+    needs: [check-required-secrets-configured]
+    uses: ./.github/workflows/docs-updated.yaml
+    secrets: inherit
+
   build-wrapping:
     name: Build the 'wrapping' module
     needs: [build-platform]

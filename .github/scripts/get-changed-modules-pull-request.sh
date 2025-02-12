@@ -104,12 +104,26 @@ function get_paths_changed_in_pr() {
 
     h2 "Files changed:"
 
+    # changed_files_in_pr[@] contains things like this:
+    #     modules/ivts/README.md
+    #     modules/ivts/build-locally.sh
+    #     modules/ivts/dev.galasa.ivts/buildSrc/build.gradle
+    # ... so we can get the module name easily.
+    # or it could be 
+    #     docs/blah/blah.md
     modules_changed_in_pr=()
     for changed_file in "${changed_files_in_pr[@]}"; do
         echo "$changed_file"
-        module=$(echo "$changed_file" | cut -d'/' -f2)
-        modules_changed_in_pr+=("$module")
+        
+        if [[ "$changed_file" =~ docs/.* ]]; then 
+            modules_changed_in_pr+=("docs")
+        else 
+            module=$(echo "$changed_file" | cut -d'/' -f2)
+            modules_changed_in_pr+=("$module")
+        fi
     done
+
+
 
     # Remove possible duplicates from array of changed modules
     declare -A unique_module_map
@@ -175,19 +189,27 @@ function get_changed_modules_and_set_in_environment() {
             echo "OBR_CHANGED=true" >> $GITHUB_OUTPUT
             continue
         fi
+        if [[ "$module" == "docs" ]]; then 
+            echo "DOCS_CHANGED=true" >> $GITHUB_OUTPUT
+            continue
+        fi
     done
 }
 
-# Set outputs to false as default value.
-echo "BUILDUTILS_CHANGED=false" >> $GITHUB_OUTPUT
-echo "PLATFORM_CHANGED=false" >> $GITHUB_OUTPUT
-echo "WRAPPING_CHANGED=false" >> $GITHUB_OUTPUT
-echo "GRADLE_CHANGED=false" >> $GITHUB_OUTPUT
-echo "MAVEN_CHANGED=false" >> $GITHUB_OUTPUT
-echo "FRAMEWORK_CHANGED=false" >> $GITHUB_OUTPUT
-echo "EXTENSIONS_CHANGED=false" >> $GITHUB_OUTPUT
-echo "MANAGERS_CHANGED=false" >> $GITHUB_OUTPUT
-echo "OBR_CHANGED=false" >> $GITHUB_OUTPUT
+function set_defaults_to_github_output() {
+    # Set outputs to false as default value.
+    echo "BUILDUTILS_CHANGED=false" >> $GITHUB_OUTPUT
+    echo "PLATFORM_CHANGED=false" >> $GITHUB_OUTPUT
+    echo "WRAPPING_CHANGED=false" >> $GITHUB_OUTPUT
+    echo "GRADLE_CHANGED=false" >> $GITHUB_OUTPUT
+    echo "MAVEN_CHANGED=false" >> $GITHUB_OUTPUT
+    echo "FRAMEWORK_CHANGED=false" >> $GITHUB_OUTPUT
+    echo "EXTENSIONS_CHANGED=false" >> $GITHUB_OUTPUT
+    echo "MANAGERS_CHANGED=false" >> $GITHUB_OUTPUT
+    echo "OBR_CHANGED=false" >> $GITHUB_OUTPUT
+    echo "DOCS_CHANGED=false" >> $GITHUB_OUTPUT
+}
 
+set_defaults_to_github_output
 get_paths_changed_in_pr
 get_changed_modules_and_set_in_environment

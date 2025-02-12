@@ -1,0 +1,72 @@
+name: Remove preview of PR docs
+on:
+  pull_request:
+    types: [ closed ]
+
+permissions:
+  contents: write
+
+jobs:
+  delete-docs-on-gh-pages:
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+      contents: write
+      pull-requests: write
+
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - id: vars
+        run: |
+          echo "cache_id=$(date --utc '+%V')" >> $GITHUB_OUTPUT
+          echo "galasa_version=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "artifact_name=galasa-docs-pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          
+      - uses: actions/checkout@v4
+        name: Configure Git Credentials
+
+      - name: Copy the scripts somewhere we can use them once we switch branches
+        run: |- 
+          mkdir -p ${{ github.workspace }}/../scripts
+          cp ${{ github.workspace }}/.github/scripts/* ${{ github.workspace }}/../scripts
+          chmod +x ${{ github.workspace }}/../scripts/*.sh
+
+      - name: checkout the github pages branch
+        run: |-
+          git fetch
+          git checkout -t origin/gh-pages
+          echo "Branch:"
+          git branch
+
+      - name: Delete the docs preview generated for this PR
+        run: |-
+          rm -fr ${{ github.workspace }}/drafts/${{ steps.vars.outputs.artifact_name }}
+
+      - name: Sign into github
+        run: |-
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_GITHUB_ACCESS_TOKEN }}@github.com/${{ github.repository }}
+
+      - name: executing check-in script
+        run: ${{ github.workspace }}/../scripts/update-gh-pages.sh --commit-message "Removed draft docs for pr \#${{ github.event.number }} ${{ github.event.pull_request.title }}"
+  
+
+      - name: Comment PR with execution number
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            Preview of documentation for this PR has been removed.
+          comment-tag: draft-docs-available
+
+
+
+         
+        
+
+      

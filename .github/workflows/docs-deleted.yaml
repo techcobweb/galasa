@@ -1,0 +1,72 @@
+name: Remove preview of branch docs
+
+# When a branch gets deleted...
+on:
+  delete:
+    branches:
+      - 'main'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      # - '*'         # matches every branch that doesn't contain a '/'
+      # - '*/*'       # matches every branch containing a single '/'
+      # - '**'        # matches every branch
+      # - '!gh-pages' # exclude pushes to gh-pages branch always.
+
+permissions:
+  contents: write
+  
+jobs:
+  delete-docs-on-gh-pages:
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+      contents: write
+      pull-requests: write
+
+    # Specify runner + deployment step
+    runs-on: ubuntu-latest
+    steps:
+
+      - id: vars
+        run: |
+          echo "cache_id=$(date --utc '+%V')" >> $GITHUB_OUTPUT
+          echo "galasa_version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          echo "artifact_name=galasa-docs-${{ github.ref_name }}" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v4
+        name: Checkout branch
+
+      - name: Copy the scripts somewhere we can use them once we switch branches
+        run: |- 
+          mkdir -p ${{ github.workspace }}/../scripts
+          cp ${{ github.workspace }}/.github/scripts/* ${{ github.workspace }}/../scripts
+          chmod +x ${{ github.workspace }}/../scripts/*.sh
+
+      - name: checkout the github pages branch
+        run: |-
+          git fetch
+          git checkout -t origin/gh-pages
+          echo "Branch:"
+          git branch
+
+      - name: Delete the docs preview generated for this PR
+        run: |
+          rm -fr ${{ github.workspace }}/${{ steps.vars.outputs.artifact_name }}
+
+      - name: Sign into github
+        run: |-
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_GITHUB_ACCESS_TOKEN }}@github.com/${{ github.repository }}
+
+      - name: executing check-in script
+        run: ${{ github.workspace }}/../scripts/update-gh-pages.sh --commit-message "Removing docs preview of branch ${{ github.ref_name }}"
+        
+
+
+
+         
+        
+
+      
