@@ -40,12 +40,6 @@ jobs:
       - name: Log this module is unchanged
         run: |
           echo "The managers module is unchanged"
-
-  build-managers:
-    name: Build Managers source code and Docker image
-    if: ${{ inputs.changed == 'true' }}
-    runs-on: ubuntu-latest
-
   
   build-docs:
     outputs:
@@ -54,7 +48,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ inputs.changed == 'true' }}
     steps:
-      # TODO: Make sure the pull request is approved for building prior to going any further.
 
       - uses: actions/checkout@v4
         name: checkout code
