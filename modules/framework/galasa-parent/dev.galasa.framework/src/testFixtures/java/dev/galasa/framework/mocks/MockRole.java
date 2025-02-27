@@ -14,10 +14,12 @@ public class MockRole implements Role{
     private String id ;
     private String description;
     private List<String> actionIds;
+    private boolean assignable;
 
-    public MockRole( String name, String id , String description, List<String> actionIds) {
+    public MockRole( String name, String id , String description, List<String> actionIds, boolean assignable) {
         this(name,id,description);
         this.actionIds = actionIds;
+        this.assignable = assignable;
     }
 
     private MockRole( String name, String id , String description) {
@@ -45,5 +47,10 @@ public class MockRole implements Role{
     public String getDescription() {
         return this.description;
     }
+
+	@Override
+	public boolean getAssignable() {
+		return this.assignable;
+	}
     
 }

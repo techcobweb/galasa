@@ -17,4 +17,6 @@ public interface Role {
 
     String getDescription();
 
+    boolean getAssignable();
+
 }

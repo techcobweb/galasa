@@ -31,6 +31,12 @@ public class UserUpdateRequestValidator {
         String roleId = userUpdateData.getrole();
         if (roleId==null || roleId.trim().isBlank()) {
             // Role is blank, so the user isn't trying to update the role field in the user record. Ok.
+        } 
+        else if (roleId == "3") { // Assigning a user a role of owner (with ID 3) is not allowed
+
+            ServletError error = new ServletError(GAL5106_FORBIDDEN_USER_UPDATE_SERVICE_OWNER);
+            throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);
+
         } else {
 
             boolean isRoleFieldOK = true ;

@@ -52,6 +52,7 @@ public class RoleTransform {
         metadata.setdescription(role.getDescription());
         metadata.setid(role.getId());
         metadata.setname(role.getName());
+        metadata.setassignable(role.getAssignable());
         metadata.seturl(url);
         return metadata;
     }

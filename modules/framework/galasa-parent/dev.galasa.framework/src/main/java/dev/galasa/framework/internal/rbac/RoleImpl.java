@@ -17,10 +17,12 @@ public class RoleImpl implements Role {
     private String id ;
     private String description;
     private List<String> actionIdsSorted;
+    private boolean assignable;
 
-    public RoleImpl( String name, String id , String description, List<String> actionIds ) {
+    public RoleImpl( String name, String id , String description, List<String> actionIds, boolean assignable ) {
         this.name = name ;
         this.id = id ;
+        this.assignable = assignable;
 
         // Take a copy of the action Ids and sort it.
         this.actionIdsSorted = new ArrayList<String>(actionIds);
@@ -48,5 +50,10 @@ public class RoleImpl implements Role {
     public List<String> getActionIds() {
         return this.actionIdsSorted;
     }
+
+	@Override
+	public boolean getAssignable() {
+		return this.assignable;
+	}
     
 }

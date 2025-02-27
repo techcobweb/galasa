@@ -138,6 +138,7 @@ public enum ServletErrorMessage {
     GAL5087_BAD_USER_UPDATE_FIELD_ROLE                (5087, "E: Server detected an invalid 'role' field value from a client wishing to update a user record. The role field must be less than 128 characters and a consist of alphanumeric characters, '-' (hyphen) or '_' (underscore)"),
     GAL5088_FORBIDDEN_USER_DELETE_THEMSELVES          (5088, "E: It is not permitted for a user to delete their own user record. Ask another Galasa service administrator to delete your user record for you."),
     GAL5089_FORBIDDEN_USER_DELETE_SERVICE_OWNER       (5089, "E: It is not permitted for a user to delete an owner of the Galasa service. Ask a Galasa service administrator to change the list of owners in the kubernetes configuration."),
+    GAL5106_FORBIDDEN_USER_UPDATE_SERVICE_OWNER       (5106, "E: It is not permitted for a user to set another user to an owner of a Galasa service. Ask a Galasa service administrator to change the list of owners in the kubernetes configuration."),
 
     // Secrets APIs...
     GAL5092_INVALID_SECRET_NAME_PROVIDED              (5092, "E: Invalid secret name provided. The name of a Galasa secret cannot be empty, contain only spaces or tabs, or contain dots ('.'), and must only contain characters in the Latin-1 character set. Check your request payload and try again."),

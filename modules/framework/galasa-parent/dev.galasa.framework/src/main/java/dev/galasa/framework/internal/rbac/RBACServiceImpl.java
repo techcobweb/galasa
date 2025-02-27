@@ -64,14 +64,17 @@ public class RBACServiceImpl implements RBACService {
             actionsMapById.put(action.getId(),action);
         }
 
-        roleAdmin= new RoleImpl("admin","2","Administrator access",allActionIds);
-        roleOwner= new RoleImpl("owner","3","Galasa service owner",allActionIds);
+        roleAdmin= new RoleImpl("admin","2","Administrator access",allActionIds, true);
+
+        //The role of "owner" can not be assigned. A user can be assigned owner by a kubernetes configuration action"
+        roleOwner= new RoleImpl("owner","3","Galasa service owner",allActionIds,false);
 
         roleTester = new RoleImpl("tester", "1", "Test developer and runner", 
-            List.of( USER_EDIT_OTHER.getAction().getId() , GENERAL_API_ACCESS.getAction().getId() )   
+            List.of( USER_EDIT_OTHER.getAction().getId() , GENERAL_API_ACCESS.getAction().getId() ),
+            true   
         );
 
-        roleDeactivated = new RoleImpl("deactivated", "0", "User has no access", new ArrayList<String>());
+        roleDeactivated = new RoleImpl("deactivated", "0", "User has no access", new ArrayList<String>(),true);
 
         List<Role> rolesUnsorted = List.of(roleAdmin, roleTester, roleDeactivated, roleOwner);
 

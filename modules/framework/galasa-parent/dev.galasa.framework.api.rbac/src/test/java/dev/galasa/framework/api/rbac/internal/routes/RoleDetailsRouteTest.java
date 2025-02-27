@@ -48,7 +48,7 @@ public class RoleDetailsRouteTest {
 
         List<Action> actions = List.of(action1,action2);
 
-        Role role1 = new MockRole("myRole1Name","myRole1Id","Description of myRole1Name", List.of(action1.getId(), action2.getId()));
+        Role role1 = new MockRole("myRole1Name","myRole1Id","Description of myRole1Name", List.of(action1.getId(), action2.getId()), true);
         List<Role> roles = List.of(role1);
 
         MockRBACService rbacService = new MockRBACService(roles , actions, role1);
@@ -79,6 +79,7 @@ public class RoleDetailsRouteTest {
         role1Obj.addProperty("apiVersion","galasa-dev/v1alpha1");
 
         JsonObject role1MetadataObj = new JsonObject();
+        role1MetadataObj.addProperty("assignable", true);
         role1MetadataObj.addProperty("url","http://mock.galasa.server/roles/myRole1Id");
         role1MetadataObj.addProperty("name","myRole1Name");
         role1MetadataObj.addProperty("id","myRole1Id");
@@ -106,7 +107,7 @@ public class RoleDetailsRouteTest {
 
         List<Action> actions = List.of(action1,action2);
 
-        Role role1 = new MockRole("myRole1Name","myRole1Id","Description of myRole1Name", List.of(action1.getId(), action2.getId()));
+        Role role1 = new MockRole("myRole1Name","myRole1Id","Description of myRole1Name", List.of(action1.getId(), action2.getId()),true);
         List<Role> roles = List.of(role1);
 
         MockRBACService rbacService = new MockRBACService(roles , actions, role1);
