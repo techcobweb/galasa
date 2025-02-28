@@ -1,3 +1,8 @@
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package dev.galasa.framework.spi.rbac;
 
 import java.util.ArrayList;
@@ -9,11 +14,11 @@ import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
 
 public enum RBACRoles {
 
-    RBAC_DEACTIVATED_ROLE(new RoleImpl("deactivated", "0", "User has no access", new ArrayList<>(), true)),
-    RBAC_TESTER_ROLE(new RoleImpl("tester", "1", "Test developer and runner",
+    DEACTIVATED(new RoleImpl("deactivated", "0", "User has no access", new ArrayList<>(), true)),
+    TESTER(new RoleImpl("tester", "1", "Test developer and runner",
             List.of(USER_EDIT_OTHER.getAction().getId(), GENERAL_API_ACCESS.getAction().getId()), true)),
-    RBAC_ADMIN_ROLE(new RoleImpl("admin", "2", "Administrator access", getAllActionIds(), true)),
-    RBAC_OWNER_ROLE(new RoleImpl("owner", "3", "Galasa service owner", getAllActionIds(), false));
+    ADMIN(new RoleImpl("admin", "2", "Administrator access", getAllActionIds(), true)),
+    OWNER(new RoleImpl("owner", "3", "Galasa service owner", getAllActionIds(), false));
 
     private final Role role;
 
@@ -25,24 +30,18 @@ public enum RBACRoles {
         return this.role;
     }
 
-    private static class ActionIdsHolder {
-        static final List<String> allActionIds = createActionIds();
-    }
+    private static List<String> getAllActionIds() {
+        List<Action> allActions = BuiltInAction.getActions();
+        List<Action> sortedActions = new ArrayList<>(allActions);
 
-    private static List<String> createActionIds() {
+        // Sort by name, for example
+        sortedActions.sort(Comparator.comparing(Action::getName));
+
         List<String> actionIds = new ArrayList<>();
-        List<Action> allActionsUnsorted = BuiltInAction.getActions();
-
-        List<Action> actionsSortedByName = new ArrayList<>(allActionsUnsorted);
-        actionsSortedByName.sort(Comparator.comparing(Action::getName));
-
-        for (Action action : actionsSortedByName) {
+        for (Action action : sortedActions) {
             actionIds.add(action.getId());
         }
-        return actionIds;
-    }
 
-    private static List<String> getAllActionIds() {
-        return ActionIdsHolder.allActionIds;
+        return actionIds;
     }
 }

@@ -64,14 +64,14 @@ public class RBACServiceImpl implements RBACService {
             actionsMapById.put(action.getId(),action);
         }
 
-        roleAdmin= RBAC_ADMIN_ROLE.getRole();
+        roleAdmin= ADMIN.getRole();
 
         //The role of "owner" can not be assigned. A user can be assigned owner by a kubernetes configuration action"
-        roleOwner= RBAC_OWNER_ROLE.getRole();
+        roleOwner= OWNER.getRole();
 
-        roleTester = RBAC_TESTER_ROLE.getRole();
+        roleTester = TESTER.getRole();
 
-        roleDeactivated = RBAC_DEACTIVATED_ROLE.getRole();
+        roleDeactivated = DEACTIVATED.getRole();
 
         List<Role> rolesUnsorted = List.of(roleAdmin, roleTester, roleDeactivated, roleOwner);
 
