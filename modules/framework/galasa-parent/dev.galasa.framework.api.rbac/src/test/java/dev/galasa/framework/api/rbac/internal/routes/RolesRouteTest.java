@@ -47,7 +47,7 @@ public class RolesRouteTest {
 
         List<Action> actions = List.of(action1,action2);
 
-        Role role1 = new MockRole("myRole1Name","myRole1Id","Description of myRole1Name", List.of(action1.getId(), action2.getId()));
+        Role role1 = new MockRole("myRole1Name","myRole1Id","Description of myRole1Name", List.of(action1.getId(), action2.getId()), true);
         List<Role> roles = List.of(role1);
 
         MockRBACService rbacService = new MockRBACService(roles , actions, role1);
@@ -80,6 +80,7 @@ public class RolesRouteTest {
             roleObj.addProperty("apiVersion","galasa-dev/v1alpha1");
 
             JsonObject role1MetadataObj = new JsonObject();
+            role1MetadataObj.addProperty("assignable", true);
             role1MetadataObj.addProperty("url","http://mock.galasa.server/myRole1Id");
             role1MetadataObj.addProperty("name","myRole1Name");
             role1MetadataObj.addProperty("id","myRole1Id");
@@ -112,8 +113,8 @@ public class RolesRouteTest {
 
         List<Action> actions = List.of(action1,action2);
 
-        Role role1 = new MockRole("myRole1Name","myRole1Id","Description of myRole1Name", List.of(action1.getId(), action2.getId()));
-        Role role2 = new MockRole("myRole2Name","myRole2Id","Description of myRole2Name", List.of(action1.getId()));
+        Role role1 = new MockRole("myRole1Name","myRole1Id","Description of myRole1Name", List.of(action1.getId(), action2.getId()), true);
+        Role role2 = new MockRole("myRole2Name","myRole2Id","Description of myRole2Name", List.of(action1.getId()), true);
         List<Role> roles = List.of(role1, role2);
 
         MockRBACService rbacService = new MockRBACService(roles , actions, role1);
@@ -150,6 +151,7 @@ public class RolesRouteTest {
             roleObj.addProperty("apiVersion","galasa-dev/v1alpha1");
 
             JsonObject role1MetadataObj = new JsonObject();
+            role1MetadataObj.addProperty("assignable", true);
             role1MetadataObj.addProperty("url","http://mock.galasa.server/myRole2Id");
             role1MetadataObj.addProperty("name","myRole2Name");
             role1MetadataObj.addProperty("id","myRole2Id");

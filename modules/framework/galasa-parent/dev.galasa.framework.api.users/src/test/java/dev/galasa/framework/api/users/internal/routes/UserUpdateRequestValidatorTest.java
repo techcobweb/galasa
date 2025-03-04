@@ -45,7 +45,7 @@ public class UserUpdateRequestValidatorTest extends BaseServletTest {
     }
 
     @Test
-    public void testUserUpdateWithWeirdCharactgerRoleResultsInErrors() throws Exception {
+    public void testUserUpdateWithWeirdCharacterRoleResultsInErrors() throws Exception {
         UserUpdateData dataToValidate = new UserUpdateData();
         dataToValidate.setrole("%&3£");
         UserUpdateRequestValidator validator = new UserUpdateRequestValidator();
@@ -55,13 +55,23 @@ public class UserUpdateRequestValidatorTest extends BaseServletTest {
     }
 
     @Test
-    public void testUserUpdateWithSpaceInMiddleCharactgerRoleResultsInErrors() throws Exception {
+    public void testUserUpdateWithSpaceInMiddleCharacterRoleResultsInErrors() throws Exception {
         UserUpdateData dataToValidate = new UserUpdateData();
         dataToValidate.setrole("my id");
         UserUpdateRequestValidator validator = new UserUpdateRequestValidator();
         InternalServletException ex = catchThrowableOfType( ()-> { validator.validateUpdateRequest(dataToValidate); },
             InternalServletException.class );
         assertThat(ex.getMessage()).contains("GAL5087");
+    }
+
+    @Test
+    public void testUserUpdateWithOwnerRoleResultsInError() throws Exception {
+        UserUpdateData dataToValidate = new UserUpdateData();
+        dataToValidate.setrole("3");
+        UserUpdateRequestValidator validator = new UserUpdateRequestValidator();
+        InternalServletException ex = catchThrowableOfType( ()-> { validator.validateUpdateRequest(dataToValidate); },
+            InternalServletException.class );
+        assertThat(ex.getMessage()).contains("GAL5106");
     }
 
     @Test

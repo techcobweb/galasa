@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
+import static dev.galasa.framework.spi.rbac.RBACRoles.*;
 
 import dev.galasa.framework.api.beans.generated.UserUpdateData;
 import dev.galasa.framework.api.common.InternalServletException;
@@ -31,6 +32,12 @@ public class UserUpdateRequestValidator {
         String roleId = userUpdateData.getrole();
         if (roleId==null || roleId.trim().isBlank()) {
             // Role is blank, so the user isn't trying to update the role field in the user record. Ok.
+        } 
+        else if (roleId.equals(OWNER.getRole().getId())) { // Assigning a user a role of owner (with ID 3) is not allowed
+
+            ServletError error = new ServletError(GAL5106_FORBIDDEN_USER_UPDATE_SERVICE_OWNER);
+            throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);
+
         } else {
 
             boolean isRoleFieldOK = true ;

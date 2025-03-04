@@ -39,7 +39,7 @@ public class FilledMockRBACService {
         actions.add(action1);
         actions.add(action2);
 
-        MockRole role1 = new MockRole("role1","2","role1 description",actionIDsList);
+        MockRole role1 = new MockRole("role1","2","role1 description",actionIDsList,true);
         
         List<Role> roles = new ArrayList<Role>();
         roles.add(role1);
@@ -57,7 +57,7 @@ public class FilledMockRBACService {
         
         List<String> actionIDsList = actions.stream().map(action -> action.getId()).collect(Collectors.toList());
 
-        MockRole role1 = new MockRole("role1","2","role1 description",actionIDsList);
+        MockRole role1 = new MockRole("role1","2","role1 description",actionIDsList,true);
         
         List<Role> roles = new ArrayList<Role>();
         roles.add(role1);

@@ -27,7 +27,7 @@ import dev.galasa.framework.spi.rbac.Role;
 
 import org.apache.commons.logging.*;
 
-import static dev.galasa.framework.spi.rbac.BuiltInAction.*;
+import static dev.galasa.framework.spi.rbac.RBACRoles.*;
 
 public class RBACServiceImpl implements RBACService {
 
@@ -64,14 +64,14 @@ public class RBACServiceImpl implements RBACService {
             actionsMapById.put(action.getId(),action);
         }
 
-        roleAdmin= new RoleImpl("admin","2","Administrator access",allActionIds);
-        roleOwner= new RoleImpl("owner","3","Galasa service owner",allActionIds);
+        roleAdmin= ADMIN.getRole();
 
-        roleTester = new RoleImpl("tester", "1", "Test developer and runner", 
-            List.of( USER_EDIT_OTHER.getAction().getId() , GENERAL_API_ACCESS.getAction().getId() )   
-        );
+        //The role of "owner" can not be assigned. A user can be assigned owner by a kubernetes configuration action"
+        roleOwner= OWNER.getRole();
 
-        roleDeactivated = new RoleImpl("deactivated", "0", "User has no access", new ArrayList<String>());
+        roleTester = TESTER.getRole();
+
+        roleDeactivated = DEACTIVATED.getRole();
 
         List<Role> rolesUnsorted = List.of(roleAdmin, roleTester, roleDeactivated, roleOwner);
 

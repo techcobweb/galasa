@@ -47,7 +47,7 @@ public class ActionsRouteTest {
 
         List<Action> actions = List.of(action1,action2);
 
-        Role role1 = new MockRole("myRole1Id","myRole1Name","Description of myRole1Name", List.of(action1.getId(), action2.getId()));
+        Role role1 = new MockRole("myRole1Id","myRole1Name","Description of myRole1Name", List.of(action1.getId(), action2.getId()),true);
         List<Role> roles = List.of(role1);
 
         MockRBACService rbacService = new MockRBACService(roles , actions, role1);

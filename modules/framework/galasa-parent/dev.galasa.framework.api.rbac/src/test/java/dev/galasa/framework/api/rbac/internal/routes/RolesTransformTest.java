@@ -32,7 +32,7 @@ public class RolesTransformTest {
         String myRole1Description = "myRole1Description";
 
 
-        Role role = new MockRole(myRole1Name, myRole1Id, myRole1Description, List.of(action.getId()) );
+        Role role = new MockRole(myRole1Name, myRole1Id, myRole1Description, List.of(action.getId()),true );
 
         String baseUrl = "https://myHost/api/roles";
         RoleTransform xform = new RoleTransform();

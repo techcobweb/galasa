@@ -2671,6 +2671,9 @@ components:
           type: string          
         url: 
           type: string
+        assignable:
+          type: boolean
+          description: Indicates whether this role can or cannot be assigned to a user using the REST interface.
 
     RBACRoleData:
       type: object
