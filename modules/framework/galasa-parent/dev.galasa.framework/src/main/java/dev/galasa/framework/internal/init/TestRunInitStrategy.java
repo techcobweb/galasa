@@ -6,7 +6,6 @@
 package dev.galasa.framework.internal.init;
 
 import java.util.Properties;
-import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,16 +74,15 @@ public class TestRunInitStrategy implements IFrameworkInitialisationStrategy {
         IRun run = null;
         IFrameworkRuns frameworkRuns = framework.getFrameworkRuns();
 
-        String runId = UUID.randomUUID().toString();
         switch(language) {
             case "java": 
                 String split[] = runBundleClass.split("/");
                 String bundle = split[0];
                 String test = split[1];
-                run = frameworkRuns.submitRun("local", null, bundle, test, null, null, null, null, true, false, null, null, null, language, runId);
+                run = frameworkRuns.submitRun("local", null, bundle, test, null, null, null, null, true, false, null, null, null, language);
                 break;
             case "gherkin":
-                run = frameworkRuns.submitRun("local", null, null, runBundleClass, null, null, null, null, true, false, null, null, null, language, runId);
+                run = frameworkRuns.submitRun("local", null, null, runBundleClass, null, null, null, null, true, false, null, null, null, language);
                 break;
             default:
                 throw new FrameworkException("Unknown language to create run");

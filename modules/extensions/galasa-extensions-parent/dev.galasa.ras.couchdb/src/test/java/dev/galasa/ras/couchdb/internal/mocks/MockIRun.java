@@ -13,21 +13,14 @@ import dev.galasa.framework.spi.IRun;
 public class MockIRun implements IRun {
 
     private String name ;
-    private String runId;
 
-    public MockIRun(String name, String runId) {
+    public MockIRun(String name) {
         this.name = name ;
-        this.runId = runId;
     }
 
     @Override
     public String getName() {
         return this.name;
-    }
-
-    @Override
-    public String getRasRunId() {
-        return this.runId;
     }
 
     @Override
@@ -129,4 +122,5 @@ public class MockIRun implements IRun {
     public String getGherkin() {
         throw new UnsupportedOperationException("Unimplemented method 'getGherkin'");
     }
+    
 }

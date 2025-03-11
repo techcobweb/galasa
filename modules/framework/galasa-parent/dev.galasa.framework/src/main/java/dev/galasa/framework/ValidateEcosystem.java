@@ -7,7 +7,6 @@ package dev.galasa.framework;
 
 import java.time.Instant;
 import java.util.Properties;
-import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,8 +70,7 @@ public class ValidateEcosystem {
                     null, 
                     null, 
                     null, 
-                    null,
-                    UUID.randomUUID().toString());
+                    null);
             
             logger.info("Test CoreManagerIVT submitted as run " + testRun.getName());
             

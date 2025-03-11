@@ -80,6 +80,9 @@ public class TestRunner extends BaseTestRunner {
             
         try {
 
+            String rasRunId = this.ras.calculateRasRunId();
+            storeRasRunIdInDss(dss, rasRunId);
+
             Class<?> testClass ;
 
             try {

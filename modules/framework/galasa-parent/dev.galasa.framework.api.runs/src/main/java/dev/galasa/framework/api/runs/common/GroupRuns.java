@@ -8,7 +8,6 @@ package dev.galasa.framework.api.runs.common;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -101,30 +100,16 @@ public class GroupRuns extends ProtectedRoute {
                 }
             }
 
-            if (jwtRequestor == null) {
+            if(jwtRequestor == null){
                 jwtRequestor = request.getRequestor(); 
             }
-
-            String runId = UUID.randomUUID().toString();
-
             try {
-                IRun newRun = framework.getFrameworkRuns().submitRun(
-                    request.getRequestorType(),
-                    jwtRequestor,
-                    classNameSplit[0],
-                    classNameSplit[1],
-                    groupName,
-                    request.getMavenRepository(),
-                    request.getObr(),
-                    request.getTestStream(),
-                    false,
-                    request.isTrace(),
-                    request.getOverrides(), 
-                    senvPhase, 
-                    request.getSharedEnvironmentRunName(),
-                    "java",
-                    runId
-                );
+                IRun newRun = framework.getFrameworkRuns().submitRun(request.getRequestorType(), jwtRequestor, classNameSplit[0], classNameSplit[1],
+                        groupName, request.getMavenRepository(), request.getObr(), request.getTestStream(), false,
+                        request.isTrace(), request.getOverrides(), 
+                        senvPhase, 
+                        request.getSharedEnvironmentRunName(),
+                        "java");
                 
                 status.getRuns().add(newRun.getSerializedRun());
             } catch (FrameworkException fe) {

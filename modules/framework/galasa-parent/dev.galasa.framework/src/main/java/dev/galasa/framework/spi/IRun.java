@@ -52,6 +52,4 @@ public interface IRun {
     boolean isSharedEnvironment();
 
     public String getGherkin();
-
-    String getRasRunId();
 }
