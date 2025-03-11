@@ -18,6 +18,8 @@ import dev.galasa.framework.spi.IRun;
 
 public class MockIFrameworkRuns implements IFrameworkRuns{
     protected String groupName;
+    private String mockSubmissionId = "submission1";
+
     List<IRun> runs ;
 
 
@@ -63,12 +65,12 @@ public class MockIFrameworkRuns implements IFrameworkRuns{
     @Override
     public @NotNull IRun submitRun(String type, String requestor, String bundleName, String testName, String groupName,
             String mavenRepository, String obr, String stream, boolean local, boolean trace, Properties overrides,
-            SharedEnvironmentPhase sharedEnvironmentPhase, String sharedEnvironmentRunName, String language)
+            SharedEnvironmentPhase sharedEnvironmentPhase, String sharedEnvironmentRunName, String language, String submissionId)
             throws FrameworkException {
             if (stream.equals("null")){
                 throw new FrameworkException(language);
             }
-        return new MockIRun("runname"+testName, type, requestor, testName, sharedEnvironmentRunName, bundleName, language, groupName);
+        return new MockIRun("runname"+testName, type, requestor, testName, sharedEnvironmentRunName, bundleName, language, groupName, this.mockSubmissionId);
     }
 
     @Override
@@ -84,5 +86,9 @@ public class MockIFrameworkRuns implements IFrameworkRuns{
     @Override
     public boolean reset(String runname) throws DynamicStatusStoreException {
         return true;
+    }
+
+    public void setMockSubmissionId(String mockSubmissionId) {
+        this.mockSubmissionId = mockSubmissionId;
     }
 }
