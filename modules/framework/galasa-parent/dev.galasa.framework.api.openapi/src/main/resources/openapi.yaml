@@ -458,6 +458,46 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 
 ##################################################################################
+# Streams API
+##################################################################################
+  /streams:
+    parameters:
+      - $ref: '#/components/parameters/ClientApiVersion'
+    get:
+      operationId: getStreams
+      summary: Returns the details of all the test streams. 
+      tags:
+      - Streams API
+      parameters:
+        - name: name
+          in: query
+          description: The name of the stream whose details will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Array of Stream Data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Stream'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                missingparametererror:
+                  value:
+                    error_code: 5400
+                    error_message: "E: Error occurred when trying to execute request '/streams'. Check your request parameters or report the problem to your Galasa Ecosystem owner."
+                  summary: One or more required query parameters are missing
+
+##################################################################################
 # CPS API
 ##################################################################################
   #--------------------------------------
@@ -2867,7 +2907,55 @@ components:
           type: string
         type:
           type: string
-
+    Stream:
+      type: object
+      properties:
+        apiVersion:
+          type: string
+        kind:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/StreamMetadata'
+        data:
+          $ref: '#/components/schemas/StreamData'
+    StreamMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        description:
+          type: string
+    StreamData:
+      type: object
+      properties:
+        isEnabled:
+          type: boolean
+        repository:
+          type: object
+          properties:
+            url:
+              type: string
+        obrs:
+          type: array
+          description: List of OBRs
+          items:
+            $ref: '#/components/schemas/StreamOBRData'
+        testCatalog:
+          type: object
+          properties:
+            url:
+              type: string
+    StreamOBRData:
+      type: object
+      properties:
+        group-id:
+          type: string
+        artifact-id:
+          type: string
+        version:
+          type: string
 
     # Structures used by the listing of the available artifacts endpoint.
     ArtifactIndex:

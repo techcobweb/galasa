@@ -170,6 +170,9 @@ public enum ServletErrorMessage {
     GAL5413_USER_CANNOT_UPDATE_OWN_USER_ROLE          (5413, "E: A user is not allowed to update their own role. Ask a Galasa service administrator to change your role instead."),
     GAL5414_USER_CANNOT_UPDATE_SERVICE_OWNER_ROLE     (5414, "E: A user is not allowed to update the role of the Galasa service owner. Ask a Galasa service administrator to change the list of owners and update the kubernetes configuration of the service."),
 
+    // STREAMS API
+    GAL5418_INVALID_STREAM_NAME_QUERY_PARAM                (5418, "E: Invalid 'name' provided. This could be because no value was given for the 'name' query parameter. Check your provided 'name' query parameter value and try again.")
+
     ;
 
     // >>>
@@ -178,7 +181,7 @@ public enum ServletErrorMessage {
     // >>>       Unit tests guarantee that this number is 'free' to use for a new error message.
     // >>>       If you do use this number for a new error template, please incriment this value.
     // >>>
-    public static final int GALxxx_NEXT_MESSAGE_NUMBER_TO_USE = 5418 ;
+    public static final int GALxxx_NEXT_MESSAGE_NUMBER_TO_USE = 5419;
 
 
     private String template ;

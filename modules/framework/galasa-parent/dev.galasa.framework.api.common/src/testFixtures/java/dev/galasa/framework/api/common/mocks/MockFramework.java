@@ -28,6 +28,7 @@ import dev.galasa.framework.spi.creds.CredentialsException;
 import dev.galasa.framework.spi.creds.ICredentialsService;
 import dev.galasa.framework.spi.rbac.RBACException;
 import dev.galasa.framework.spi.rbac.RBACService;
+import dev.galasa.framework.spi.streams.IStreamsService;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ public class MockFramework implements IFramework {
     private IAuthStoreService authStoreService;
     private RBACService rbacService;
     private IDynamicStatusStoreService dssService;
+    private IStreamsService streamsService;
     
     public MockFramework() {
         this.rbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(BaseServletTest.JWT_USERNAME);
@@ -129,6 +131,15 @@ public class MockFramework implements IFramework {
 
     public void setRBACService(RBACService rbacService) {
         this.rbacService = rbacService;
+    }
+
+    @Override
+    public @NotNull IStreamsService getStreamsService() {
+        return this.streamsService;
+    }
+
+    public void setStreamsService(IStreamsService streamsService) {
+        this.streamsService = streamsService;
     }
 
     @Override

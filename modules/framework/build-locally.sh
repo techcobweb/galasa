@@ -470,7 +470,7 @@ log_file=${LOGS_DIR}/${project}.txt
 info "Log will be placed at ${log_file}"
 
 
-build_framework_uml_diagrams
+#build_framework_uml_diagrams
 
 cleaning_up_before_we_start
 
