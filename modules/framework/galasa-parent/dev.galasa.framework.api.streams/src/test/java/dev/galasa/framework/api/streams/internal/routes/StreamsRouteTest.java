@@ -152,4 +152,45 @@ public class StreamsRouteTest extends BaseServletTest {
         assertThat(getJsonArrayFromJson(output, "streams")).hasSize(2);
     }
 
+    @Test
+    public void testGetSTreamsByNameRouteThrowsInternalServletException() throws Exception {
+
+        Map<String, String> headerMap = Map.of("Authorization", "Bearer " + BaseServletTest.DUMMY_JWT);
+
+        List<IStream> mockStreams = new ArrayList<>();
+        MockStream mockstream = new MockStream("fakeStream", "This is a dummy test stream",
+                "http://mymavenrepo.host/testmaterial",
+                "http://mymavenrepo.host/testmaterial/com.ibm.zosadk.k8s/com.ibm.zosadk.k8s.obr/0.1.0-SNAPSHOT/testcatalog.yaml",
+                "mvn:dev.galasa/dev.galasa.ivts.obr/0.41.0/obr", true);
+
+        mockStreams.add(mockstream);
+
+        MockIStreamsService mockIStreamsService = new MockIStreamsService(mockStreams);
+        mockIStreamsService.setThrowException(true);
+
+        MockRBACService mockRBACService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME);
+        MockFramework mockFramework = new MockFramework(mockRBACService, mockIStreamsService);
+        MockIConfigurationPropertyStoreService mockIConfigurationPropertyStoreService = new MockIConfigurationPropertyStoreService(
+                "framework");
+
+        MockEnvironment env = new MockEnvironment();
+        env.setenv(EnvironmentVariables.GALASA_USERNAME_CLAIMS, "preferred_username");
+
+        MockStreamsServlet mockServlet = new MockStreamsServlet(mockFramework, env,
+                mockIConfigurationPropertyStoreService);
+
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest(null, headerMap);
+        MockHttpServletResponse servletResponse = new MockHttpServletResponse();
+        ServletOutputStream outStream = servletResponse.getOutputStream();
+
+        // When...
+        mockServlet.init();
+        mockServlet.doGet(mockRequest, servletResponse);
+
+        assertThat(servletResponse.getStatus()).isEqualTo(500);
+        assertThat(servletResponse.getContentType()).isEqualTo("application/json");
+        assertThat(outStream.toString()).contains("GAL5000E", "Error occurred when trying to access the endpoint. Report the problem to your Galasa Ecosystem owner.");
+
+    }
+
 }

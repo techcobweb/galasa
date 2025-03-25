@@ -10,9 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
 import dev.galasa.framework.spi.IConfigurationPropertyStoreService;
 import dev.galasa.framework.spi.streams.IStream;
@@ -33,8 +30,7 @@ public class StreamsServiceImpl implements IStreamsService {
         List<IStream> streamsList = new ArrayList<>();
         try {
             // Keys are in the form: test.stream.<stream-name>.property
-            String testStreamPrefix = "test.stream.";
-            streamsList = handleStreamProperties(testStreamPrefix);
+            streamsList = handleStreamProperties(TEST_STREAM_PREFIX);
 
         } catch (ConfigurationPropertyStoreException e) {
             throw new StreamsException(e);
@@ -50,7 +46,7 @@ public class StreamsServiceImpl implements IStreamsService {
 
         try {
 
-            String testStreamPrefix = "test.stream." + streamName + ".";
+            String testStreamPrefix = TEST_STREAM_PREFIX + streamName + ".";
             streams = handleStreamProperties(testStreamPrefix);
 
             if (!streams.isEmpty()) {

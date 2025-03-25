@@ -584,7 +584,7 @@ public class Framework implements IFramework, IShuttableFramework {
                 IConfigurationPropertyStoreService cpsService = getConfigurationPropertyService("framework");
                 this.streamsService = new StreamsServiceImpl(cpsService);
             } catch (ConfigurationPropertyStoreException e) {
-                throw new StreamsException(e);
+                throw new StreamsException("Failed to initialise Streams service",e);
             }
         }
 

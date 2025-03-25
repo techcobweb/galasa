@@ -23,6 +23,7 @@ import dev.galasa.framework.spi.streams.IStream;
 public class StreamsTransform {
 
     public Log logger = LogFactory.getLog(StreamsTransform.class);
+    private static final String MAVEN_PREFIX = "mvn:";
 
     /**
      * Creates a list with a single Stream bean based on the provided properties.
@@ -104,7 +105,7 @@ public class StreamsTransform {
         List<StreamOBRData> streamObrData = new ArrayList<>();
 
         for (String obrLocation : obrUrls) {
-            String extractedUrl = obrLocation.substring(4, obrLocation.length() - 1);
+            String extractedUrl = obrLocation.substring(MAVEN_PREFIX.length(), obrLocation.length() - 1);
             String[] splitTestCatalogUrl = extractedUrl.split("/");
 
             // Example URL: mvn:dev.galasa/dev.galasa.inttests.obr/0.41.0/obr

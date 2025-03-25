@@ -8,7 +8,7 @@ package dev.galasa.framework.api.streams;
 import dev.galasa.framework.api.common.BaseServlet;
 import dev.galasa.framework.api.common.Environment;
 import dev.galasa.framework.api.common.SystemEnvironment;
-import dev.galasa.framework.api.streams.internal.routes.StreamsByName;
+import dev.galasa.framework.api.streams.internal.routes.StreamsByNameRoute;
 import dev.galasa.framework.api.streams.internal.routes.StreamsRoute;
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
 import dev.galasa.framework.spi.IConfigurationPropertyStoreService;
@@ -55,17 +55,16 @@ public class StreamsServlet extends BaseServlet {
         logger.info("Galasa Streams API initialising");
 
         try {
+
             rbacService = framework.getRBACService();
             streamsService = framework.getStreamsService();
             configurationPropertyStoreService = framework.getConfigurationPropertyService("framework");
-        } catch ( RBACException | ConfigurationPropertyStoreException | StreamsException ex) {
-            throw new ServletException(ex);
-        }
-        try {
+
             addRoute(new StreamsRoute(getResponseBuilder(), env, streamsService, rbacService));
-            addRoute(new StreamsByName(getResponseBuilder(), env, streamsService, rbacService));
-        } catch (StreamsException e) {
-            throw new ServletException(e);
+            addRoute(new StreamsByNameRoute(getResponseBuilder(), env, streamsService, rbacService));
+            
+        } catch ( RBACException | ConfigurationPropertyStoreException | StreamsException ex) {
+            throw new ServletException("Failed to initialise Streams service",ex);
         }
 
         logger.info("Galasa Streams API initialised");

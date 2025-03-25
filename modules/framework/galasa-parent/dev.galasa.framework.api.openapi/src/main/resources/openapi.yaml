@@ -477,6 +477,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Stream'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /streams/{streamName}:
     parameters:
       - $ref: '#/components/parameters/ClientApiVersion'
@@ -523,6 +525,9 @@ paths:
                     error_code: 5420
                     error_message: "GAL5420E: Error getting stream"
                   summary: An Error occurred when trying to get a stream using the given stream name.
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+
 ##################################################################################
 # CPS API
 ##################################################################################

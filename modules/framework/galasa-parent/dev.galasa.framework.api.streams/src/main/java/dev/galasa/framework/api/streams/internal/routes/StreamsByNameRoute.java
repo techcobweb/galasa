@@ -30,7 +30,7 @@ import dev.galasa.framework.spi.streams.IStream;
 import dev.galasa.framework.spi.streams.IStreamsService;
 import dev.galasa.framework.spi.streams.StreamsException;
 
-public class StreamsByName extends AbstractStreamsRoute {
+public class StreamsByNameRoute extends AbstractStreamsRoute {
 
     // Regex to match endpoint /streams/{streamName}
     protected static final String path = "\\/([a-zA-Z0-9\\-\\_]+)\\/?";
@@ -39,7 +39,7 @@ public class StreamsByName extends AbstractStreamsRoute {
 
     private StreamsTransform streamsTransform;
 
-    public StreamsByName(ResponseBuilder responseBuilder, Environment env, IStreamsService streamsService,
+    public StreamsByNameRoute(ResponseBuilder responseBuilder, Environment env, IStreamsService streamsService,
             RBACService rbacService)
             throws StreamsException {
         super(responseBuilder, path, rbacService, streamsService);
