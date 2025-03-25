@@ -19,6 +19,7 @@ public class RunImpl implements IRun {
     private final Instant heartbeat;
     private final String  type;
     private final String  group;
+    private final String  submissionId;
     private final String  test;
     private final String  bundleName;
     private final String  testName;
@@ -60,6 +61,7 @@ public class RunImpl implements IRun {
         repo = runProperties.get(prefix + "repository");
         obr = runProperties.get(prefix + "obr");
         group = runProperties.get(prefix + "group");
+        submissionId = runProperties.get(prefix + "submissionId");
         rasRunId = runProperties.get(prefix + "rasrunid");
         local = Boolean.parseBoolean(runProperties.get(prefix + "local"));
         trace = Boolean.parseBoolean(runProperties.get(prefix + "trace"));
@@ -162,6 +164,11 @@ public class RunImpl implements IRun {
     }
 
     @Override
+    public String getSubmissionId() {
+        return this.submissionId;
+    }
+
+    @Override
     public Instant getQueued() {
         return this.queued;
     }
@@ -194,7 +201,7 @@ public class RunImpl implements IRun {
     @Override
     public Run getSerializedRun() {
         return new Run(name, heartbeat, type, group, test, bundleName, testName, status, result, queued,
-                finished, waitUntil, requestor, stream, repo, obr, local, trace, rasRunId);
+                finished, waitUntil, requestor, stream, repo, obr, local, trace, rasRunId, submissionId);
     }
 
     @Override

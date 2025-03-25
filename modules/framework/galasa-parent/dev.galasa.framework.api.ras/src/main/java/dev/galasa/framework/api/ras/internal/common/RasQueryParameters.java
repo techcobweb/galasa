@@ -18,6 +18,7 @@ import dev.galasa.framework.TestRunLifecycleStatus;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ServletError;
+import dev.galasa.framework.api.ras.internal.routes.RunQueryRoute;
 import dev.galasa.framework.spi.ras.RasSortField;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
@@ -90,6 +91,10 @@ public class RasQueryParameters {
         return generalQueryParams.getSingleString("group", null);
     }
 
+    public String getSubmissionId() throws InternalServletException {
+        return generalQueryParams.getSingleString("submissionId", null);
+    }
+
     public String getTestName() throws InternalServletException {
         return generalQueryParams.getSingleString("testname", null);
     }
@@ -135,8 +140,13 @@ public class RasQueryParameters {
         return generalQueryParams.getMultipleString("runId", new ArrayList<String>());
     }
 
-    public boolean isFromTimeOrRunNameOrGroupPresent() throws InternalServletException {
-        return generalQueryParams.checkAtLeastOneQueryParameterPresent("from", "runname", "group");
+    public boolean isAtLeastOneMandatoryParameterPresent() throws InternalServletException {
+        return generalQueryParams.checkAtLeastOneQueryParameterPresent(
+            RunQueryRoute.QUERY_PARAMETER_FROM,
+            RunQueryRoute.QUERY_PARAMETER_RUNNAME,
+            RunQueryRoute.QUERY_PARAMETER_GROUP,
+            RunQueryRoute.QUERY_PARAMETER_SUBMISSION_ID
+        );
     }
 
     public int getSize(){

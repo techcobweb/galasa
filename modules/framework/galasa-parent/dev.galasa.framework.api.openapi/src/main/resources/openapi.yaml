@@ -6,7 +6,7 @@
 openapi: 3.0.3
 info:
   title: Galasa Ecosystem API
-  version : "0.40.0"
+  version : "0.41.0"
   description: The Galasa Ecosystem REST API allows you to interact with a Galasa Ecosystem.
   contact:
     url: https://galasa.dev/support
@@ -1441,7 +1441,7 @@ paths:
         - name: submissionId
           in: query
           description: |
-            The submission Id allocated to this test run when the test run was submitted
+            The submission ID allocated to this test run when the test run was submitted
             It can be used to query all the runs and re-runs for a test.
             Similar to the groupId, but much more restricted to return a set of runs which are all a result of 
             the same request to run a test.
