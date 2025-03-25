@@ -74,6 +74,11 @@ public class MockFramework implements IFramework {
         this.rbacService = rbacService;
     }
 
+    public MockFramework(RBACService rbacService, IStreamsService streamsService) {
+        this.streamsService = streamsService;
+        this.rbacService = rbacService;
+    }
+
     public MockFramework(IDynamicStatusStoreService dssService) {
         this();
         this.dssService = dssService;

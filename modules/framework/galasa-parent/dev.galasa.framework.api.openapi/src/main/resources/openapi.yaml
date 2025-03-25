@@ -458,7 +458,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 
 ##################################################################################
-# Streams API
+# STREAMS API
 ##################################################################################
   /streams:
     parameters:
@@ -468,13 +468,6 @@ paths:
       summary: Returns the details of all the test streams. 
       tags:
       - Streams API
-      parameters:
-        - name: name
-          in: query
-          description: The name of the stream whose details will be returned.
-          required: false
-          schema:
-            type: string
       responses:
         '200':
           description: Array of Stream Data
@@ -483,6 +476,28 @@ paths:
               schema:
                 type: array
                 items:
+                  $ref: '#/components/schemas/Stream'
+  /streams/{streamName}:
+    parameters:
+      - $ref: '#/components/parameters/ClientApiVersion'
+    get:
+      operationId: getStreamByName
+      summary: Gets a stream based on its name. 
+      tags:
+      - Streams API
+      parameters:
+        - name: streamName
+          in: path
+          description: Stream name of the stream to be retrieved.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The get operation worked. The stream found is returned.
+          content:
+            application/json:
+              schema:
                   $ref: '#/components/schemas/Stream'
         '400':
           description: Bad Request
@@ -495,8 +510,19 @@ paths:
                   value:
                     error_code: 5400
                     error_message: "E: Error occurred when trying to execute request '/streams'. Check your request parameters or report the problem to your Galasa Ecosystem owner."
-                  summary: One or more required query parameters are missing
-
+                  summary: One or more required query parameters are missing                
+        '404':
+          description: The get operation failed. The record was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                runiderror:
+                  value:
+                    error_code: 5420
+                    error_message: "GAL5420E: Error getting stream"
+                  summary: An Error occurred when trying to get a stream using the given stream name.
 ##################################################################################
 # CPS API
 ##################################################################################
@@ -2933,20 +2959,14 @@ components:
         isEnabled:
           type: boolean
         repository:
-          type: object
-          properties:
-            url:
-              type: string
+          $ref: '#/components/schemas/StreamRepository'
         obrs:
           type: array
           description: List of OBRs
           items:
             $ref: '#/components/schemas/StreamOBRData'
         testCatalog:
-          type: object
-          properties:
-            url:
-              type: string
+          $ref: '#/components/schemas/StreamTestCatalog'
     StreamOBRData:
       type: object
       properties:
@@ -2956,7 +2976,16 @@ components:
           type: string
         version:
           type: string
-
+    StreamRepository:
+      type: object
+      properties:
+        url:
+          type: string
+    StreamTestCatalog:
+      type: object
+      properties:
+        url:
+          type: string
     # Structures used by the listing of the available artifacts endpoint.
     ArtifactIndex:
       type: array

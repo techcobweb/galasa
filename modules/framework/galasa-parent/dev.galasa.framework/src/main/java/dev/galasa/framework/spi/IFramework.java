@@ -174,7 +174,7 @@ public interface IFramework {
     RBACService getRBACService() throws RBACException;
 
     @NotNull
-    IStreamsService getStreamsService();
+    IStreamsService getStreamsService() throws StreamsException;
 
     /**
      * Retrieve the test run name. Will be null for non test runs

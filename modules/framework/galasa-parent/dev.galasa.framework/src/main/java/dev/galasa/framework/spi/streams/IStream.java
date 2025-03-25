@@ -6,9 +6,17 @@
 package dev.galasa.framework.spi.streams;
 
 public interface IStream {
-    
+
     String getName();
-    Boolean getState();
+
     String getDescription();
+
+    String getMavenRepositoryUrl();
+
+    String getTestCatalogUrl();
+
+    String getObrLocation();
+
+    boolean getIsEnabled();
 
 }
