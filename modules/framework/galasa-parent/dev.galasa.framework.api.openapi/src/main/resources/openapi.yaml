@@ -477,6 +477,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Stream'
+        '401':
+          $ref: "#/components/responses/Unauthorized"
         '500':
           $ref: '#/components/responses/InternalServerError'
   /streams/{streamName}:
@@ -527,6 +529,8 @@ paths:
                   summary: An Error occurred when trying to get a stream using the given stream name.
         '401':
           $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
 ##################################################################################
 # CPS API
