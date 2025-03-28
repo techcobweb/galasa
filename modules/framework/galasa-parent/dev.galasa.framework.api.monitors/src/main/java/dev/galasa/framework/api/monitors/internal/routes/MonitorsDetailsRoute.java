@@ -7,6 +7,7 @@ package dev.galasa.framework.api.monitors.internal.routes;
 
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import dev.galasa.framework.api.beans.generated.GalasaMonitor;
+import dev.galasa.framework.api.beans.generated.UpdateGalasaMonitorRequest;
+import dev.galasa.framework.api.beans.generated.UpdateGalasaMonitorRequestdata;
 import dev.galasa.framework.api.common.HttpRequestContext;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.MimeType;
@@ -26,6 +29,7 @@ import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.api.common.ServletErrorMessage;
 import dev.galasa.framework.api.monitors.internal.IKubernetesApiClient;
 import dev.galasa.framework.api.monitors.internal.MonitorTransform;
+import dev.galasa.framework.api.monitors.internal.UpdateMonitorRequestValidator;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.rbac.RBACService;
 import io.kubernetes.client.openapi.ApiException;
@@ -46,6 +50,7 @@ public class MonitorsDetailsRoute extends ProtectedRoute {
     private final String kubeNamespace;
 
     private MonitorTransform monitorTransform = new MonitorTransform();
+    private UpdateMonitorRequestValidator validator = new UpdateMonitorRequestValidator();
 
     public MonitorsDetailsRoute(
         ResponseBuilder responseBuilder,
@@ -71,6 +76,7 @@ public class MonitorsDetailsRoute extends ProtectedRoute {
         HttpServletRequest request = requestContext.getRequest();
 
         String monitorName = getMonitorNameFromPath(pathInfo);
+
         V1Deployment matchingDeployment = getDeploymentByName(monitorName);
 
         GalasaMonitor monitorBean = null;
@@ -85,6 +91,70 @@ public class MonitorsDetailsRoute extends ProtectedRoute {
         logger.info("handleGetRequest() exiting");
 
         return getResponseBuilder().buildResponse(request, response, MimeType.APPLICATION_JSON.toString(), monitorJson, HttpServletResponse.SC_OK);
+    }
+
+    @Override
+    public HttpServletResponse handlePutRequest(
+        String pathInfo,
+        HttpRequestContext requestContext,
+        HttpServletResponse response
+    ) throws FrameworkException, IOException {
+
+        logger.info("handlePutRequest() entered");
+
+        HttpServletRequest request = requestContext.getRequest();
+
+        String monitorName = getMonitorNameFromPath(pathInfo);
+        UpdateGalasaMonitorRequest updateRequest = parseRequestBody(request, UpdateGalasaMonitorRequest.class);
+        validator.validate(updateRequest);
+
+        V1Deployment matchingDeployment = getDeploymentByName(monitorName);
+
+        V1Deployment updatedDeployment = null;
+        if (matchingDeployment == null) {
+            ServletError error = new ServletError(GAL5422_ERROR_MONITOR_NOT_FOUND_BY_NAME);
+            throw new InternalServletException(error, HttpServletResponse.SC_NOT_FOUND);
+        } else {
+            logger.info("Deployment with the given name was found OK");
+            updatedDeployment = updateDeployment(updateRequest, matchingDeployment);
+        }
+
+        // Convert the updated deployment into a monitor bean that we can return
+        GalasaMonitor monitorToReturn = monitorTransform.createGalasaMonitorBeanFromDeployment(updatedDeployment);
+        String monitorJson = gson.toJson(monitorToReturn);
+
+        logger.info("handlePutRequest() exiting");
+
+        return getResponseBuilder().buildResponse(request, response, MimeType.APPLICATION_JSON.toString(), monitorJson, HttpServletResponse.SC_OK);
+    }
+
+    private V1Deployment updateDeployment(UpdateGalasaMonitorRequest updateRequest, V1Deployment matchingDeployment) throws InternalServletException {
+        V1Deployment upToDateDeployment = matchingDeployment;
+
+        int replicas = 0;
+        UpdateGalasaMonitorRequestdata updateRequestData = updateRequest.getdata();
+        if (updateRequestData.getIsEnabled()) {
+            replicas = 1;
+        }
+
+        if (matchingDeployment.getSpec().getReplicas() == replicas) {
+            logger.info("Requested deployment replica count is unchanged, there is nothing to update");
+        } else {
+            matchingDeployment.getSpec().setReplicas(replicas);
+            logger.info("Deployment replicas set to: " + replicas);
+    
+            String deploymentName = matchingDeployment.getMetadata().getName();
+    
+            try {
+                upToDateDeployment = kubeApiClient.replaceDeployment(kubeNamespace, deploymentName, matchingDeployment);
+            } catch (ApiException e) {
+                ServletError error = new ServletError(GAL5424_FAILED_TO_UPDATE_MONITOR);
+                throw new InternalServletException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
+            }
+    
+            logger.info("Deployment updated OK");
+        }
+        return upToDateDeployment;
     }
 
     private V1Deployment getDeploymentByName(String monitorName) throws InternalServletException {
