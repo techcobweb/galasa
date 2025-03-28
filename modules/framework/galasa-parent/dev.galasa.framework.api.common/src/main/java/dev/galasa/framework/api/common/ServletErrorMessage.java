@@ -175,6 +175,10 @@ public enum ServletErrorMessage {
     GAL5419_FAILED_TO_GET_STREAM_NAME_FROM_URL        (5419, "E: Failed to retrieve a stream name from the request path. Ensure that you have provided a valid name representing an existing stream in your request and try again"),
     GAL5420_ERROR_STREAM_NOT_FOUND                    (5420, "E: Unable to retrieve a stream with the given stream name. No such stream exists."),
 
+    // Monitors APIs...
+    GAL5421_ERROR_GETTING_MONITOR_DEPLOYMENTS         (5421, "E: Error occurred when getting the Galasa monitor deployments from Kubernetes. Report the problem to your Galasa systems administrator."),
+    GAL5422_ERROR_MONITOR_NOT_FOUND_BY_NAME           (5422, "E: Unable to retrieve a monitor with the given name. No such monitor exists. Check your request parameters and try again."),
+    GAL5423_INVALID_MONITOR_NAME_PROVIDED             (5423, "E: Invalid monitor name provided. Check that the name provided only contains characters in the ranges 'a'-'z', 'A'-'Z', 0-9, '-' (hyphens), '_' (underscores), and '.' (dots)."),
     ;
 
     // >>>
@@ -183,7 +187,7 @@ public enum ServletErrorMessage {
     // >>>       Unit tests guarantee that this number is 'free' to use for a new error message.
     // >>>       If you do use this number for a new error template, please incriment this value.
     // >>>
-    public static final int GALxxx_NEXT_MESSAGE_NUMBER_TO_USE = 5421;
+    public static final int GALxxx_NEXT_MESSAGE_NUMBER_TO_USE = 5424;
 
 
     private String template ;
