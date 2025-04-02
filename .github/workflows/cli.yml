@@ -73,7 +73,7 @@ jobs:
           java -jar /opt/openapi/openapi-generator-cli.jar generate \
           -i /var/workspace/build/dependencies/openapi.yaml \
           -g go \
-          -o /var/workspace/pkg/galasaapi \
+          -o /var/workspace/modules/cli/pkg/galasaapi \
           --additional-properties=packageName=galasaapi \
           --global-property=apiTests=false
 
@@ -89,20 +89,20 @@ jobs:
       - name: Clear go.mod
         run : |
           docker run --rm -v ${{ github.workspace }}:/var/workspace ghcr.io/galasa-dev/openapi:main \
-          rm /var/workspace/pkg/galasaapi/go.mod
+          rm /var/workspace/modules/cli/pkg/galasaapi/go.mod
 
       - name: Clear go.sum
         run : |
           docker run --rm -v ${{ github.workspace }}:/var/workspace ghcr.io/galasa-dev/openapi:main \
-          rm /var/workspace/pkg/galasaapi/go.sum
+          rm /var/workspace/modules/cli/pkg/galasaapi/go.sum
 
       # The go code needs to know which version of Galasa it is part of, so substitute an eye-catcher with the correct value.
       - name: Update version 
         run : |
-          version=$(cat VERSION) &&
-          cat pkg/cmd/root.go | sed "s/unknowncliversion-unknowngithash/${version}/1" > temp.txt &&
-          mv -f temp.txt pkg/cmd/root.go &&
-          cat pkg/cmd/root.go
+          version=$(cat /var/workspace/modules/cli/VERSION) &&
+          cat /var/workspace/modules/cli/pkg/cmd/root.go | sed "s/unknowncliversion-unknowngithash/${version}/1" > temp.txt &&
+          mv -f temp.txt /var/workspace/modules/cli/pkg/cmd/root.go &&
+          cat /var/workspace/modules/cli/pkg/cmd/root.go
 
       # Invoke the make command to build the go code, run unit tests and gather code coverage stats.
       - name: Build Go code with the Makefile
@@ -117,15 +117,15 @@ jobs:
 
       - name: Chmod local test script
         run: | 
-          chmod +x test-galasactl-local.sh
+          chmod +x /var/workspace/modules/cli/test-galasactl-local.sh
 
       - name: Run local test script with Maven
         run : |
-          ./test-galasactl-local.sh --buildTool maven
+          /var/workspace/modules/cli/ --buildTool maven
 
       - name: Run local test script with Gradle
         run : |
-          ./test-galasactl-local.sh --buildTool gradle
+          /var/workspace/modules/cli/ --buildTool gradle
 
       # Skip testing of Galasa service related commands if the
       # GALASA_TOKEN_ECOSYSTEM1 secret is not set as the test
@@ -155,8 +155,8 @@ jobs:
       - name: Run ecosystem test script
         if: ${{ steps.check-galasa-token.outcome == 'success' }}
         run : |
-          chmod +x test-galasactl-ecosystem.sh
-          ./test-galasactl-ecosystem.sh --bootstrap https://galasa-ecosystem1.galasa.dev/api/bootstrap
+          chmod +x /var/workspace/modules/cli/test-galasactl-ecosystem.sh
+          /var/workspace/modules/cli/test-galasactl-ecosystem.sh --bootstrap https://galasa-ecosystem1.galasa.dev/api/bootstrap
 
       - name: Login to Github Container Registry
         uses: docker/login-action@v3
