@@ -34,6 +34,7 @@ jobs:
 
   build-cli:
     name: Build the Galasa CLI
+    if: ${{ inputs.changed == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -48,6 +49,7 @@ jobs:
 
       # Pull down dependencies with Gradle and put them in the right places.
       - name: Gather dependencies using Gradle
+        working-directory: ./modules/cli
         run : |
           set -o pipefail
           gradle -b build.gradle installJarsIntoTemplates --info \
@@ -66,11 +68,13 @@ jobs:
 
       # Generate client code so galasactl can communicate with the API server.
       - name: Generate Go client code using openapi.yaml
+        working-directory: ./modules/cli
         run : |
           docker run --rm --user $(id -u):$(id -g) -v ${{ github.workspace }}:/var/workspace ghcr.io/galasa-dev/openapi:main java -jar /opt/openapi/openapi-generator-cli.jar generate -i /var/workspace/build/dependencies/openapi.yaml -g go -o /var/workspace/pkg/galasaapi --additional-properties=packageName=galasaapi --global-property=apiTests=false
 
       # The generated code needs adjustment for various reasons.
       - name: Fix generated code
+        working-directory: ./modules/cli
         run : |
           chmod +x ./fix-generated-code.sh
           ./fix-generated-code.sh
@@ -80,14 +84,15 @@ jobs:
 
       - name: Clear go.mod
         run : |
-          docker run --rm -v ${{ github.workspace }}:/var/workspace ghcr.io/galasa-dev/openapi:main rm /var/workspace/pkg/galasaapi/go.mod
+          docker run --rm -v ${{ github.workspace }}:/var/workspace ghcr.io/galasa-dev/openapi:main rm /var/workspace/modules/cli/pkg/galasaapi/go.mod
 
       - name: Clear go.sum
         run : |
-          docker run --rm -v ${{ github.workspace }}:/var/workspace ghcr.io/galasa-dev/openapi:main rm /var/workspace/pkg/galasaapi/go.sum
+          docker run --rm -v ${{ github.workspace }}:/var/workspace ghcr.io/galasa-dev/openapi:main rm /var/workspace/modules/cli/pkg/galasaapi/go.sum
 
       # The go code needs to know which version of Galasa it is part of, so substitute an eye-catcher with the correct value.
       - name: Update version 
+        working-directory: ./modules/cli
         run : |
           version=$(cat VERSION) &&
           cat pkg/cmd/root.go | sed "s/unknowncliversion-unknowngithash/${version}/1" > temp.txt &&
@@ -96,6 +101,7 @@ jobs:
 
       # Invoke the make command to build the go code, run unit tests and gather code coverage stats.
       - name: Build Go code with the Makefile
+        working-directory: ./modules/cli
         run : |
           make all
 
@@ -106,14 +112,17 @@ jobs:
           distribution: 'semeru'
 
       - name: Chmod local test script
+        working-directory: ./modules/cli
         run: | 
           chmod +x test-galasactl-local.sh
 
       - name: Run local test script with Maven
+        working-directory: ./modules/cli
         run : |
           ./test-galasactl-local.sh --buildTool maven
 
       - name: Run local test script with Gradle
+        working-directory: ./modules/cli
         run : |
           ./test-galasactl-local.sh --buildTool gradle
 
@@ -144,6 +153,7 @@ jobs:
 
       - name: Run ecosystem test script
         if: ${{ steps.check-galasa-token.outcome == 'success' }}
+        working-directory: ./modules/cli
         run : |
           chmod +x test-galasactl-ecosystem.sh
           ./test-galasactl-ecosystem.sh --bootstrap https://galasa-ecosystem1.galasa.dev/api/bootstrap
