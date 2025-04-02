@@ -3,16 +3,35 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-name: PR build
+name: CLI PR Build
 
 on:
-  pull_request:
-    branches: [main]
+  workflow_call:
+    inputs:
+      changed:
+        description: 'True if this module has been changed and should be rebuilt'
+        required: true
+        type: string
+      artifact-id:
+        description: 'The Workflow Run ID of the last workflow containing artifacts to download'
+        required: true
+        type: string
 
 env:
   REGISTRY: ghcr.io
 
 jobs:
+
+  log-unchanged:
+    name: Cli is unchanged
+    if: ${{ inputs.changed == 'false' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log this module is unchanged
+        run: |
+          echo "The cli module is unchanged"
+
   build-cli:
     name: Build the Galasa CLI
     runs-on: ubuntu-latest
