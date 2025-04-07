@@ -48,6 +48,7 @@ public class MockStreamsService implements IStreamsService {
         for (IStream stream : streams) {
             if (stream.getName().equals(streamName)) {
                 streamToReturn = stream;
+                break;
             }
         }
 
@@ -64,6 +65,7 @@ public class MockStreamsService implements IStreamsService {
         for (IStream stream : streams) {
             if (stream.getName().equals(streamName)) {
                 streams.remove(stream);
+                break;
             }
         }
     }

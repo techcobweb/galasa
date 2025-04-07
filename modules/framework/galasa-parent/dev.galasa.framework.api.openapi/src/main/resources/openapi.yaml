@@ -539,7 +539,7 @@ paths:
       parameters:
         - name: streamName
           in: path
-          description: Stream name of the stream to be deleted.
+          description: Name of the stream to be deleted
           required: true
           schema:
             type: string
@@ -556,10 +556,10 @@ paths:
                 missingparametererror:
                   value:
                     error_code: 5400
-                    error_message: "E: Error occurred when trying to execute request '/streams'. Check your request parameters or report the problem to your Galasa Ecosystem owner."
-                  summary: One or more required query parameters are missing                
+                    error_message: "E: Error occurred when trying to execute request '/streams'. Check your request path variables or report the problem to your Galasa Ecosystem owner."
+                  summary: One or more required path variables are missing                
         '404':
-          description: The delete operation failed. The record was not found.
+          description: The delete operation failed. The stream was not found.
           content:
             application/json:
               schema:

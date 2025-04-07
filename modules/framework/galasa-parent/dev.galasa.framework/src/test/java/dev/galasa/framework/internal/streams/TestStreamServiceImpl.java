@@ -461,7 +461,7 @@ public class TestStreamServiceImpl {
     }
 
     @Test
-    public void testDeleteStreamByNameWithMultipleSreamsPresentOkNoContent() throws Exception {
+    public void testDeleteStreamByNameWithMultipleStreamsPresentOkNoContent() throws Exception {
 
         // Given...
         MockIConfigurationPropertyStoreService mockCps = new MockIConfigurationPropertyStoreService();
@@ -494,6 +494,12 @@ public class TestStreamServiceImpl {
 
         //Check if there is only 1 stream left after deletion
         assertThat(streams).hasSize(1);
+
+        //Check that the other stream was not deleted
+        IStream stream = streams.get(0);
+        assertThat(stream).isNotNull();
+        assertThat(stream.getName()).isEqualTo(streamName2);
+        assertThat(stream.getDescription()).isEqualTo(streamDescription2);
         
 
     }

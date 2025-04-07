@@ -58,7 +58,7 @@ public class StreamsByNameRoute extends AbstractStreamsRoute {
 
         String streamName = getStreamName(pathInfo);
 
-        IStream stream = validateAndGetStream(streamName);
+        IStream stream = getStreamByName(streamName);
 
         Stream streamsBean = streamsTransform.createStreamBean(stream, baseServletUrl);
         String payloadContent = gson.toJson(streamsBean);
@@ -79,7 +79,7 @@ public class StreamsByNameRoute extends AbstractStreamsRoute {
 
         String streamName = getStreamName(pathInfo);
 
-        validateAndGetStream(streamName);
+        getStreamByName(streamName);
         
         streamsService.deleteStream(streamName);
 
@@ -92,7 +92,7 @@ public class StreamsByNameRoute extends AbstractStreamsRoute {
         return parser.getStreamName(urlPath);
     }
 
-    private IStream validateAndGetStream(String streamName) throws InternalServletException, FrameworkException {
+    private IStream getStreamByName(String streamName) throws InternalServletException, FrameworkException {
         IStream stream = streamsService.getStreamByName(streamName);
         if (stream == null) {
             ServletError error = new ServletError(GAL5420_ERROR_STREAM_NOT_FOUND);

@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
 import dev.galasa.framework.spi.IConfigurationPropertyStoreService;
 import dev.galasa.framework.spi.streams.IStream;
@@ -20,6 +23,7 @@ public class StreamsServiceImpl implements IStreamsService {
 
     private IConfigurationPropertyStoreService cpsService;
     private static final String TEST_STREAM_PREFIX = "test.stream.";
+    private static final Log logger = LogFactory.getLog(StreamsServiceImpl.class);
 
     public StreamsServiceImpl(IConfigurationPropertyStoreService configurationPropertyStoreService) {
         this.cpsService = configurationPropertyStoreService;
@@ -61,7 +65,8 @@ public class StreamsServiceImpl implements IStreamsService {
 
     }
 
-    private Stream createStreamFromProperties(String streamName, Map<String, String> streamProperties) throws StreamsException {
+    private Stream createStreamFromProperties(String streamName, Map<String, String> streamProperties)
+            throws StreamsException {
         Stream streamBean = new Stream();
         streamBean.setName(streamName);
 
@@ -86,7 +91,8 @@ public class StreamsServiceImpl implements IStreamsService {
         return streamBean;
     }
 
-    private List<IStream> handleStreamProperties(String testStreamPrefix) throws ConfigurationPropertyStoreException, StreamsException {
+    private List<IStream> handleStreamProperties(String testStreamPrefix)
+            throws ConfigurationPropertyStoreException, StreamsException {
         List<IStream> streamsList = new ArrayList<>();
 
         Map<String, String> testStreamProperties = cpsService.getPrefixedProperties(testStreamPrefix);
@@ -125,18 +131,42 @@ public class StreamsServiceImpl implements IStreamsService {
     public void deleteStream(String streamName) throws StreamsException {
         
         String testStreamPrefix = TEST_STREAM_PREFIX + streamName + ".";
+        Map<String, String> testStreamProperties;
+
         try {
-            // Get all the properties with the streamName
-            Map<String, String> testStreamProperties = cpsService.getPrefixedProperties(testStreamPrefix);
-
-            for (Map.Entry<String,String> entry : testStreamProperties.entrySet()) {
-                // Delete all the properties
-                cpsService.deleteProperty(entry.getKey());
-            }
-
+            // Retrieve all properties associated with the stream
+            testStreamProperties = cpsService.getPrefixedProperties(testStreamPrefix);
         } catch (ConfigurationPropertyStoreException e) {
-            e.printStackTrace();
+            throw new StreamsException("Failed to retrieve properties for stream: " + streamName, e);
         }
-        
+
+        // List to keep track of successfully deleted properties
+        List<String> deletedKeys = new ArrayList<>();
+
+        // Going for all-or-nothing approach while deleting properties
+        // If any property fails to delete, we should restore all the previous ones
+        // This strategy is implemented so that no property is left dangling.
+        for (Map.Entry<String, String> entry : testStreamProperties.entrySet()) {
+            String key = entry.getKey();
+            try {
+                cpsService.deleteProperty(key);
+                deletedKeys.add(key);
+            } catch (ConfigurationPropertyStoreException deletionEx) {
+                // Deletion failed: attempt to revert all previously deleted properties
+                for (String deletedKey : deletedKeys) {
+                    try {
+                        // Restore the property using the original value from the backup map
+                        cpsService.setProperty(deletedKey, testStreamProperties.get(deletedKey));
+                    } catch (ConfigurationPropertyStoreException rollbackEx) {
+                        logger.error("Rollback failed for property: " + deletedKey, rollbackEx);
+                    }
+                }
+                // After attempting rollback, throw an exception to indicate the overall
+                // deletion failure.
+                throw new StreamsException(
+                        "Failed to delete property " + key + ". All previously deleted properties have been reverted.",
+                        deletionEx);
+            }
+        }
     }
 }
