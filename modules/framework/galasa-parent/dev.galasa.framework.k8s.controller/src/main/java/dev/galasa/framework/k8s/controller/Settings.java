@@ -139,13 +139,24 @@ public class Settings implements Runnable {
 
     private void updateConfigMapProperties(V1ObjectMeta configMapMetadata, Map<String, String> configMapData) throws K8sControllerException {
         String newResourceVersion = configMapMetadata.getResourceVersion();
+        
         if (newResourceVersion != null && newResourceVersion.equals(oldConfigMapResourceVersion)) {
+            // There is nothing to update, as the old config map version is the same as the current one.
             return;
         }
 
         oldConfigMapResourceVersion = newResourceVersion;
 
         logger.info("ConfigMap has been changed, reloading parameters");
+        updateConfigMapProperties(configMapData);
+
+        setRunPoll(configMapData);
+        setRequestorsByScheduleId(configMapData);
+        setEngineCapabilities(configMapData);
+    }
+
+
+    protected void updateConfigMapProperties(Map<String,String> configMapData) throws K8sControllerException { 
 
         this.bootstrap = updateProperty(configMapData, "bootstrap", "http://bootstrap", this.bootstrap);
         this.maxEngines = updateProperty(configMapData, "max_engines", 1, this.maxEngines);
@@ -157,21 +168,22 @@ public class Settings implements Runnable {
         this.engineCPURequestM = updateProperty(configMapData, "engine_cpu_request", engineCPURequestM, this.engineCPURequestM);
         this.engineCPULimitM = updateProperty(configMapData, "engine_cpu_limit", engineCPULimitM, this.engineCPULimitM);
 
+        this.engineMemoryHeapSizeMi = updateProperty(configMapData, "engine_memory_heap", engineMemoryHeapSizeMi, this.engineMemoryHeapSizeMi);
+
         this.nodeArch = updateProperty(configMapData, "node_arch", "", this.nodeArch);
         this.nodePreferredAffinity = updateProperty(configMapData, "galasa_node_preferred_affinity", "", this.nodePreferredAffinity);
         this.nodeTolerations = updateProperty(configMapData, "galasa_node_tolerations", "", this.nodeTolerations);
 
         this.encryptionKeysSecretName = updateProperty(configMapData, "encryption_keys_secret_name", "", this.encryptionKeysSecretName);
+    }
 
+    private void setRunPoll(Map<String,String> configMapData) throws K8sControllerException {
         int poll = getPropertyFromData(configMapData, "run_poll", 20);
         if (poll != runPoll) {
             logger.info("Setting Run Poll from '" + runPoll + "' to '" + poll + "'");
             runPoll = poll;
             controller.pollUpdated();
         }
-
-        setRequestorsByScheduleId(configMapData);
-        setEngineCapabilities(configMapData);
     }
 
     private void setRequestorsByScheduleId(Map<String, String> configMapData) {

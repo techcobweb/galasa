@@ -357,7 +357,7 @@ public class TestPodSchedulerTest {
 
         // Then...
         assertThat(args).containsOnly(
-        "-Xmx:150m",
+        "-Xmx150m",
                 "-jar",
                 "boot.jar", 
                 "--obr",
