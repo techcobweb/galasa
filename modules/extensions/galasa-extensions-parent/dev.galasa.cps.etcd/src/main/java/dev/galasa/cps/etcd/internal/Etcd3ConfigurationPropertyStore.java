@@ -22,8 +22,6 @@ import javax.validation.constraints.Null;
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
 import dev.galasa.framework.spi.IConfigurationPropertyStore;
 import io.etcd.jetcd.ByteSequence;
-import io.etcd.jetcd.Client;
-import io.etcd.jetcd.KV;
 import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.options.GetOption;
@@ -35,9 +33,8 @@ import io.etcd.jetcd.options.OptionsUtil;
  * @author James Davies
  * @author Matthew Chivers
  */
-public class Etcd3ConfigurationPropertyStore implements IConfigurationPropertyStore {
-    private final Client client;
-    private final KV kvClient;
+public class Etcd3ConfigurationPropertyStore extends Etcd3Store implements IConfigurationPropertyStore {
+    
 
     /**
      * This constructor create a priate KVClient from JETCD for store interactions.
@@ -45,8 +42,7 @@ public class Etcd3ConfigurationPropertyStore implements IConfigurationPropertySt
      * @param cpsUri - location of the etcd
      */
     public Etcd3ConfigurationPropertyStore(URI cpsUri) {
-        client = Client.builder().endpoints(cpsUri).build();
-        kvClient = client.getKVClient();
+        super(cpsUri);
     }
 
     /**
@@ -129,6 +125,18 @@ public class Etcd3ConfigurationPropertyStore implements IConfigurationPropertySt
             Thread.currentThread().interrupt();
             throw new ConfigurationPropertyStoreException("Could not delete key.", e);
         }
+    }
+
+    @Override
+    public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {
+        
+        try {
+            deletePrefix(prefix);
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            throw new ConfigurationPropertyStoreException("Failed to delete properties", e);
+        }
+
     }
 
     @Override

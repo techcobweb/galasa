@@ -34,6 +34,20 @@ public class TestStreamServiceImpl {
         mockCps.setProperty("test.stream." + streamName + ".location", testcatalogUrl);
     }
 
+    private void addStreamWithNameSpaceToCps(
+        MockIConfigurationPropertyStoreService mockCps,
+        String streamName,
+        String description,
+        String mavenRepoUrl,
+        String commaSeparatedObrUrls,
+        String testcatalogUrl
+    ) throws ConfigurationPropertyStoreException {
+        mockCps.setProperty("framework.test.stream." + streamName + ".obr", commaSeparatedObrUrls);
+        mockCps.setProperty("framework.test.stream." + streamName + ".description", description);
+        mockCps.setProperty("framework.test.stream." + streamName + ".repo", mavenRepoUrl);
+        mockCps.setProperty("framework.test.stream." + streamName + ".location", testcatalogUrl);
+    }
+
     @Test
     public void testGetStreamsWithNoStreamsReturnsEmptyListOK() throws Exception {
         // Given...
@@ -445,7 +459,7 @@ public class TestStreamServiceImpl {
         String streamMavenRepo1 = "https://my.company/maven/repository";
         String streamTestCatalog1 = "https://my.company/maven/repository/testcatalog.json";
 
-        addStreamToCps(mockCps, streamName1, streamDescription1, streamMavenRepo1, streamObr1, streamTestCatalog1);
+        addStreamWithNameSpaceToCps(mockCps, streamName1, streamDescription1, streamMavenRepo1, streamObr1, streamTestCatalog1);
 
         StreamsServiceImpl streamsService = new StreamsServiceImpl(mockCps);
 
@@ -487,16 +501,12 @@ public class TestStreamServiceImpl {
         streamsService.deleteStream(streamName1);
 
         // Check if the stream exists after 
-        List<IStream> streams = streamsService.getStreams();
+        IStream stream = streamsService.getStreamByName(streamName2);
 
         // Then...
-        assertThat(streams).isNotEmpty();
-
-        //Check if there is only 1 stream left after deletion
-        assertThat(streams).hasSize(1);
+        assertThat(stream).isNotNull();
 
         //Check that the other stream was not deleted
-        IStream stream = streams.get(0);
         assertThat(stream).isNotNull();
         assertThat(stream.getName()).isEqualTo(streamName2);
         assertThat(stream.getDescription()).isEqualTo(streamDescription2);

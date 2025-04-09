@@ -148,6 +148,26 @@ public interface IConfigurationPropertyStoreService {
     void deleteProperty(@NotNull String name) throws ConfigurationPropertyStoreException;
 
     /**
+     * <p>
+     * deletePrefixedProperties will delete all the properties from the standard Configuration Property Store starting the with provided prefix in an atomic operation.
+     * </p>
+     * 
+     * <p>
+     * As an example, if we called deletePrefixedProperties("test.stream.mystream.") within the a
+     * namespace, then all the properties starting with "test.stream.mystream." will be deleted
+     * </p>
+     * 
+     * <p>
+     * If a property could not be deleted, a ConfigurationPropertyStoreException is thrown.
+     * </p>
+     * 
+     * @param prefix The prefix for a property.
+     * @throws ConfigurationPropertyStoreException
+     * @throws FrameworkPropertyFileException 
+     */
+    void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException, FrameworkPropertyFileException;
+
+    /**
      * Retrieves all possible different properties set from a namespace
      * 
      * @return Map of names and values of all properties

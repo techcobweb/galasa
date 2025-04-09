@@ -78,11 +78,11 @@ public class MockIConfigurationPropertyStoreService implements IConfigurationPro
             throws ConfigurationPropertyStoreException {
         checkThrowError();
                 
-        Map<String, String> fecthedProperties = new HashMap<>();
+        Map<String, String> fetchedProperties = new HashMap<>();
 
         for(Map.Entry<String, String> property : properties.entrySet()) {
             if(property.getKey().startsWith(prefix)){
-                fecthedProperties.put(property.getKey(), property.getValue());
+                fetchedProperties.put(property.getKey(), property.getValue());
             }
         }
 
@@ -156,5 +156,10 @@ public class MockIConfigurationPropertyStoreService implements IConfigurationPro
         if (throwError) {
             throw new ConfigurationPropertyStoreException("Simulating a CPS failure!");
         }
+    }
+
+    @Override
+    public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {
+        throw new UnsupportedOperationException("Unimplemented method 'deletePrefixedProperties'");
     }
 }

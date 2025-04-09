@@ -73,6 +73,15 @@ public interface IConfigurationPropertyStore {
      * @throws ConfigurationPropertyStoreException - An error occurred.
      */
     void deleteProperty(@NotNull String key) throws ConfigurationPropertyStoreException;
+
+    /**
+     * Deletes all properties matching the prefix from the underlying configuration property store
+     * 
+     * @param prefix The prefix for a property.
+     * @throws ConfigurationPropertyStoreException
+     * @throws FrameworkPropertyFileException 
+     */
+    void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException, FrameworkPropertyFileException;
     
     /**
      * Retrieves all possible different properties set from a given namespace

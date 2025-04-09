@@ -344,7 +344,7 @@ public class StreamsByNameRouteTest extends BaseServletTest {
 
         //Iterate over list of streams and check that deleted stream does not exists anymore
         for (IStream stream : mockStreams) {
-            assertThat(!stream.getName().equals(streamName));
+            assertThat(stream.getName()).isNotEqualTo(streamName);
         }
 
     }

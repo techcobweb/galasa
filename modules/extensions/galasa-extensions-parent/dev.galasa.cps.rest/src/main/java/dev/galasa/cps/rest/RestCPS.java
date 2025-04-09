@@ -397,6 +397,12 @@ public class RestCPS implements IConfigurationPropertyStore {
         throw new ConfigurationPropertyStoreException(msg);
     }
 
+    @Override
+    public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {
+        String msg = ERROR_GALASA_CPS_DELETE_OPERATIONS_NOT_PERMITTED.getMessage();
+        throw new ConfigurationPropertyStoreException(msg);
+    }
+
     /**
      * This method returns all properties for a given namespace from the framework property
      * file class.
