@@ -14,7 +14,6 @@ import java.util.Properties;
 import javax.validation.constraints.NotNull;
 
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
-import dev.galasa.framework.spi.FrameworkPropertyFileException;
 import dev.galasa.framework.spi.IConfigurationPropertyStore;
 import dev.galasa.framework.spi.IConfigurationPropertyStoreService;
 import dev.galasa.framework.spi.IFramework;
@@ -130,7 +129,7 @@ public class FrameworkConfigurationPropertyService implements IConfigurationProp
     }
 
     @Override
-    public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException, FrameworkPropertyFileException {
+    public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {
         cpsStore.deletePrefixedProperties(prefix);
     }
 

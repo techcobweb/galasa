@@ -79,9 +79,8 @@ public interface IConfigurationPropertyStore {
      * 
      * @param prefix The prefix for a property.
      * @throws ConfigurationPropertyStoreException
-     * @throws FrameworkPropertyFileException 
      */
-    void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException, FrameworkPropertyFileException;
+    void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException;
     
     /**
      * Retrieves all possible different properties set from a given namespace

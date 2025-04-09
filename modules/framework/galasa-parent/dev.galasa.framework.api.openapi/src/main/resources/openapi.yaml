@@ -556,7 +556,7 @@ paths:
                 missingparametererror:
                   value:
                     error_code: 5400
-                    error_message: "E: Error occurred when trying to execute request '/streams'. Check your request path variables or report the problem to your Galasa Ecosystem owner."
+                    error_message: "E: Error occurred when trying to execute request '/streams/{streamName}'. Check your request path variables or report the problem to your Galasa Ecosystem owner."
                   summary: One or more required path variables are missing                
         '404':
           description: The delete operation failed. The stream was not found.
@@ -565,7 +565,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/APIError'
               examples:
-                runiderror:
+                streamnameerror:
                   value:
                     error_code: 5420
                     error_message: "GAL5420E: Error getting stream"

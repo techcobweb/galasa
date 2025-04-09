@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import dev.galasa.framework.spi.ConfigurationPropertyStoreException;
-import dev.galasa.framework.spi.FrameworkPropertyFileException;
 import dev.galasa.framework.spi.IConfigurationPropertyStoreService;
 import dev.galasa.framework.spi.streams.IStream;
 import dev.galasa.framework.spi.streams.IStreamsService;
@@ -134,7 +133,7 @@ public class StreamsServiceImpl implements IStreamsService {
             // Delete all properties associated with the stream
             cpsService.deletePrefixedProperties(testStreamPrefix);
 
-        } catch (ConfigurationPropertyStoreException | FrameworkPropertyFileException e) {
+        } catch (ConfigurationPropertyStoreException e) {
             throw new StreamsException("Failed to delete properties for stream: " + streamName, e);
         }
     }
