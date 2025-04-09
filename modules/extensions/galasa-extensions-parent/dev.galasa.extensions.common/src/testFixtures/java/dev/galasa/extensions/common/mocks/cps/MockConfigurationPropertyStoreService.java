@@ -66,4 +66,9 @@ public class MockConfigurationPropertyStoreService implements IConfigurationProp
         throw new UnsupportedOperationException("Unimplemented method 'getCPSNamespaces'");
     }
 
+    @Override
+    public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {
+        throw new UnsupportedOperationException("Unimplemented method 'deletePrefixedProperties'");
+    }
+
 }

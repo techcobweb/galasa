@@ -84,7 +84,15 @@ public class FpfConfigurationPropertyStore implements IConfigurationPropertyStor
         try {
             fpf.delete(key);
         } catch (FrameworkPropertyFileException e) {
-            throw new ConfigurationPropertyStoreException("Unable to set property value", e);
+            throw new ConfigurationPropertyStoreException("Unable to delete property value", e);
+        }
+    }
+
+    @Override
+    public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {
+        Map<String, String> propertiesToRemove = getPrefixedProperties(prefix);
+        for(Map.Entry<String, String> property : propertiesToRemove.entrySet()) {
+            deleteProperty(property.getKey());
         }
     }
 

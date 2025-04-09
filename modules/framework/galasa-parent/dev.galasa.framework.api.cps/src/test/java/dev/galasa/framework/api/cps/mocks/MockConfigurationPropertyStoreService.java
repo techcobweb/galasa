@@ -11,6 +11,8 @@ import dev.galasa.framework.spi.IConfigurationPropertyStoreService;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotNull;
+
 public class MockConfigurationPropertyStoreService implements IConfigurationPropertyStoreService {
 
     @Override
@@ -50,6 +52,11 @@ public class MockConfigurationPropertyStoreService implements IConfigurationProp
 
     @Override
     public List<String> getCPSNamespaces() {
+        throw new MockMethodNotImplementedException();
+    }
+
+    @Override
+    public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {
         throw new MockMethodNotImplementedException();
     }
 }

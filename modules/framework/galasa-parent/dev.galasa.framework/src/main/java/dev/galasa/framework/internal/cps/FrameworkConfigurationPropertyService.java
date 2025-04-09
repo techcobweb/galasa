@@ -128,6 +128,11 @@ public class FrameworkConfigurationPropertyService implements IConfigurationProp
         
     }
 
+    @Override
+    public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {
+        cpsStore.deletePrefixedProperties(prefix);
+    }
+
     /**
      * <p>
      * This method retrievs all the keys that would be serached in the order that

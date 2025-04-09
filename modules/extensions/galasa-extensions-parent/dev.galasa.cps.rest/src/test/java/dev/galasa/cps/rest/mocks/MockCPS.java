@@ -129,5 +129,15 @@ public class MockCPS implements IConfigurationPropertyStore {
     public void shutdown() throws ConfigurationPropertyStoreException {
         callCounterForShutdown +=1;
     }
+
+    @Override
+    public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {
+
+        Map<String, String> propertiesToRemove = getPrefixedProperties(prefix);
+        for(Map.Entry<String,String> property : propertiesToRemove.entrySet()) {
+            this.properties.remove(property.getKey());
+        }
+        
+    }
     
 }

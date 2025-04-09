@@ -45,13 +45,26 @@ public class MockIConfigurationPropertyStoreService implements IConfigurationPro
     }
 
     @Override
+    public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {
+
+        Map<String, String> propertiesToRemove = getPrefixedProperties(prefix);
+        for(Map.Entry<String, String> property : propertiesToRemove.entrySet()) {
+            String propertyKey = property.getKey();
+            if(this.properties.containsKey(propertyKey)){
+                this.properties.remove(propertyKey);
+            }
+        }
+        
+    }
+
+    @Override
     public void setProperty(@NotNull String name, @NotNull String value) throws ConfigurationPropertyStoreException {
         this.properties.put(name, value);
     }
 
     @Override
     public void deleteProperty(@NotNull String name) throws ConfigurationPropertyStoreException {
-               throw new UnsupportedOperationException("Unimplemented method 'deleteProperty'");
+        this.properties.remove(name);
     }
 
     @Override
