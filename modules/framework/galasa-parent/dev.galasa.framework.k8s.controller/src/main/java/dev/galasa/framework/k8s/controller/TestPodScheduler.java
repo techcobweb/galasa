@@ -389,7 +389,7 @@ public class TestPodScheduler implements Runnable {
         
         // Set the max heap size for the test pod...
         if (settings.getEngineMemoryHeapSizeMegabytes() != 0 ) {
-            args.add("-Xmx:"+Integer.toString(settings.getEngineMemoryHeapSizeMegabytes())+"m");
+            args.add("-Xmx"+Integer.toString(settings.getEngineMemoryHeapSizeMegabytes())+"m");
         }
 
         args.add("-jar");
