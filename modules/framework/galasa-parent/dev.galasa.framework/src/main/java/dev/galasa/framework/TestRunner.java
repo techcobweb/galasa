@@ -5,6 +5,7 @@
  */
 package dev.galasa.framework;
 
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Properties;
@@ -509,7 +510,9 @@ public class TestRunner extends BaseTestRunner {
                 try {
                     testClazz = bundle.loadClass(testClassName);
                 } catch (ClassNotFoundException e) {
-                    throw new TestRunException("Unable to load test class " + testClassName, e);
+                    String msg = MessageFormat.format("Unable to load test class {0} {1}", testClassName, e.getMessage());
+                    logger.error(msg,e);
+                    throw new TestRunException(msg, e);
                 }
                 logger.trace("Found test class: " + testClazz.getName());
 
@@ -517,7 +520,10 @@ public class TestRunner extends BaseTestRunner {
             }
         }
         if (!bundleFound) {
-            throw new TestRunException("Unable to find test bundle " + testBundleName);
+            String msg = MessageFormat.format("Unable to find test bundle  {0}",testBundleName);
+            TestRunException ex = new TestRunException(msg);
+            logger.error(msg, ex);
+            throw ex ;
         }
         return testClazz;
     }
