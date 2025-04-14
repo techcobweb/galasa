@@ -2087,6 +2087,14 @@ paths:
 
         Requests to this endpoint require a valid bearer token in JWT format to be provided
         in the 'Authorization' header (e.g. 'Authorization: Bearer <bearer-token>').
+
+        The 'overrides' property is a java Property object, so looks like this: 
+            {
+              "propA" : "myValue1",
+              "propB" : "myValue2"
+            }
+        ie: It's an object containing a list of underfined property names, each having a value.
+        It has only one set of {...} brackets to indicate this property is an object.
       operationId: postSubmitTestRuns
       tags:
       - Runs API
@@ -2864,6 +2872,14 @@ components:
         sharedEnvironmentRunName:
           type: string
         overrides:
+          description: |-
+            This is a java Property object, so looks like this: 
+            {
+              "propA" : "myValue1",
+              "propB" : "myValue2"
+            }
+            ie: It's an object containing a list of underfined property names, each having a value.
+            It has only one set of {...} brackets to indicate this property is an object.
           type: object
         trace:
           type: boolean
