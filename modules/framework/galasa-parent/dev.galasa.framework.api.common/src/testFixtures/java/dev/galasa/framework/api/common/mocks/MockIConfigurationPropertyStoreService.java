@@ -86,7 +86,7 @@ public class MockIConfigurationPropertyStoreService implements IConfigurationPro
             }
         }
 
-        return properties;
+        return fetchedProperties;
 
     }
 
@@ -160,6 +160,11 @@ public class MockIConfigurationPropertyStoreService implements IConfigurationPro
 
     @Override
     public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {
-        throw new UnsupportedOperationException("Unimplemented method 'deletePrefixedProperties'");
+
+        Map<String, String> propertiesToRemove = getPrefixedProperties(prefix);
+        for(Map.Entry<String, String> property : propertiesToRemove.entrySet()) {
+            this.properties.remove(property.getKey());
+        }
+
     }
 }

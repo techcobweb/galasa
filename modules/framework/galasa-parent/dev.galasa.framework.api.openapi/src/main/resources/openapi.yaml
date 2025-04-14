@@ -2742,6 +2742,7 @@ components:
             anyOf:
               - $ref: '#/components/schemas/GalasaProperty'
               - $ref: '#/components/schemas/GalasaSecret'
+              - $ref: '#/components/schemas/Stream'
     SecretRequest:
       type: object
       properties:

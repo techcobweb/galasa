@@ -33,8 +33,10 @@ import dev.galasa.framework.api.common.resources.ResourceAction;
 import dev.galasa.framework.api.common.resources.ResourceNameValidator;
 import dev.galasa.framework.api.resources.processors.GalasaPropertyProcessor;
 import dev.galasa.framework.api.resources.processors.GalasaSecretProcessor;
+import dev.galasa.framework.api.resources.processors.GalasaStreamProcessor;
 import dev.galasa.framework.api.resources.processors.IGalasaResourceProcessor;
 import dev.galasa.framework.spi.FrameworkException;
+import dev.galasa.framework.spi.IConfigurationPropertyStoreService;
 import dev.galasa.framework.spi.creds.ICredentialsService;
 import dev.galasa.framework.spi.rbac.RBACService;
 import dev.galasa.framework.spi.utils.GalasaGson;
@@ -57,12 +59,14 @@ public class ResourcesRoute  extends ProtectedRoute {
         CPSFacade cps,
         ICredentialsService credentialsService,
         ITimeService timeService,
-        RBACService rbacService
+        RBACService rbacService,
+        IConfigurationPropertyStoreService cpsService
     ) {
         super(responseBuilder, path, rbacService);
 
         resourceProcessors.put(GALASA_PROPERTY, new GalasaPropertyProcessor(cps, rbacValidator));
         resourceProcessors.put(GALASA_SECRET, new GalasaSecretProcessor(credentialsService, timeService, rbacValidator));
+        resourceProcessors.put(GALASA_STREAM, new GalasaStreamProcessor(cpsService, rbacValidator));
     }
 
     @Override
