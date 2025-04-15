@@ -9,6 +9,7 @@ import static dev.galasa.framework.api.common.resources.ResourceAction.DELETE;
 import static dev.galasa.framework.spi.rbac.BuiltInAction.GENERAL_API_ACCESS;
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -18,10 +19,10 @@ import com.google.gson.JsonObject;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.RBACValidator;
 import dev.galasa.framework.api.common.mocks.MockFramework;
-import dev.galasa.framework.api.common.mocks.MockIConfigurationPropertyStoreService;
 import dev.galasa.framework.api.resources.ResourcesServletTest;
 import dev.galasa.framework.mocks.FilledMockRBACService;
 import dev.galasa.framework.mocks.MockRBACService;
+import dev.galasa.framework.mocks.MockStreamsService;
 import dev.galasa.framework.spi.rbac.Action;
 
 public class GalasaStreamProcessorTest extends ResourcesServletTest {
@@ -101,12 +102,12 @@ public class GalasaStreamProcessorTest extends ResourcesServletTest {
         List<Action> permittedActions = List.of(GENERAL_API_ACCESS.getAction());
         MockRBACService mockRbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, permittedActions);
 
-        MockIConfigurationPropertyStoreService cpsService = new MockIConfigurationPropertyStoreService();
-        MockFramework mockFramework = new MockFramework(cpsService);
+        MockStreamsService streamService = new MockStreamsService(new ArrayList<>());
+        MockFramework mockFramework = new MockFramework();
         mockFramework.setRBACService(mockRbacService);
 
         RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
-        GalasaStreamProcessor streamProcessor = new GalasaStreamProcessor(cpsService, rbacValidator);
+        GalasaStreamProcessor streamProcessor = new GalasaStreamProcessor(streamService, rbacValidator);
 
         // When...
         InternalServletException thrown = catchThrowableOfType(() -> {
@@ -124,12 +125,12 @@ public class GalasaStreamProcessorTest extends ResourcesServletTest {
         List<Action> permittedActions = List.of(GENERAL_API_ACCESS.getAction());
         MockRBACService mockRbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, permittedActions);
 
-        MockIConfigurationPropertyStoreService cpsService = new MockIConfigurationPropertyStoreService();
-        MockFramework mockFramework = new MockFramework(cpsService);
+        MockStreamsService streamService = new MockStreamsService(new ArrayList<>());
+        MockFramework mockFramework = new MockFramework();
         mockFramework.setRBACService(mockRbacService);
 
         RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
-        GalasaStreamProcessor streamProcessor = new GalasaStreamProcessor(cpsService, rbacValidator);
+        GalasaStreamProcessor streamProcessor = new GalasaStreamProcessor(streamService, rbacValidator);
 
         String description = "This is a test stream";
         String streamUrl = "http://localhost:8080/streams/mystream";
@@ -152,12 +153,12 @@ public class GalasaStreamProcessorTest extends ResourcesServletTest {
         List<Action> permittedActions = List.of(GENERAL_API_ACCESS.getAction());
         MockRBACService mockRbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, permittedActions);
 
-        MockIConfigurationPropertyStoreService cpsService = new MockIConfigurationPropertyStoreService();
-        MockFramework mockFramework = new MockFramework(cpsService);
+        MockStreamsService streamService = new MockStreamsService(new ArrayList<>());
+        MockFramework mockFramework = new MockFramework();
         mockFramework.setRBACService(mockRbacService);
 
         RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
-        GalasaStreamProcessor streamProcessor = new GalasaStreamProcessor(cpsService, rbacValidator);
+        GalasaStreamProcessor streamProcessor = new GalasaStreamProcessor(streamService, rbacValidator);
 
         String streamName = "mystream.";
         String description = "This is a test stream";
@@ -171,8 +172,8 @@ public class GalasaStreamProcessorTest extends ResourcesServletTest {
 
         // Then...
         assertThat(errors).isNotEmpty();
-        errorMessage.contains("GAL5044");
-        errorMessage.contains("E: Invalid property name. Property name ''{0}'' must not end with a '.' (dot) separator.");
+        errorMessage.contains("GAL5418");
+        errorMessage.contains("E: Invalid 'name' provided. A valid stream name should always start with 'a'-'z' or 'A'-'Z' and end with 'a'-'z', 'A'-'Z' or 0-9.");
     }
 
     @Test
@@ -181,12 +182,12 @@ public class GalasaStreamProcessorTest extends ResourcesServletTest {
         List<Action> permittedActions = List.of(GENERAL_API_ACCESS.getAction());
         MockRBACService mockRbacService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME, permittedActions);
 
-        MockIConfigurationPropertyStoreService cpsService = new MockIConfigurationPropertyStoreService();
-        MockFramework mockFramework = new MockFramework(cpsService);
+        MockStreamsService streamService = new MockStreamsService(new ArrayList<>());
+        MockFramework mockFramework = new MockFramework();
         mockFramework.setRBACService(mockRbacService);
 
         RBACValidator rbacValidator = new RBACValidator(mockFramework.getRBACService());
-        GalasaStreamProcessor streamProcessor = new GalasaStreamProcessor(cpsService, rbacValidator);
+        GalasaStreamProcessor streamProcessor = new GalasaStreamProcessor(streamService, rbacValidator);
 
         String streamName = "mystream";
         String description = "This is a test stream";

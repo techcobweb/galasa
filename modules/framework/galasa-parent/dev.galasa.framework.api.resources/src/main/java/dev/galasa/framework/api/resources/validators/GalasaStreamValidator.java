@@ -1,3 +1,8 @@
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package dev.galasa.framework.api.resources.validators;
 
 import javax.servlet.http.HttpServletResponse;
@@ -11,12 +16,8 @@ import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.api.common.resources.GalasaResourceValidator;
 import dev.galasa.framework.api.common.resources.ResourceAction;
-import dev.galasa.framework.api.common.resources.ResourceNameValidator;
 
 public class GalasaStreamValidator extends GalasaResourceValidator<JsonObject> {
-
-    private ResourceNameValidator nameValidator = new ResourceNameValidator();
-    private final String TEST_STREAM_PREFIX = "framework.test.stream.";
 
     public GalasaStreamValidator(ResourceAction action) {
         super(action);
@@ -38,17 +39,14 @@ public class GalasaStreamValidator extends GalasaResourceValidator<JsonObject> {
         if (metadata.has("name")) {
 
             JsonElement name = metadata.get("name");
-            String prefixedName = TEST_STREAM_PREFIX + name.getAsString();
+            boolean isStreamNameValid = isAlphanumWithDashes(name.getAsString());
 
-            try{
-                nameValidator.assertPropertyNameCharPatternIsValid(prefixedName);
-            } catch (InternalServletException e) {
-                // All ResourceNameValidator error should be added to the list of reasons why the property action has failed
-                validationErrors.add(e.getMessage());
+            if(!isStreamNameValid) {
+                validationErrors.add(GAL5418_INVALID_STREAM_NAME.toString());
             }
 
         } else {
-            ServletError error = new ServletError(GAL5415_INVALID_GALASASTREAM_EMPTY_METADATA);
+            ServletError error = new ServletError(GAL5427_MISSING_STREAM_NAME);
             validationErrors.add(new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST).getMessage());
         }
 
