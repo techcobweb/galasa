@@ -16,3 +16,6 @@ Snap*.trc
 local-builds/
 **/.idea
 **/temp/
+.gradle
+**/.vscode
+
