@@ -45,8 +45,7 @@ jobs:
       managers_changed: ${{ steps.get-changed-modules.outputs.MANAGERS_CHANGED }}
       obr_changed: ${{ steps.get-changed-modules.outputs.OBR_CHANGED }}
       ivts_changed: ${{ steps.get-changed-modules.outputs.IVTS_CHANGED }}
-      # cli_changed: ${{ steps.get-changed-modules.outputs.CLI_CHANGED }}
-      cli_changed: "true"
+      cli_changed: ${{ steps.get-changed-modules.outputs.CLI_CHANGED }}
 
     steps:
       - name: Checkout Code
