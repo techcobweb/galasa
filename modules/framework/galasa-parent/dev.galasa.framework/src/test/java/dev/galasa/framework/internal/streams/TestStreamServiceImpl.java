@@ -518,7 +518,7 @@ public class TestStreamServiceImpl {
     }
 
     @Test
-    public void testGetStreamByNameWithMissingTestCatalogeUrlOk() throws Exception {
+    public void testGetStreamByNameWithMissingTestCatalogUrlOk() throws Exception {
         // Given...
         MockIConfigurationPropertyStoreService mockCps = new MockIConfigurationPropertyStoreService();
 

@@ -56,8 +56,6 @@ public class Stream implements IStream {
         try {
             if(mavenRepositoryUrl != null) {
                 this.mavenRepositoryUrl = new URL(mavenRepositoryUrl);
-            } else{
-                this.mavenRepositoryUrl = null;
             }
         } catch (MalformedURLException e) {
             throw new StreamsException("Invalid maven repository URL provided", e);
@@ -73,8 +71,6 @@ public class Stream implements IStream {
         try {
             if(testCatalogUrl != null) {
                 this.testCatalogUrl = new URL(testCatalogUrl);
-            } else {
-                this.testCatalogUrl = null;
             }
         } catch (MalformedURLException e) {
             throw new StreamsException("Invalid testcatalog URL provided", e);
