@@ -448,6 +448,111 @@ public class TestStreamServiceImpl {
     }
 
     @Test
+    public void testGetStreamByNameWithMissingDescriptionOk() throws Exception {
+        // Given...
+        MockIConfigurationPropertyStoreService mockCps = new MockIConfigurationPropertyStoreService();
+
+        String streamName1 = "stream1";
+        String streamDescription1 = null;
+        String streamObr1 = "mvn:my.company/my.company.obr/0.0.1/obr/";
+        String streamMavenRepo1 = "https://my.company/maven/repository";
+        String streamTestCatalog1 = "https://my.company/maven/repository/testcatalog.json";
+
+        addStreamToCps(mockCps, streamName1, streamDescription1, streamMavenRepo1, streamObr1, streamTestCatalog1);
+
+        StreamsServiceImpl streamsService = new StreamsServiceImpl(mockCps);
+
+        // When...
+        IStream stream = streamsService.getStreamByName(streamName1);
+
+        // Then...
+        assertThat(stream.getName()).isEqualTo(streamName1);
+        assertThat(stream.getDescription()).isEqualTo(null);
+        assertThat(stream.getMavenRepositoryUrl()).isEqualTo(new URL(streamMavenRepo1));
+        assertThat(stream.getTestCatalogUrl()).isEqualTo(new URL(streamTestCatalog1));
+
+        List<IOBR> obrs = stream.getObrs();
+        assertThat(obrs).hasSize(1);
+
+        IOBR obr = obrs.get(0);
+        String expectedObrString = "mvn:my.company/my.company.obr/0.0.1/obr";
+        assertThat(obr.toString()).isEqualTo(expectedObrString);
+        assertThat(obr.getGroupId()).isEqualTo("my.company");
+        assertThat(obr.getArtifactId()).isEqualTo("my.company.obr");
+        assertThat(obr.getVersion()).isEqualTo("0.0.1");
+    }
+
+    @Test
+    public void testGetStreamByNameWithMissingMavenRepositoryUrlOk() throws Exception {
+        // Given...
+        MockIConfigurationPropertyStoreService mockCps = new MockIConfigurationPropertyStoreService();
+
+        String streamName1 = "stream1";
+        String streamDescription1 = "this is the first test stream!";
+        String streamObr1 = "mvn:my.company/my.company.obr/0.0.1/obr/";
+        String streamMavenRepo1 = null;
+        String streamTestCatalog1 = "https://my.company/maven/repository/testcatalog.json";
+
+        addStreamToCps(mockCps, streamName1, streamDescription1, streamMavenRepo1, streamObr1, streamTestCatalog1);
+
+        StreamsServiceImpl streamsService = new StreamsServiceImpl(mockCps);
+
+        // When...
+        IStream stream = streamsService.getStreamByName(streamName1);
+
+        // Then...
+        assertThat(stream.getName()).isEqualTo(streamName1);
+        assertThat(stream.getDescription()).isEqualTo(streamDescription1);
+        assertThat(stream.getMavenRepositoryUrl()).isEqualTo(null);
+        assertThat(stream.getTestCatalogUrl()).isEqualTo(new URL(streamTestCatalog1));
+
+        List<IOBR> obrs = stream.getObrs();
+        assertThat(obrs).hasSize(1);
+
+        IOBR obr = obrs.get(0);
+        String expectedObrString = "mvn:my.company/my.company.obr/0.0.1/obr";
+        assertThat(obr.toString()).isEqualTo(expectedObrString);
+        assertThat(obr.getGroupId()).isEqualTo("my.company");
+        assertThat(obr.getArtifactId()).isEqualTo("my.company.obr");
+        assertThat(obr.getVersion()).isEqualTo("0.0.1");
+    }
+
+    @Test
+    public void testGetStreamByNameWithMissingTestCatalogUrlOk() throws Exception {
+        // Given...
+        MockIConfigurationPropertyStoreService mockCps = new MockIConfigurationPropertyStoreService();
+
+        String streamName1 = "stream1";
+        String streamDescription1 = "this is the first test stream!";
+        String streamObr1 = "mvn:my.company/my.company.obr/0.0.1/obr/";
+        String streamMavenRepo1 = "https://my.company/maven/repository";
+        String streamTestCatalog1 = null;
+
+        addStreamToCps(mockCps, streamName1, streamDescription1, streamMavenRepo1, streamObr1, streamTestCatalog1);
+
+        StreamsServiceImpl streamsService = new StreamsServiceImpl(mockCps);
+
+        // When...
+        IStream stream = streamsService.getStreamByName(streamName1);
+
+        // Then...
+        assertThat(stream.getName()).isEqualTo(streamName1);
+        assertThat(stream.getDescription()).isEqualTo(streamDescription1);
+        assertThat(stream.getMavenRepositoryUrl()).isEqualTo(new URL(streamMavenRepo1));
+        assertThat(stream.getTestCatalogUrl()).isEqualTo(null);
+
+        List<IOBR> obrs = stream.getObrs();
+        assertThat(obrs).hasSize(1);
+
+        IOBR obr = obrs.get(0);
+        String expectedObrString = "mvn:my.company/my.company.obr/0.0.1/obr";
+        assertThat(obr.toString()).isEqualTo(expectedObrString);
+        assertThat(obr.getGroupId()).isEqualTo("my.company");
+        assertThat(obr.getArtifactId()).isEqualTo("my.company.obr");
+        assertThat(obr.getVersion()).isEqualTo("0.0.1");
+    }
+
+    @Test
     public void testDeleteStreamByNameWithOkNoContent() throws Exception {
 
         // Given...
