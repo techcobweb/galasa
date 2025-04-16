@@ -12,6 +12,10 @@ BASEDIR=$(dirname "$0");pushd $BASEDIR 2>&1 >> /dev/null ;BASEDIR=$(pwd);popd 2>
 export ORIGINAL_DIR=$(pwd)
 cd "${BASEDIR}"
 
+cd "${BASEDIR}/../.."
+REPO_ROOT=$(pwd)
+
+cd "${BASEDIR}"
 
 #--------------------------------------------------------------------------
 #
@@ -53,6 +57,8 @@ function usage {
 Options are:
 -c | --clean : Do a clean build. One of the --clean or --delta flags are mandatory.
 -d | --delta : Do a delta build. One of the --clean or --delta flags are mandatory.
+-s | --detectsecrets true|false : Do we want to detect secrets in the entire repo codebase ? Default is 'true'. Valid values are 'true' or 'false'
+
 EOF
 }
 
@@ -85,7 +91,7 @@ function check_exit_code () {
 # Process parameters
 #-----------------------------------------------------------------------------------------
 build_type=""
-
+detectsecrets="true"
 while [ "$1" != "" ]; do
     case $1 in
         -c | --clean )          build_type="clean"
@@ -94,6 +100,9 @@ while [ "$1" != "" ]; do
                                 ;;
         -h | --help )           usage
                                 exit
+                                ;;
+        -s | --detectsecrets )  detectsecrets="$2"
+                                shift
                                 ;;
         * )                     error "Unexpected argument $1"
                                 usage
@@ -105,6 +114,11 @@ done
 if [[ "${build_type}" == "" ]]; then
     error "Need to use either the --clean or --delta parameter."
     usage
+    exit 1
+fi
+
+if [[ "${detectsecrets}" != "true" ]] && [[ "${detectsecrets}" != "false" ]]; then
+    error "--detectsecrets flag must be 'true' or 'false'. Was $detectesecrets"
     exit 1
 fi
 
@@ -596,46 +610,6 @@ function cleanup_temp {
 }
 
 
-#-------------------------------------------
-#Detect secrets
-function check_secrets {
-    h2 "updating secrets baseline"
-    cd ${BASEDIR}
-    detect-secrets scan --update .secrets.baseline
-    rc=$? 
-    check_exit_code $rc "Failed to run detect-secrets. Please check it is installed properly" 
-    success "updated secrets file"
-
-    h2 "running audit for secrets"
-    detect-secrets audit .secrets.baseline
-    rc=$? 
-    check_exit_code $rc "Failed to audit detect-secrets."
-    
-    #Check all secrets have been audited
-    secrets=$(grep -c hashed_secret .secrets.baseline)
-    audits=$(grep -c is_secret .secrets.baseline)
-    if [[ "$secrets" != "$audits" ]]; then 
-        error "Not all secrets found have been audited"
-        exit 1  
-    fi
-    success "secrets audit complete"
-
-    h2 "Removing the timestamp from the secrets baseline file so it doesn't always cause a git change."
-    mkdir -p temp
-    rc=$? 
-    check_exit_code $rc "Failed to create a temporary folder"
-    cat .secrets.baseline | grep -v "generated_at" > temp/.secrets.baseline.temp
-    rc=$? 
-    check_exit_code $rc "Failed to create a temporary file with no timestamp inside"
-    mv temp/.secrets.baseline.temp .secrets.baseline
-    rc=$? 
-    check_exit_code $rc "Failed to overwrite the secrets baseline with one containing no timestamp inside."
-    success "secrets baseline timestamp content has been removed ok"
-}
-
-
-
-
 # The steps to build the CLI
 clean
 download_dependencies
@@ -688,7 +662,10 @@ build_generated_source_gradle
 run_test_locally_using_galasactl ${BASEDIR}/temp/local-run-log-gradle.txt
 
 
-check_secrets
+if [[ "$detectsecrets" == "true" ]]; then
+    $REPO_ROOT/tools/detect-secrets.sh 
+    check_exit_code $? "Failed to detect secrets"
+fi
 
 # launch_test_on_ecosystem
 # test_on_windows

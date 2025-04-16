@@ -303,7 +303,7 @@ function build_module() {
     if [[ "$module" == "cli" ]]; then
         h2 "Building $module"
         cd ${PROJECT_DIR}/modules/$module
-        ${PROJECT_DIR}/modules/$module/build-locally.sh --detectsecrets false ${build_docker_flag}
+        ${PROJECT_DIR}/modules/$module/build-locally.sh --clean --detectsecrets false 
         rc=$? ;  if [[ "${rc}" != "0" ]]; then error "Failed to build module $module. rc=$rc" ; exit 1 ; fi
         success "Built module $module OK"
     fi
