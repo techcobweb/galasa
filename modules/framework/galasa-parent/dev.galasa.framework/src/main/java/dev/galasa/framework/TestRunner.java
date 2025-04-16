@@ -5,6 +5,7 @@
  */
 package dev.galasa.framework;
 
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Properties;
@@ -227,7 +228,7 @@ public class TestRunner extends BaseTestRunner {
         // *** time for things like jenkins and other run requesters to obtain the
         // result and RAS id before
         // *** deleting, default is to keep the automation run properties for 5 minutes
-        if (!markedWaiting) {
+        if (this.run.isLocal() && !markedWaiting) {
             deleteRunProperties(this.framework);
         }
 
@@ -358,7 +359,7 @@ public class TestRunner extends BaseTestRunner {
 
         if (invalidManager) {
             logger.error("There are Managers that do not support Shared Environment builds");
-            testClassWrapper.setResult(Result.failed("Invalid Shared Environment build"));
+            testClassWrapper.setResult(Result.failed("Invalid Shared Environment build"), managers);
             testStructure.setResult(testClassWrapper.getResult().getName());
             isRunOK = false;
         }
@@ -379,7 +380,7 @@ public class TestRunner extends BaseTestRunner {
                 if (e instanceof FrameworkResourceUnavailableException) {
                     this.isResourcesAvailable = false;
                 }
-                testClassWrapper.setResult(Result.envfail(e));
+                testClassWrapper.setResult(Result.envfail(e), managers);
                 if (isResourcesAvailable) {
                     managers.testClassResult(testClassWrapper.getResult(), e);
                 }
@@ -411,7 +412,7 @@ public class TestRunner extends BaseTestRunner {
                         if (e instanceof FrameworkResourceUnavailableException) {
                             this.isResourcesAvailable = false;
                         }
-                        testClassWrapper.setResult(Result.envfail(e));
+                        testClassWrapper.setResult(Result.envfail(e), managers);
                         if (this.isResourcesAvailable) {
                             managers.testClassResult(testClassWrapper.getResult(), e);
                         }
@@ -449,7 +450,7 @@ public class TestRunner extends BaseTestRunner {
                         if (e instanceof FrameworkResourceUnavailableException) {
                             this.isResourcesAvailable = false;
                         }
-                        testClassWrapper.setResult(Result.envfail(e));
+                        testClassWrapper.setResult(Result.envfail(e), managers);
                         testStructure.setResult(testClassWrapper.getResult().getName());
                         return;
                     }
@@ -481,7 +482,7 @@ public class TestRunner extends BaseTestRunner {
                 updateStatus(TestRunLifecycleStatus.RUNNING, null);
                 try {
                     logger.info("Running the test class");
-                    testClassWrapper.runTestMethods(managers, dss, runName);
+                    testClassWrapper.runMethods(managers, dss, runName);
                 } finally {
                     updateStatus(TestRunLifecycleStatus.RUNDONE, null);
                 }
@@ -509,7 +510,9 @@ public class TestRunner extends BaseTestRunner {
                 try {
                     testClazz = bundle.loadClass(testClassName);
                 } catch (ClassNotFoundException e) {
-                    throw new TestRunException("Unable to load test class " + testClassName, e);
+                    String msg = MessageFormat.format("Unable to load test class {0} {1}", testClassName, e.getMessage());
+                    logger.error(msg,e);
+                    throw new TestRunException(msg, e);
                 }
                 logger.trace("Found test class: " + testClazz.getName());
 
@@ -517,7 +520,10 @@ public class TestRunner extends BaseTestRunner {
             }
         }
         if (!bundleFound) {
-            throw new TestRunException("Unable to find test bundle " + testBundleName);
+            String msg = MessageFormat.format("Unable to find test bundle  {0}",testBundleName);
+            TestRunException ex = new TestRunException(msg);
+            logger.error(msg, ex);
+            throw ex ;
         }
         return testClazz;
     }

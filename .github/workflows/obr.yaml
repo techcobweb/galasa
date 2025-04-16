@@ -48,7 +48,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'semeru'
-          # cache: 'maven'
 
       - name: Make secrets directory
         run : |
@@ -189,6 +188,16 @@ jobs:
       - name: Display Galasa OBR pom.xml
         run: |
           cat modules/obr/dev.galasa.uber.obr/pom.xml
+      
+      # - name: Cache OBR dependencies
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ~/.m2/repository
+      #       !~/.m2/repository/dev/galasa/**
+      #     key: cache-obr-${{ hashFiles('**/pom.xml') }} 
+      #     restore-keys: |
+      #         cache-obr-
         
       - name: Build Galasa OBR with maven
         working-directory: modules/obr
@@ -232,12 +241,6 @@ jobs:
           echo $(git log -1 --pretty=format:"%H" -- "modules/managers") > modules/obr/managers.githash
           echo $(git log -1 --pretty=format:"%H" -- "modules/obr") > modules/obr/obr.githash
 
-      - name: Upload obr artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: obr
-          path: modules/obr/repo
-
       - name: Login to Github Container Registry
         uses: docker/login-action@v3
         env:
@@ -254,6 +257,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/obr-maven-artefacts
 
+      # Here we build a Docker image that contains all dev.galasa artifacts
+      # to deploy to a download site. It contains all artifacts listed in 
+      # the Uber OBR.
       - name: Build and push OBR image 
         id: build-obr
         uses: docker/build-push-action@v5
@@ -282,6 +288,23 @@ jobs:
           ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_TOKEN }}
         run: |
           docker run --env ARGOCD_AUTH_TOKEN=${{ env.ARGOCD_AUTH_TOKEN }} --rm ghcr.io/galasa-dev/argocdcli:main app wait ${{ env.BRANCH }}-maven-repos --resource apps:Deployment:obr-${{ env.BRANCH }} --health --server argocd.galasa.dev
+
+      # Here we remove the artifacts built by the other modules (everything
+      # other than dev.galasa.uber.obr and galasa-bom) as otherwise when
+      # a workflow downloads this zip, the other module's artifacts are 
+      # overwritten by the contents of this zip.
+      - name: Remove other module's artifacts before uploading to workflow
+        working-directory: modules/obr/repo/dev/galasa
+        run: |
+          mkdir -p ../tmp && mv dev.galasa.uber.obr galasa-bom ../tmp/
+          rm -rf ./*
+          mv ../tmp/dev.galasa.uber.obr ../tmp/galasa-bom ./
+
+      - name: Upload OBR artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: obr
+          path: modules/obr/repo
 
   # For the release process build an image containing
   # the OBR artifacts and a galasabld executable used
@@ -357,7 +380,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'semeru'
-          # cache: 'maven'
       
       - name: Make secrets directory
         run : |
@@ -455,7 +477,17 @@ jobs:
         with:
           name: managers
           path: modules/artifacts
-        
+      
+      # - name: Cache OBR-javadoc dependencies
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ~/.m2/repository
+      #       !~/.m2/repository/dev/galasa/**
+      #     key: cache-obr-javadoc-${{ hashFiles('**/pom.xml') }} 
+      #     restore-keys: |
+      #         cache-obr-javadoc-
+
       - name: Build javadoc site using maven
         working-directory: modules/obr/javadocs
         env:
@@ -579,7 +611,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'semeru'
-          # cache: 'maven'
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -690,7 +721,17 @@ jobs:
         with:
           name: obr
           path: modules/artifacts
-        
+      
+      # - name: Cache OBR-generic dependencies
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ~/.m2/repository
+      #       !~/.m2/repository/dev/galasa/**
+      #     key: cache-obr-generic-${{ hashFiles('**/pom.xml') }} 
+      #     restore-keys: |
+      #       cache-obr-generic-
+
       - name: Build Galasa OBR generic pom.xml with maven
         working-directory: modules/obr/obr-generic
         env:

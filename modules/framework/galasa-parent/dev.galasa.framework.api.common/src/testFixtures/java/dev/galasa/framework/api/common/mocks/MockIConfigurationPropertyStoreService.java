@@ -7,8 +7,10 @@ package dev.galasa.framework.api.common.mocks;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -21,6 +23,7 @@ public class MockIConfigurationPropertyStoreService implements IConfigurationPro
     protected String namespaceInput;
     protected Map<String, String> properties = new HashMap<String,String>();
     private boolean throwError = false;
+    private Set<String> keysThrowOnDelete = new HashSet<>();
 
     public MockIConfigurationPropertyStoreService() {
         this("framework");
@@ -74,7 +77,17 @@ public class MockIConfigurationPropertyStoreService implements IConfigurationPro
     public @NotNull Map<String, String> getPrefixedProperties(@NotNull String prefix)
             throws ConfigurationPropertyStoreException {
         checkThrowError();
-        return null;
+                
+        Map<String, String> fetchedProperties = new HashMap<>();
+
+        for(Map.Entry<String, String> property : properties.entrySet()) {
+            if(property.getKey().startsWith(prefix)){
+                fetchedProperties.put(property.getKey(), property.getValue());
+            }
+        }
+
+        return fetchedProperties;
+
     }
 
     @Override
@@ -83,9 +96,26 @@ public class MockIConfigurationPropertyStoreService implements IConfigurationPro
        this.properties.put(name,value);
     }
 
+    /**
+     * This method simulates a deletion failure for a given key.
+     *
+     * @param key         The property key to simulate a failure on.
+     * @param shouldThrow If true, deletion of the key will throw an exception.
+     */
+    public void setThrowOnDeleteForKey(String key, boolean shouldThrow) {
+        if (shouldThrow) {
+            keysThrowOnDelete.add(key);
+        } else {
+            keysThrowOnDelete.remove(key);
+        }
+    }
+
     @Override
     public void deleteProperty(@NotNull String name) throws ConfigurationPropertyStoreException {
         checkThrowError();
+        if (keysThrowOnDelete.contains(name)) {
+            throw new ConfigurationPropertyStoreException("Simulated deletion failure for key: " + name);
+        }
         this.properties.remove(namespaceInput+"."+name);
     }
 
@@ -126,5 +156,15 @@ public class MockIConfigurationPropertyStoreService implements IConfigurationPro
         if (throwError) {
             throw new ConfigurationPropertyStoreException("Simulating a CPS failure!");
         }
+    }
+
+    @Override
+    public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {
+
+        Map<String, String> propertiesToRemove = getPrefixedProperties(prefix);
+        for(Map.Entry<String, String> property : propertiesToRemove.entrySet()) {
+            this.properties.remove(property.getKey());
+        }
+
     }
 }

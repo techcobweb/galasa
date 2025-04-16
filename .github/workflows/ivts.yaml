@@ -49,7 +49,9 @@ jobs:
         with:
           gradle-version: 8.9
           cache-disabled: true
-
+          # gradle-home-cache-excludes: |
+          #   caches/modules-2/files-2.1/dev.galasa/**
+            
       - name: Download platform from this workflow
         id: download-platform
         uses: actions/download-artifact@v4

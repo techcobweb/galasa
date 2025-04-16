@@ -174,6 +174,9 @@ public class TestDockerRegistryImpl {
 		public void deleteProperty(@NotNull String name) throws ConfigurationPropertyStoreException {}
 
 		@Override
+		public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {}
+
+		@Override
 		public Map<String, String> getAllProperties() {
 			return null;
 		}
@@ -192,6 +195,6 @@ public class TestDockerRegistryImpl {
 		public List<String> getCPSNamespaces() {
 			return null;
 		}
-    	
+
     }
 }

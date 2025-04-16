@@ -23,7 +23,6 @@ import dev.galasa.framework.spi.IDynamicStatusStoreService;
 import dev.galasa.framework.spi.IFramework;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.Configuration;
-import io.kubernetes.client.ProtoClient;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.util.Config;
 import io.prometheus.client.exporter.HTTPServer;
@@ -48,9 +47,9 @@ public class K8sController {
     private TestPodScheduler podScheduler;
     private ScheduledFuture<?> pollFuture;
 
-    private RunDeleted runDeleted;
+    private RunPodCleanup runCleanup;
 
-    private ScheduledFuture<?> deleteFuture;
+    private ScheduledFuture<?> cleanupFuture;
 
     private Settings settings;
 
@@ -86,7 +85,7 @@ public class K8sController {
                 throw new FrameworkException("Unable to load Kubernetes API", e);
             }
             Configuration.setDefaultApiClient(client);
-            ProtoClient pc = new ProtoClient(client);
+            IKubernetesProtoClient protoClient = new KubernetesProtoClient(client);
             CoreV1Api api = new CoreV1Api();
 
             // *** Fetch the settings
@@ -141,8 +140,8 @@ public class K8sController {
                 logger.info("Health monitoring disabled");
             }
             // *** Start the run polling
-            runDeleted = new RunDeleted(settings, api, pc, framework.getFrameworkRuns());
-            scheduleDelete();
+            runCleanup = new RunPodCleanup(settings, api, protoClient, framework.getFrameworkRuns());
+            schedulePodCleanup();
             podScheduler = new TestPodScheduler(dss, cps, settings, api, framework.getFrameworkRuns());
             schedulePoll();
 
@@ -194,12 +193,12 @@ public class K8sController {
         pollFuture = scheduledExecutorService.scheduleWithFixedDelay(podScheduler, 1, settings.getPoll(), TimeUnit.SECONDS);
     }
 
-    private void scheduleDelete() {
-        if (deleteFuture != null) {
-            this.deleteFuture.cancel(false);
+    private void schedulePodCleanup() {
+        if (cleanupFuture != null) {
+            this.cleanupFuture.cancel(false);
         }
         
-        deleteFuture = scheduledExecutorService.scheduleWithFixedDelay(runDeleted, 0, settings.getPoll(), TimeUnit.SECONDS);
+        cleanupFuture = scheduledExecutorService.scheduleWithFixedDelay(runCleanup, 0, settings.getPoll(), TimeUnit.SECONDS);
     }
 
     private class ShutdownHook extends Thread {
@@ -249,7 +248,7 @@ public class K8sController {
         }
         
         schedulePoll();
-        scheduleDelete();
+        schedulePodCleanup();
     }
 
 }

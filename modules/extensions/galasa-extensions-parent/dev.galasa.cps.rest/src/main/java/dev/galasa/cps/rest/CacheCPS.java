@@ -189,6 +189,19 @@ public class CacheCPS implements IConfigurationPropertyStore {
     }
 
     @Override
+    public void deletePrefixedProperties(@NotNull String prefix) throws ConfigurationPropertyStoreException {
+
+        primeCaches(childCPS);
+        if(isCachePrimed) {
+            Map<String, String> propertiesToRemove = getPrefixedProperties(prefix);
+            for(String key : propertiesToRemove.keySet()) {
+                this.propertyCache.remove(key);
+            }
+        }
+
+    }
+
+    @Override
     public Map<String, String> getPropertiesFromNamespace(String namespace) throws ConfigurationPropertyStoreException {
 
         primeCaches(childCPS);

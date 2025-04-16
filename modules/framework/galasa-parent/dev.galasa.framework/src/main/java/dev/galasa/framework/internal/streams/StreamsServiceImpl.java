@@ -20,6 +20,7 @@ public class StreamsServiceImpl implements IStreamsService {
 
     private IConfigurationPropertyStoreService cpsService;
     private static final String TEST_STREAM_PREFIX = "test.stream.";
+    private static final String TEST_STREAM_PREFIX_WITH_NAMESPACE = "framework.test.stream.";
 
     public StreamsServiceImpl(IConfigurationPropertyStoreService configurationPropertyStoreService) {
         this.cpsService = configurationPropertyStoreService;
@@ -61,7 +62,8 @@ public class StreamsServiceImpl implements IStreamsService {
 
     }
 
-    private Stream createStreamFromProperties(String streamName, Map<String, String> streamProperties) throws StreamsException {
+    private Stream createStreamFromProperties(String streamName, Map<String, String> streamProperties)
+            throws StreamsException {
         Stream streamBean = new Stream();
         streamBean.setName(streamName);
 
@@ -86,7 +88,8 @@ public class StreamsServiceImpl implements IStreamsService {
         return streamBean;
     }
 
-    private List<IStream> handleStreamProperties(String testStreamPrefix) throws ConfigurationPropertyStoreException, StreamsException {
+    private List<IStream> handleStreamProperties(String testStreamPrefix)
+            throws ConfigurationPropertyStoreException, StreamsException {
         List<IStream> streamsList = new ArrayList<>();
 
         Map<String, String> testStreamProperties = cpsService.getPrefixedProperties(testStreamPrefix);
@@ -119,5 +122,19 @@ public class StreamsServiceImpl implements IStreamsService {
         }
 
         return streamsList;
+    }
+
+    @Override
+    public void deleteStream(String streamName) throws StreamsException {
+        
+        String testStreamPrefix = TEST_STREAM_PREFIX_WITH_NAMESPACE + streamName + ".";
+
+        try {
+            // Delete all properties associated with the stream
+            cpsService.deletePrefixedProperties(testStreamPrefix);
+
+        } catch (ConfigurationPropertyStoreException e) {
+            throw new StreamsException("Failed to delete properties for stream: " + streamName, e);
+        }
     }
 }

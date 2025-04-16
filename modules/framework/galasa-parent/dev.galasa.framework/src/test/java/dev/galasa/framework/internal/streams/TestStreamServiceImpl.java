@@ -34,6 +34,20 @@ public class TestStreamServiceImpl {
         mockCps.setProperty("test.stream." + streamName + ".location", testcatalogUrl);
     }
 
+    private void addStreamWithNameSpaceToCps(
+        MockIConfigurationPropertyStoreService mockCps,
+        String streamName,
+        String description,
+        String mavenRepoUrl,
+        String commaSeparatedObrUrls,
+        String testcatalogUrl
+    ) throws ConfigurationPropertyStoreException {
+        mockCps.setProperty("framework.test.stream." + streamName + ".obr", commaSeparatedObrUrls);
+        mockCps.setProperty("framework.test.stream." + streamName + ".description", description);
+        mockCps.setProperty("framework.test.stream." + streamName + ".repo", mavenRepoUrl);
+        mockCps.setProperty("framework.test.stream." + streamName + ".location", testcatalogUrl);
+    }
+
     @Test
     public void testGetStreamsWithNoStreamsReturnsEmptyListOK() throws Exception {
         // Given...
@@ -432,4 +446,72 @@ public class TestStreamServiceImpl {
         assertThat(obr.getArtifactId()).isEqualTo("my.company.obr");
         assertThat(obr.getVersion()).isEqualTo("0.0.1");
     }
+
+    @Test
+    public void testDeleteStreamByNameWithOkNoContent() throws Exception {
+
+        // Given...
+        MockIConfigurationPropertyStoreService mockCps = new MockIConfigurationPropertyStoreService();
+
+        String streamName1 = "stream1";
+        String streamDescription1 = "this is the first test stream!";
+        String streamObr1 = "mvn:my.company/my.company.obr/0.0.1/obr/";
+        String streamMavenRepo1 = "https://my.company/maven/repository";
+        String streamTestCatalog1 = "https://my.company/maven/repository/testcatalog.json";
+
+        addStreamWithNameSpaceToCps(mockCps, streamName1, streamDescription1, streamMavenRepo1, streamObr1, streamTestCatalog1);
+
+        StreamsServiceImpl streamsService = new StreamsServiceImpl(mockCps);
+
+        // When...
+        streamsService.deleteStream(streamName1);
+
+        // Check if the stream exists after deletion
+        IStream stream = streamsService.getStreamByName(streamName1);
+
+        // Then...
+        assertThat(stream).isNull();
+
+    }
+
+    @Test
+    public void testDeleteStreamByNameWithMultipleStreamsPresentOkNoContent() throws Exception {
+
+        // Given...
+        MockIConfigurationPropertyStoreService mockCps = new MockIConfigurationPropertyStoreService();
+
+        String streamName1 = "stream1";
+        String streamDescription1 = "this is the first test stream!";
+        String streamObr1 = "mvn:my.company/my.company.obr/0.0.1/obr/";
+        String streamMavenRepo1 = "https://my.company/maven/repository";
+        String streamTestCatalog1 = "https://my.company/maven/repository/testcatalog.json";
+
+        String streamName2 = "stream2";
+        String streamDescription2 = "this is the second test stream!";
+        String streamObr2 = "mvn:my.company/my.company.obr/0.0.2/obr/";
+        String streamMavenRepo2 = "https://my.company/maven/repository";
+        String streamTestCatalog2 = "https://my.company/maven/repository/testcatalog.json";
+
+        addStreamToCps(mockCps, streamName1, streamDescription1, streamMavenRepo1, streamObr1, streamTestCatalog1);
+        addStreamToCps(mockCps, streamName2, streamDescription2, streamMavenRepo2, streamObr2, streamTestCatalog2);
+
+        StreamsServiceImpl streamsService = new StreamsServiceImpl(mockCps);
+
+        // When...
+        streamsService.deleteStream(streamName1);
+
+        // Check if the stream exists after 
+        IStream stream = streamsService.getStreamByName(streamName2);
+
+        // Then...
+        assertThat(stream).isNotNull();
+
+        //Check that the other stream was not deleted
+        assertThat(stream).isNotNull();
+        assertThat(stream.getName()).isEqualTo(streamName2);
+        assertThat(stream.getDescription()).isEqualTo(streamDescription2);
+        
+
+    }
+
 }
