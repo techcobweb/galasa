@@ -116,7 +116,7 @@ public class StreamsByNameRouteTest extends BaseServletTest {
     }
 
     @Test
-    public void testGetStreamsByAMtachingNameReturnsSingleStreamOK() throws Exception {
+    public void testGetStreamsByAMatchingNameReturnsSingleStreamOK() throws Exception {
 
         // Given...
         String streamName = "fakeStream";
@@ -171,7 +171,7 @@ public class StreamsByNameRouteTest extends BaseServletTest {
     }
 
     @Test
-    public void testGetStreamsByAMtachingNameWithMultipleStreamsReturnsRequiredStreamOK() throws Exception {
+    public void testGetStreamsByAMatchingNameWithMultipleStreamsReturnsRequiredStreamOK() throws Exception {
 
         // Given...
         String streamName = "fakeStream2";
@@ -243,7 +243,7 @@ public class StreamsByNameRouteTest extends BaseServletTest {
     }
 
     @Test
-    public void testGetStreamsByAMtachingNameButMissingMavenUrlReturnsRequiredStreamOK() throws Exception {
+    public void testGetStreamsByAMatchingNameButMissingMavenUrlReturnsRequiredStreamOK() throws Exception {
 
         // Given...
         String streamName = "fakeStream";
@@ -300,7 +300,7 @@ public class StreamsByNameRouteTest extends BaseServletTest {
     }
 
     @Test
-    public void testGetStreamsByAMtachingNameButMissingTestCatalogUrlReturnsRequiredStreamOK() throws Exception {
+    public void testGetStreamsByAMatchingNameButMissingTestCatalogUrlReturnsRequiredStreamOK() throws Exception {
 
         // Given...
         String streamName = "fakeStream";
@@ -357,7 +357,58 @@ public class StreamsByNameRouteTest extends BaseServletTest {
     }
 
     @Test
-    public void testGetSTreamsByNameRouteThrowsInternalServletException() throws Exception {
+    public void testGetStreamsByAMatchingNameButMissingObrsReturnsRequiredStreamOK() throws Exception {
+
+        // Given...
+        String streamName = "fakeStream";
+        Map<String, String> headerMap = Map.of("Authorization", "Bearer " + BaseServletTest.DUMMY_JWT);
+
+        List<IStream> mockStreams = new ArrayList<>();
+        MockStream mockStream = new MockStream();
+        mockStream.setName("fakeStream");
+        mockStream.setDescription("This is a dummy test stream");
+        mockStream.setMavenRepositoryUrl("http://mymavenrepo.host/testmaterial");
+        mockStream.setTestCatalogUrl(null);
+        mockStream.setObrs(new ArrayList<>());
+
+        mockStreams.add(mockStream);
+
+        MockStreamsService mockStreamsService = new MockStreamsService(mockStreams);
+        MockRBACService mockRBACService = FilledMockRBACService.createTestRBACServiceWithTestUser(JWT_USERNAME);
+        MockFramework mockFramework = new MockFramework(mockRBACService, mockStreamsService);
+        MockIConfigurationPropertyStoreService mockIConfigurationPropertyStoreService = new MockIConfigurationPropertyStoreService(
+                "framework");
+
+        MockEnvironment env = new MockEnvironment();
+        env.setenv(EnvironmentVariables.GALASA_USERNAME_CLAIMS, "preferred_username");
+
+        MockStreamsServlet mockServlet = new MockStreamsServlet(mockFramework, env,
+                mockIConfigurationPropertyStoreService);
+
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest("/" + streamName, headerMap);
+        MockHttpServletResponse servletResponse = new MockHttpServletResponse();
+        ServletOutputStream outStream = servletResponse.getOutputStream();
+
+        // When...
+        mockServlet.init();
+        mockServlet.doGet(mockRequest, servletResponse);
+
+        String output = outStream.toString();
+        Stream streamGotBack = gson.fromJson(output, Stream.class);
+
+        assertThat(servletResponse.getStatus()).isEqualTo(200);
+        assertThat(servletResponse.getContentType()).isEqualTo("application/json");
+
+        {
+            assertThat(streamGotBack.getApiVersion()).isEqualTo("galasa-dev/v1alpha1");
+            assertThat(streamGotBack.getmetadata().getdescription()).isEqualTo("This is a dummy test stream");
+            assertThat(streamGotBack.getmetadata().getname()).isEqualTo(streamName);
+        }
+
+    }
+
+    @Test
+    public void testGetStreamsByNameRouteThrowsInternalServletException() throws Exception {
 
         String streamName = "fakeStream";
         Map<String, String> headerMap = Map.of("Authorization", "Bearer " + BaseServletTest.DUMMY_JWT);
