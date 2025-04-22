@@ -268,7 +268,7 @@ func TestCanGetAStreamByNameWhenStreamExistsGivesUnexpectedErrorSummaryFormat(t 
 	assert.Contains(t, err.Error(), "GAL1238E")
 }
 
-func TestCanGetAStreamByNameWhenStreamExistsGivesUnexpectedErrorSummaryFormat2(t *testing.T) {
+func TestCanGetAStreamByNameWhenStreamExistsWithRequestBodyGivesUnexpectedErrorSummaryFormat(t *testing.T) {
 	// Given...
 	outputFormat := "summary"
 
