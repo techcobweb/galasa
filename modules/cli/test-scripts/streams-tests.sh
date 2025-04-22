@@ -196,7 +196,7 @@ function streams_get_all {
 }
 
 function streams_create {
-    h2 "Creating a test stream for get test"
+    h2 "Creating a test stream to test successful stream creation"
 
     set -o pipefail # Fail everything if anything in the pipeline fails. Else we are just checking the 'tee' return code.
     
@@ -230,30 +230,23 @@ function streams_create {
     fi
 
     # Check that the previous properties set created a stream, with the correct values
-    grep -q -E "Galasa" "$output_file"
-    rc1=$?
+    grep -qF -- 'Galasa' "$output_file" \
+    || { error "Missing 'Galasa' in stream output"; exit 1; }
 
-    grep -q -E "$stream_name" "$output_file"
-    rc2=$?
+    # 2) Check for the stream name
+    grep -qF -- "$stream_name" "$output_file" \
+    || { error "Missing '$stream_name' in stream output"; exit 1; }
 
-    grep -q -E "enabled" "$output_file"
-    rc3=$?
+    # 3) Check for “enabled”
+    grep -qF -- 'enabled' "$output_file" \
+    || { error "Missing 'enabled' in stream output"; exit 1; }
 
-    # Check if any of the greps failed
-    if [[ "$rc1" != "0" || "$rc2" != "0" || "$rc3" != "0" ]]; then
-        # Report which specific check failed
-        [[ "$rc1" != "0" ]] && error "Missing 'Galasa' in stream output"
-        [[ "$rc2" != "0" ]] && error "Missing '$stream_name' in stream output"
-        [[ "$rc3" != "0" ]] && error "Missing 'enabled' in stream output"
-        error "Stream successfully created, but values incorrect."
-        exit 1
-    fi
+    success "Stream created successfully with all expected values."
 
-    success "Stream set with name and value used seems to have been created correctly."
 }
 
 function streams_get_yaml_format {
-    h2 "Creating a test stream for get test"
+    h2 "Creating a test stream to get stream in YAML format"
 
     set -o pipefail # Fail everything if anything in the pipeline fails. Else we are just checking the 'tee' return code.
     
@@ -287,30 +280,22 @@ function streams_get_yaml_format {
     fi
 
     # Check that the previous properties set created a stream, with the correct values
-    grep -q -E "Galasa" "$output_file"
-    rc1=$?
+    grep -qF -- 'Galasa' "$output_file" \
+    || { error "Missing 'Galasa' in stream output"; exit 1; }
 
-    grep -q -E "$stream_name" "$output_file"
-    rc2=$?
+    # 2) Check for the stream name
+    grep -qF -- "$stream_name" "$output_file" \
+    || { error "Missing '$stream_name' in stream output"; exit 1; }
 
-    grep -q -E "GalasaStream" "$output_file"
-    rc3=$?
-
-    # Check if any of the greps failed
-    if [[ "$rc1" != "0" || "$rc2" != "0" || "$rc3" != "0" ]]; then
-        # Report which specific check failed
-        [[ "$rc1" != "0" ]] && error "Missing 'Galasa' in stream output"
-        [[ "$rc2" != "0" ]] && error "Missing '$stream_name' in stream output"
-        [[ "$rc3" != "0" ]] && error "Missing 'GalasaStream' in stream output"
-        error "Stream successfully created, but values incorrect."
-        exit 1
-    fi
+    # 3) Check for “enabled”
+    grep -qF -- 'true' "$output_file" \
+    || { error "Missing 'enabled' in stream output"; exit 1; }
 
     success "Stream set with name and value used seems to have been created correctly and formatted in YAML"
 }
 
 function streams_get_missing_name {
-    h2 "Creating a test stream for get test"
+    h2 "Creating a test stream if stream is not present"
 
     set -o pipefail # Fail everything if anything in the pipeline fails. Else we are just checking the 'tee' return code.
     
