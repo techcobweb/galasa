@@ -91,4 +91,14 @@ public class MockIFrameworkRuns implements IFrameworkRuns{
     public void setMockSubmissionId(String mockSubmissionId) {
         this.mockSubmissionId = mockSubmissionId;
     }
+
+    @Override
+    public boolean markRunCancelled(String runName) throws DynamicStatusStoreException {
+        return true;
+    }
+
+    @Override
+    public void markRunFinished(String runName, String result) throws DynamicStatusStoreException {
+        throw new UnsupportedOperationException("Unimplemented method 'setRunStatus'");
+    }
 }

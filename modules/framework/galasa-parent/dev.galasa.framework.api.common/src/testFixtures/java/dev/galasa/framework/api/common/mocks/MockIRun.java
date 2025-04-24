@@ -6,9 +6,11 @@
 package dev.galasa.framework.api.common.mocks;
 
 import java.time.Instant;
+import java.util.List;
 
 import dev.galasa.api.run.Run;
 import dev.galasa.framework.spi.IRun;
+import dev.galasa.framework.spi.RunRasAction;
 
 public class MockIRun implements IRun{
 
@@ -160,8 +162,22 @@ public class MockIRun implements IRun{
     }
 
     @Override
+    public String getInterruptReason() {
+        throw new UnsupportedOperationException("Unimplemented method 'getInterruptReason'");
+    }
+
+    @Override
     public String getGherkin() {
         throw new UnsupportedOperationException("Unimplemented method 'getGherkin'");
     }
-    
+
+    @Override
+    public String getRasRunId() {
+        throw new UnsupportedOperationException("Unimplemented method 'getRasRunId'");
+    }
+
+    @Override
+    public List<RunRasAction> getRasActions() {
+        throw new UnsupportedOperationException("Unimplemented method 'getRasActions'");
+    }
 }

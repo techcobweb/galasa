@@ -281,7 +281,12 @@ public abstract class CouchdbStore {
 
                 String errorMessage = ERROR_UNEXPECTED_COUCHDB_HTTP_RESPONSE.getMessage(httpRequest.getURI().toString(),
                         expectedStatusCodesStr, actualStatusCode);
-                throw new CouchdbException(errorMessage);
+
+                if (actualStatusCode == HttpStatus.SC_CONFLICT) {
+                    throw new CouchdbClashingUpdateException(errorMessage);
+                } else {
+                    throw new CouchdbException(errorMessage);
+                }
             }
 
             // If we're expecting a 404 not found response, return null

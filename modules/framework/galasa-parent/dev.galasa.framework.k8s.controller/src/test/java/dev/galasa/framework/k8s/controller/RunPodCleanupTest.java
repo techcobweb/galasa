@@ -13,9 +13,10 @@ import java.util.List;
 import org.junit.Test;
 
 import dev.galasa.framework.TestRunLifecycleStatus;
-import dev.galasa.framework.k8s.controller.mocks.MockKubernetesProtoClient;
+import dev.galasa.framework.k8s.controller.api.KubernetesEngineFacade;
+import dev.galasa.framework.k8s.controller.mocks.MockKubernetesApiClient;
 import dev.galasa.framework.k8s.controller.mocks.MockSettings;
-import dev.galasa.framework.mocks.MockIFrameworkRuns;
+import dev.galasa.framework.mocks.MockFrameworkRuns;
 import dev.galasa.framework.mocks.MockRun;
 import dev.galasa.framework.spi.IRun;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
@@ -27,7 +28,7 @@ public class RunPodCleanupTest {
         V1Pod mockPod = new V1Pod();
 
         V1ObjectMeta podMetadata = new V1ObjectMeta();
-        podMetadata.putLabelsItem(RunPodCleanup.GALASA_RUN_POD_LABEL, runName);
+        podMetadata.putLabelsItem(TestPodScheduler.GALASA_RUN_POD_LABEL, runName);
         podMetadata.setName(runName);
 
         mockPod.setMetadata(podMetadata);
@@ -74,17 +75,18 @@ public class RunPodCleanupTest {
         mockRuns.add(createMockRun(runName2, TestRunLifecycleStatus.FINISHED.toString()));
         mockRuns.add(createMockRun(runName3, TestRunLifecycleStatus.RUNNING.toString()));
 
-        MockKubernetesProtoClient mockProtoClient = new MockKubernetesProtoClient(mockPods);
-        MockIFrameworkRuns mockFrameworkRuns = new MockIFrameworkRuns(mockRuns);
+        MockKubernetesApiClient mockApiClient = new MockKubernetesApiClient(mockPods);
+        MockFrameworkRuns mockFrameworkRuns = new MockFrameworkRuns(mockRuns);
 
         MockSettings mockSettings = new MockSettings(null, null, null);
-        RunPodCleanup runPodCleanup = new RunPodCleanup(mockSettings, null, mockProtoClient, mockFrameworkRuns);
+        KubernetesEngineFacade kubeEngineFacade = new KubernetesEngineFacade(mockApiClient, mockSettings);
+        RunPodCleanup runPodCleanup = new RunPodCleanup(mockSettings, kubeEngineFacade, mockFrameworkRuns);
 
         // When...
         runPodCleanup.deletePodsForCompletedRuns(mockTerminatedPods);
 
         // Then...
-        List<V1Pod> remainingPods = mockProtoClient.getMockPods();
+        List<V1Pod> remainingPods = mockApiClient.getMockPods();
         assertThat(remainingPods).hasSize(1);
         assertThat(remainingPods.get(0)).usingRecursiveComparison().isEqualTo(runningPod);
 
@@ -109,17 +111,18 @@ public class RunPodCleanupTest {
         // so the pods should get deleted
         List<IRun> mockRuns = new ArrayList<>();
 
-        MockKubernetesProtoClient mockProtoClient = new MockKubernetesProtoClient(mockPods);
-        MockIFrameworkRuns mockFrameworkRuns = new MockIFrameworkRuns(mockRuns);
+        MockKubernetesApiClient mockApiClient = new MockKubernetesApiClient(mockPods);
+        MockFrameworkRuns mockFrameworkRuns = new MockFrameworkRuns(mockRuns);
 
         MockSettings mockSettings = new MockSettings(null, null, null);
-        RunPodCleanup runPodCleanup = new RunPodCleanup(mockSettings, null, mockProtoClient, mockFrameworkRuns);
+        KubernetesEngineFacade kubeEngineFacade = new KubernetesEngineFacade(mockApiClient, mockSettings);
+        RunPodCleanup runPodCleanup = new RunPodCleanup(mockSettings, kubeEngineFacade, mockFrameworkRuns);
 
         // When...
         runPodCleanup.deletePodsForCompletedRuns(mockTerminatedPods);
 
         // Then...
-        assertThat(mockProtoClient.getMockPods()).isEmpty();
+        assertThat(mockApiClient.getMockPods()).isEmpty();
     }
 
     @Test
@@ -135,17 +138,18 @@ public class RunPodCleanupTest {
 
         List<IRun> mockRuns = new ArrayList<>();
 
-        MockKubernetesProtoClient mockProtoClient = new MockKubernetesProtoClient(mockPods);
-        MockIFrameworkRuns mockFrameworkRuns = new MockIFrameworkRuns(mockRuns);
+        MockKubernetesApiClient mockApiClient = new MockKubernetesApiClient(mockPods);
+        MockFrameworkRuns mockFrameworkRuns = new MockFrameworkRuns(mockRuns);
 
         MockSettings mockSettings = new MockSettings(null, null, null);
-        RunPodCleanup runPodCleanup = new RunPodCleanup(mockSettings, null, mockProtoClient, mockFrameworkRuns);
+        KubernetesEngineFacade kubeEngineFacade = new KubernetesEngineFacade(mockApiClient, mockSettings);
+        RunPodCleanup runPodCleanup = new RunPodCleanup(mockSettings, kubeEngineFacade, mockFrameworkRuns);
 
         // When...
         runPodCleanup.deletePodsForCompletedRuns(mockTerminatedPods);
 
         // Then...
-        List<V1Pod> pods = mockProtoClient.getMockPods();
+        List<V1Pod> pods = mockApiClient.getMockPods();
         assertThat(pods).hasSize(1);
         assertThat(pods.get(0)).usingRecursiveComparison().isEqualTo(podWithNoRunName);
     }
