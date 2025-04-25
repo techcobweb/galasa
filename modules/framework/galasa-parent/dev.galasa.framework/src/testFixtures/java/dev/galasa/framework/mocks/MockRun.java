@@ -6,10 +6,12 @@
 package dev.galasa.framework.mocks;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import dev.galasa.api.run.Run;
 import dev.galasa.framework.spi.IRun;
+import dev.galasa.framework.spi.RunRasAction;
 
 public class MockRun implements IRun {
     private String testBundleName;
@@ -25,6 +27,10 @@ public class MockRun implements IRun {
     private String group;
     private String submissionId;
     private String status;
+    private String interruptReason;
+    private String result;
+    private String runId;
+    private List<RunRasAction> rasActions;
 
     public MockRun(
         String testBundleName, 
@@ -150,6 +156,38 @@ public class MockRun implements IRun {
         this.status = status;
     }
 
+    @Override
+    public String getInterruptReason() {
+        return this.interruptReason;
+    }
+
+    public void setInterruptReason(String interruptReason) {
+        this.interruptReason = interruptReason;
+    }
+
+    @Override
+    public String getResult() {
+        return this.result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+
+    @Override
+    public String getRasRunId() {
+        return this.runId;
+    }
+
+    @Override
+    public List<RunRasAction> getRasActions() {
+        return this.rasActions;
+    }
+
+    public void setRasActions(List<RunRasAction> rasActions) {
+        this.rasActions = rasActions;
+    }
+
     // ------------- un-implemented methods follow ----------------
 
     @Override
@@ -180,10 +218,5 @@ public class MockRun implements IRun {
     @Override
     public Run getSerializedRun() {
         throw new UnsupportedOperationException("Unimplemented method 'getSerializedRun'");
-    }
-
-    @Override
-    public String getResult() {
-        throw new UnsupportedOperationException("Unimplemented method 'getResult'");
     }
 }

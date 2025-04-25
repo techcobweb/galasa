@@ -39,6 +39,7 @@ import dev.galasa.extensions.common.api.LogFactory;
 import dev.galasa.extensions.common.couchdb.CouchdbException;
 import dev.galasa.extensions.common.couchdb.CouchdbStore;
 import dev.galasa.extensions.common.couchdb.CouchdbValidator;
+import dev.galasa.extensions.common.couchdb.RetryableCouchdbUpdateOperationProcessor;
 import dev.galasa.extensions.common.couchdb.pojos.PutPostResponse;
 import dev.galasa.extensions.common.impl.HttpClientFactoryImpl;
 import dev.galasa.extensions.common.impl.HttpRequestFactoryImpl;
@@ -46,6 +47,7 @@ import dev.galasa.extensions.common.api.HttpRequestFactory;
 import dev.galasa.extensions.common.impl.LogFactoryImpl;
 import dev.galasa.ras.couchdb.internal.pojos.Artifacts;
 import dev.galasa.ras.couchdb.internal.pojos.LogLines;
+import dev.galasa.ras.couchdb.internal.pojos.TestStructureCouchdb;
 
 public class CouchdbRasStore extends CouchdbStore implements IResultArchiveStoreService {
 
@@ -62,6 +64,8 @@ public class CouchdbRasStore extends CouchdbStore implements IResultArchiveStore
     public static final String BUNDLE_TESTNAMES_VIEW_NAME = "bundle-testnames-view";
     public static final String RUN_NAMES_VIEW_NAME        = "runnames-view";
     public static final String RUN_GROUP_VIEW_NAME        = "group-view";
+
+    public static final String COUCHDB_RUN_ID_PREFIX = "cdb-";
 
     private final Log                          logger            ;
 
@@ -97,19 +101,20 @@ public class CouchdbRasStore extends CouchdbStore implements IResultArchiveStore
             new HttpClientFactoryImpl(),
             new CouchdbValidatorImpl(),
             new LogFactoryImpl(),
-            new HttpRequestFactoryImpl(COUCHDB_AUTH_TYPE, new SystemEnvironment().getenv(COUCHDB_AUTH_ENV_VAR))
+            new HttpRequestFactoryImpl(COUCHDB_AUTH_TYPE, new SystemEnvironment().getenv(COUCHDB_AUTH_ENV_VAR)),
+            new SystemTimeService()
         );
     }
 
     // Note: We use logFactory here so we can propogate it downwards during unit testing.
     public CouchdbRasStore(IFramework framework, URI rasUri, HttpClientFactory httpFactory , CouchdbValidator validator,
-        LogFactory logFactory, HttpRequestFactory requestFactory
+        LogFactory logFactory, HttpRequestFactory requestFactory, ITimeService timeService
     ) throws CouchdbException {
         super(rasUri, requestFactory, httpFactory);
         this.logFactory = logFactory;
         this.logger = logFactory.getLog(getClass());
         this.framework = framework;
-        this.timeService = new SystemTimeService();
+        this.timeService = timeService;
          // *** Validate the connection to the server and it's version
 
         validator.checkCouchdbDatabaseIsValid(this.storeUri,this.httpClient, this.httpRequestFactory, timeService);
@@ -210,6 +215,41 @@ public class CouchdbRasStore extends CouchdbStore implements IResultArchiveStore
 
         for (String message : messages) {
             writeLog(message);
+        }
+    }
+
+    @Override
+    public synchronized void updateTestStructure(@NotNull String runId, @NotNull TestStructure testStructure)
+            throws ResultArchiveStoreException {
+
+        TestStructureCouchdb couchdbTestStructure = (TestStructureCouchdb) testStructure;
+
+        String documentId = runId;
+        if (runId.startsWith(COUCHDB_RUN_ID_PREFIX)) {
+            documentId = runId.substring(COUCHDB_RUN_ID_PREFIX.length());
+        }
+
+        String revision = couchdbTestStructure._rev;
+        if (revision == null) {
+            throw new ResultArchiveStoreException("Failed to get run document revision");
+        }
+
+        String jsonStructure = gson.toJson(testStructure);
+        HttpEntityEnclosingRequestBase request = httpRequestFactory.getHttpPutRequest(this.storeUri + "/"+RUNS_DB+"/" + documentId);
+        request.setHeader("If-Match", revision);
+        request.setEntity(new StringEntity(jsonStructure, StandardCharsets.UTF_8));
+
+        RetryableCouchdbUpdateOperationProcessor retryProcessor = new RetryableCouchdbUpdateOperationProcessor(timeService, logFactory);
+        try {
+            retryProcessor.retryCouchDbUpdateOperation(() -> {            
+                String entity = sendHttpRequest(request, HttpStatus.SC_CREATED);
+                PutPostResponse putPostResponse = gson.fromJson(entity, PutPostResponse.class);
+                if (putPostResponse.id == null || putPostResponse.rev == null) {
+                    throw new CouchdbException("Unable to update the test structure - Invalid JSON response");
+                }
+            });
+        } catch (CouchdbException e) {
+            throw new ResultArchiveStoreException("Failed to update test structure", e);
         }
     }
 
