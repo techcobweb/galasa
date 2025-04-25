@@ -36,8 +36,8 @@ public class BootstrapExternalRoute extends PublicRoute {
         HttpServletRequest request = requestContext.getRequest();
 
         Properties properties = new Properties();
-        properties.store(response.getWriter(), "Galasa Bootstrap Properties");
         response = getResponseBuilder().buildResponse(request, response, "text/plain", HttpServletResponse.SC_OK);
+        properties.store(response.getWriter(), "Galasa Bootstrap Properties");
         return response;
     }
 

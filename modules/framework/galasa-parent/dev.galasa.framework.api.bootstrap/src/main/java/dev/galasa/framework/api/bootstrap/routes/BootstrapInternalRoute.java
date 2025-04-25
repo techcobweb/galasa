@@ -44,9 +44,9 @@ public class BootstrapInternalRoute extends PublicRoute {
         synchronized (this.configurationProperties) {
             actualBootstrap.putAll(this.configurationProperties);
         }
-
-        actualBootstrap.store(response.getWriter(), "Galasa Bootstrap Properties");
+        
         response = getResponseBuilder().buildResponse(request, response, "text/plain", HttpServletResponse.SC_OK);
+        actualBootstrap.store(response.getWriter(), "Galasa Bootstrap Properties");
         return response;
     }
 
