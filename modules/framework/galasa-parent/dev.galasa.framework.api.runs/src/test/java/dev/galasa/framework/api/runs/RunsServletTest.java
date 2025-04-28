@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -92,8 +93,8 @@ public class RunsServletTest extends BaseServletTest {
 	    return this.resp;
 	}
 
-    protected void addRun(String runName, String runType, String requestor, String test, String runStatus, String bundle, String testClass, String groupName, String submissionId){
-		this.runs.add(new MockIRun( runName, runType, requestor, test, runStatus, bundle, testClass, groupName, submissionId));
+    protected void addRun(String runName, String runType, String requestor, String test, String runStatus, String bundle, String testClass, String groupName, String submissionId, Set<String> tags){
+		this.runs.add(new MockIRun( runName, runType, requestor, test, runStatus, bundle, testClass, groupName, submissionId, tags));
     }
 
 	protected String generateExpectedJson(List<IRun> runs, boolean complete) {
@@ -128,6 +129,12 @@ public class RunsServletTest extends BaseServletTest {
             runJson.addProperty("isTraceEnabled", false);
             runJson.addProperty("rasRunId", "cdb-" + run.getName());
 
+            JsonArray tagsArray = new JsonArray();
+            for( String tag : run.getTags() ) {
+                tagsArray.add(tag);
+            }
+            runJson.add("tags", tagsArray);
+
             runsJsonArray.add(runJson);
         }
 
@@ -137,13 +144,13 @@ public class RunsServletTest extends BaseServletTest {
         return expectedJson;
     }
 
-    protected String generatePayload(String[] classNames, String requestorType, String requestor, String testStream, String groupName, String overrideExpectedRequestor, String submissionId) {
+    protected String generatePayload(String[] classNames, String requestorType, String requestor, String testStream, String groupName, String overrideExpectedRequestor, String submissionId, Set<String>tags) {
         String classes ="";
         if (overrideExpectedRequestor !=null){
             requestor = overrideExpectedRequestor;
         }
         for (String className : classNames){
-            addRun( "runnamename", requestorType, requestor, "name", "submitted", className.split("/")[0], "java", groupName, submissionId);
+            addRun( "runnamename", requestorType, requestor, "name", "submitted", className.split("/")[0], "java", groupName, submissionId, tags);
             classes += "\""+className+"\",";
         }
         classes = classes.substring(0, classes.length()-1);

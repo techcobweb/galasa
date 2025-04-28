@@ -7,6 +7,7 @@ package dev.galasa.ras.couchdb.internal.mocks;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 import dev.galasa.api.run.Run;
 import dev.galasa.framework.spi.IRun;
@@ -143,5 +144,9 @@ public class MockIRun implements IRun {
     @Override
     public List<RunRasAction> getRasActions() {
         throw new UnsupportedOperationException("Unimplemented method 'getRasActions'");
+    }
+
+    public Set<String> getTags() {
+        throw new UnsupportedOperationException("Unimplemented method 'getTags'");
     }
 }

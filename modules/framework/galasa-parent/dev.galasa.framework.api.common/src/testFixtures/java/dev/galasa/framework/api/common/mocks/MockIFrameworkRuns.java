@@ -64,13 +64,13 @@ public class MockIFrameworkRuns implements IFrameworkRuns{
 
     @Override
     public @NotNull IRun submitRun(String type, String requestor, String bundleName, String testName, String groupName,
-            String mavenRepository, String obr, String stream, boolean local, boolean trace, Properties overrides,
+            String mavenRepository, String obr, String stream, boolean local, boolean trace, Set<String> tags, Properties overrides,
             SharedEnvironmentPhase sharedEnvironmentPhase, String sharedEnvironmentRunName, String language, String submissionId)
             throws FrameworkException {
             if (stream.equals("null")){
                 throw new FrameworkException(language);
             }
-        return new MockIRun("runname"+testName, type, requestor, testName, sharedEnvironmentRunName, bundleName, language, groupName, this.mockSubmissionId);
+        return new MockIRun("runname"+testName, type, requestor, testName, sharedEnvironmentRunName, bundleName, language, groupName, this.mockSubmissionId, tags);
     }
 
     @Override

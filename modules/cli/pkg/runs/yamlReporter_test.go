@@ -18,6 +18,10 @@ func TestYamlReportWorks(t *testing.T) {
 	// Given...
 	mockFileSystem := files.NewMockFileSystem()
 
+	tags := []string{}
+	tags = append(tags, "a")
+	tags = append(tags, "b")
+
 	finishedRuns := TestRun{
 		Name:           "myTestRun",
 		Bundle:         "myBundle",
@@ -33,6 +37,7 @@ func TestYamlReportWorks(t *testing.T) {
 		GherkinUrl:     "file:///my.feature",
 		GherkinFeature: "my",
 		SubmissionId:   "123",
+		Tags:           tags,
 	}
 
 	finishedRunsMap := make(map[string]*TestRun, 1)
@@ -76,7 +81,10 @@ func TestYamlReportWorks(t *testing.T) {
 	  gherkin: file:///my.feature
 	  feature: my
 	  group:""
-	  submissionId:"123"`
+	  submissionId:"123"
+	  tags:
+	  - a
+	  - b`
 
 	actualContents, err := mockFileSystem.ReadTextFile("myReportYamlFilename")
 	if err != nil {

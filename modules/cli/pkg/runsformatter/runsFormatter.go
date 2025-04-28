@@ -45,6 +45,7 @@ const (
 	HEADER_METHOD_NAME    = "method"
 	HEADER_METHOD_TYPE    = "type"
 	HEADER_GROUP          = "group"
+	HEADER_TAGS           = "tags"
 
 	RAS_RUNS_URL = "/ras/runs/"
 )
@@ -66,6 +67,7 @@ type FormattableTest struct {
 	Group         string
 	Methods       []galasaapi.TestMethod
 	Lost          bool
+	Tags          []string
 }
 
 func NewFormattableTest() FormattableTest {

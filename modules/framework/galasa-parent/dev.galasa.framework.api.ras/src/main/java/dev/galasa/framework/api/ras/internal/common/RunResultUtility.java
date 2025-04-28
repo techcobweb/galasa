@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
@@ -67,8 +68,9 @@ public class RunResultUtility {
 	   String group = struc.getGroup();
 	   String submissionId = struc.getSubmissionId();
 	   List<RasTestMethod> rasMethods = convertMethods(methods);
+	   Set<String> tags = struc.getTags();
 	   
-	   return new RasTestStructure(runName, bundle, testName, testShortName, requestor, status, result, queued, startTime, endTime, rasMethods, group, submissionId);
+	   return new RasTestStructure(runName, bundle, testName, testShortName, requestor, status, result, queued, startTime, endTime, rasMethods, group, submissionId, tags);
 	}
 	
 	private static List<RasTestMethod> convertMethods(List<TestMethod> methods){

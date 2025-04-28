@@ -519,8 +519,9 @@ func TestSubmitRunwithGherkinFile(t *testing.T) {
 	trace := false
 	requestor := "user"
 	requestType := ""
+	tags := []string{}
 
-	run, err := submitter.submitRun(groupName, readyRuns, submittedRuns, lostRuns, runOverrides, trace, requestor, requestType)
+	run, err := submitter.submitRun(groupName, readyRuns, submittedRuns, lostRuns, runOverrides, trace, requestor, requestType, tags)
 	assert.Nil(t, err)
 	assert.Empty(t, run)
 	assert.Contains(t, submittedRuns["M100"].GherkinUrl, "gherkin.feature")

@@ -267,6 +267,13 @@ public class CouchdbRasStore extends CouchdbStore implements IResultArchiveStore
 
         String jsonStructure = gson.toJson(testStructure);
 
+        // logger.info("Storing this json structure into couchdb:"+jsonStructure);
+        // try {
+        //     throw new Exception("This is just to get the stack trace while developing");
+        // } catch( Exception ex ) {
+        //     logger.info("stack trace is ",ex);
+        // }
+
         HttpEntityEnclosingRequestBase request;
         if (runDocumentId == null) {
             request = httpRequestFactory.getHttpPostRequest(this.storeUri + "/"+RUNS_DB);

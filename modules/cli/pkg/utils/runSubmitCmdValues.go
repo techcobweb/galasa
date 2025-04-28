@@ -24,5 +24,6 @@ type RunsSubmitCmdValues struct {
 	ThrottleFileName              string
 	PortfolioFileName             string
 	OverrideFilePaths             []string
+	Tags                          []string
 	TestSelectionFlagValues       *TestSelectionFlagValues
 }

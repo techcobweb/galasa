@@ -5,7 +5,9 @@
  */
 package dev.galasa.framework.beans;
 
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFrameworkRuns.SharedEnvironmentPhase;
@@ -26,6 +28,7 @@ public class SubmitRunRequest {
     private String stream;
     private boolean isLocalRun;
     private boolean isTraceEnabled = false;
+    private Set<String> tags = new HashSet<>();
     private Properties overrides = new Properties();
     private SharedEnvironmentPhase sharedEnvironmentPhase;
     private String sharedEnvironmentRunName;
@@ -45,6 +48,7 @@ public class SubmitRunRequest {
         String stream,
         boolean isLocalRun,
         boolean isTraceEnabled,
+        Set<String> tags,
         Properties overrides,
         SharedEnvironmentPhase sharedEnvironmentPhase,
         String sharedEnvironmentRunName,
@@ -62,6 +66,9 @@ public class SubmitRunRequest {
         this.stream = stream;
         this.isLocalRun = isLocalRun;
         this.isTraceEnabled = isTraceEnabled;
+        if (tags!=null) {
+            this.tags.addAll(tags);
+        }
         this.overrides = overrides;
         this.sharedEnvironmentPhase = sharedEnvironmentPhase;
         this.sharedEnvironmentRunName = sharedEnvironmentRunName;
@@ -205,5 +212,13 @@ public class SubmitRunRequest {
 
     public void setSubmissionId(String submissionId) {
         this.submissionId = submissionId;
+    }
+
+    public void setTags(Set<String> newTags) {
+        this.tags = newTags ;
+    }
+
+    public Set<String> getTags() {
+        return this.tags ;
     }
 }

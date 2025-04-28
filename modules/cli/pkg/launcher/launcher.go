@@ -30,6 +30,7 @@ type Launcher interface {
 		gherkinURL string,
 		GherkinFeature string,
 		overrides map[string]interface{},
+		tags []string,
 	) (*galasaapi.TestRuns, error)
 
 	// GetRunsById gets the Run information for the run with a specific run identifier

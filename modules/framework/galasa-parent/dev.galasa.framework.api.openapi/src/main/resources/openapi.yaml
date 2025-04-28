@@ -2851,6 +2851,10 @@ components:
           type: boolean
         rasRunId:
           type: string
+        tags:
+          type: array
+          items:
+            type: string
     TestRunRequest:
       type: object
       properties:
@@ -2884,6 +2888,16 @@ components:
           type: object
         trace:
           type: boolean
+        tags:
+          description: |-
+            A set of tag strings which are associated with this test run in the future.
+            These might include details which help categorise test results for charting for example.
+            Duplicate tags are ignored.
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+
     UpdateGalasaMonitorRequest:
       type: object
       properties:
@@ -3057,6 +3071,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TestMethod'
+        tags: 
+          type: array
+          items: 
+            type: string
     TestMethod:
       type: object
       properties:

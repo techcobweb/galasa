@@ -90,7 +90,7 @@ public class TestStructure {
 
     /**
      * @return a deep clone of the tags set associated with this test structure.
-     * If you wish to manipulate the test structure directly, use the {@link #addTag() addTag} and {@link #removeTag() void} calls.
+     * If you wish to manipulate the test structure directly, use the {@link #addTag(java.lang.String) Set<String>} and {@link #removeTag(java.lang.String) void} calls.
      */
     public Set<String> getTags() {
         Set<String> tagsToReturn = new HashSet<String>();
@@ -293,6 +293,10 @@ public class TestStructure {
 
         if (this.queued == null) {
             this.queued = this.startTime;
+        }
+
+        if (this.tags == null) {
+            this.tags = new HashSet<String>();
         }
     }
 

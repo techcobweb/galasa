@@ -13,6 +13,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.junit.BeforeClass;
@@ -73,6 +74,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
         String override1Key = "override1";
@@ -98,6 +100,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -150,6 +153,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
         String override1Key = "override1";
@@ -175,6 +179,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -229,6 +234,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
         String override1Key = "override1";
@@ -255,6 +261,7 @@ public class FrameworkRunsTest {
                 stream,
                 local,
                 trace,
+                tags,
                 overrides,
                 sharedEnvironmentPhase,
                 sharedEnvironmentRunName,
@@ -289,6 +296,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -309,6 +317,7 @@ public class FrameworkRunsTest {
                 stream,
                 local,
                 trace,
+                tags,
                 overrides,
                 sharedEnvironmentPhase,
                 sharedEnvironmentRunName,
@@ -343,6 +352,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -363,6 +373,7 @@ public class FrameworkRunsTest {
                 stream,
                 local,
                 trace,
+                tags,
                 overrides,
                 sharedEnvironmentPhase,
                 sharedEnvironmentRunName,
@@ -398,6 +409,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -416,6 +428,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -451,6 +464,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -469,6 +483,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -504,6 +519,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -522,6 +538,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -575,6 +592,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -590,6 +608,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -644,6 +663,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -660,6 +680,7 @@ public class FrameworkRunsTest {
                 stream,
                 local,
                 trace,
+                tags,
                 overrides,
                 sharedEnvironmentPhase,
                 sharedEnvironmentRunName,
@@ -701,6 +722,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -716,6 +738,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -762,6 +785,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -778,6 +802,7 @@ public class FrameworkRunsTest {
                 stream,
                 local,
                 trace,
+                tags,
                 overrides,
                 sharedEnvironmentPhase,
                 sharedEnvironmentRunName,

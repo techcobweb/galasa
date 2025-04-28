@@ -7,6 +7,8 @@ package dev.galasa.framework.api.runs.routes;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
@@ -218,7 +220,8 @@ public class TestGroupRunsRoute extends RunsServletTest{
         // Given...
 		String groupName = "framework";
         String submissionId = "submission1";
-        addRun("name1", "type1", "requestor1", "test1", "FINISHED","bundle1", "testClass1", groupName, submissionId);
+        Set<String> tags = new HashSet<>();
+        addRun("name1", "type1", "requestor1", "test1", "FINISHED","bundle1", "testClass1", groupName, submissionId,tags);
         setServlet("/"+groupName, groupName, this.runs);
 		MockRunsServlet servlet = getServlet();
 		HttpServletRequest req = getRequest();
@@ -240,8 +243,9 @@ public class TestGroupRunsRoute extends RunsServletTest{
         // Given...
 		String groupName = "framework";
         String submissionId = "submission1";
-        addRun("name1", "type1", "requestor1", "test1", "BUILDING","bundle1", "testClass1", groupName, submissionId);
-        addRun("name2", "type2", "requestor2", "test2", "BUILDING","bundle2", "testClass2", groupName, submissionId);
+        Set<String> tags = new HashSet<>();
+        addRun("name1", "type1", "requestor1", "test1", "BUILDING","bundle1", "testClass1", groupName, submissionId,tags);
+        addRun("name2", "type2", "requestor2", "test2", "BUILDING","bundle2", "testClass2", groupName, submissionId,tags);
         setServlet("/"+groupName, groupName, this.runs);
 		MockRunsServlet servlet = getServlet();
 		HttpServletRequest req = getRequest();
@@ -263,16 +267,17 @@ public class TestGroupRunsRoute extends RunsServletTest{
         // Given...
 		String groupName = "framework";
         String submissionId = "submission1";
-        addRun("name1", "type1", "requestor1", "test1", "BUILDING","bundle1", "testClass1", groupName, submissionId);
-        addRun("name2", "type2", "requestor2", "test2", "BUILDING","bundle2", "testClass2", groupName, submissionId);
-        addRun("name3", "type3", "requestor3", "test3", "FINISHED","bundle3", "testClass3", groupName, submissionId);
-        addRun("name4", "type4", "requestor4", "test4", "UP","bundle4", "testClass4", groupName, submissionId);
-        addRun("name5", "type6", "requestor5", "test5", "DISCARDED","bundle5", "testClass6", groupName, submissionId);
-        addRun("name6", "type6", "requestor6", "test6", "BUILDING","bundle6", "testClass6", groupName, submissionId);
-        addRun("name7", "type7", "requestor7", "test7", "BUILDING","bundle7", "testClass7", groupName, submissionId);
-        addRun("name8", "type8", "requestor8", "test8", "BUILDING","bundle8", "testClass8", groupName, submissionId);
-        addRun("name9", "type9", "requestor9", "test9", "BUILDING","bundle9", "testClass9", groupName, submissionId);
-        addRun("name10", "type10", "requestor10", "test10", "BUILDING","bundle10", "testClass10", groupName, submissionId);
+        Set<String> tags = new HashSet<>();
+        addRun("name1", "type1", "requestor1", "test1", "BUILDING","bundle1", "testClass1", groupName, submissionId,tags);
+        addRun("name2", "type2", "requestor2", "test2", "BUILDING","bundle2", "testClass2", groupName, submissionId,tags);
+        addRun("name3", "type3", "requestor3", "test3", "FINISHED","bundle3", "testClass3", groupName, submissionId,tags);
+        addRun("name4", "type4", "requestor4", "test4", "UP","bundle4", "testClass4", groupName, submissionId,tags);
+        addRun("name5", "type6", "requestor5", "test5", "DISCARDED","bundle5", "testClass6", groupName, submissionId,tags);
+        addRun("name6", "type6", "requestor6", "test6", "BUILDING","bundle6", "testClass6", groupName, submissionId,tags);
+        addRun("name7", "type7", "requestor7", "test7", "BUILDING","bundle7", "testClass7", groupName, submissionId,tags);
+        addRun("name8", "type8", "requestor8", "test8", "BUILDING","bundle8", "testClass8", groupName, submissionId,tags);
+        addRun("name9", "type9", "requestor9", "test9", "BUILDING","bundle9", "testClass9", groupName, submissionId,tags);
+        addRun("name10", "type10", "requestor10", "test10", "BUILDING","bundle10", "testClass10", groupName, submissionId,tags);
         setServlet("/"+groupName, groupName, this.runs);
 		MockRunsServlet servlet = getServlet();
 		HttpServletRequest req = getRequest();
@@ -294,16 +299,17 @@ public class TestGroupRunsRoute extends RunsServletTest{
         // Given...
 		String groupName = "8149dc91-dabc-461a-b9e8-6f11a4455f59";
         String submissionId = "submission1";
-        addRun("name1", "type1", "requestor1", "test1", "BUILDING","bundle1", "testClass1", groupName, submissionId);
-        addRun("name2", "type2", "requestor2", "test2", "BUILDING","bundle2", "testClass2", groupName, submissionId);
-        addRun("name3", "type3", "requestor3", "test3", "FINISHED","bundle3", "testClass3", groupName, submissionId);
-        addRun("name4", "type4", "requestor4", "test4", "UP","bundle4", "testClass4", groupName, submissionId);
-        addRun("name5", "type6", "requestor5", "test5", "DISCARDED","bundle5", "testClass6", groupName, submissionId);
-        addRun("name6", "type6", "requestor6", "test6", "BUILDING","bundle6", "testClass6", groupName, submissionId);
-        addRun("name7", "type7", "requestor7", "test7", "BUILDING","bundle7", "testClass7", groupName, submissionId);
-        addRun("name8", "type8", "requestor8", "test8", "BUILDING","bundle8", "testClass8", groupName, submissionId);
-        addRun("name9", "type9", "requestor9", "test9", "BUILDING","bundle9", "testClass9", groupName, submissionId);
-        addRun("name10", "type10", "requestor10", "test10", "BUILDING","bundle10", "testClass10", groupName, submissionId);
+        Set<String> tags = new HashSet<>();
+        addRun("name1", "type1", "requestor1", "test1", "BUILDING","bundle1", "testClass1", groupName, submissionId,tags);
+        addRun("name2", "type2", "requestor2", "test2", "BUILDING","bundle2", "testClass2", groupName, submissionId,tags);
+        addRun("name3", "type3", "requestor3", "test3", "FINISHED","bundle3", "testClass3", groupName, submissionId,tags);
+        addRun("name4", "type4", "requestor4", "test4", "UP","bundle4", "testClass4", groupName, submissionId,tags);
+        addRun("name5", "type6", "requestor5", "test5", "DISCARDED","bundle5", "testClass6", groupName, submissionId,tags);
+        addRun("name6", "type6", "requestor6", "test6", "BUILDING","bundle6", "testClass6", groupName, submissionId,tags);
+        addRun("name7", "type7", "requestor7", "test7", "BUILDING","bundle7", "testClass7", groupName, submissionId,tags);
+        addRun("name8", "type8", "requestor8", "test8", "BUILDING","bundle8", "testClass8", groupName, submissionId,tags);
+        addRun("name9", "type9", "requestor9", "test9", "BUILDING","bundle9", "testClass9", groupName, submissionId,tags);
+        addRun("name10", "type10", "requestor10", "test10", "BUILDING","bundle10", "testClass10", groupName, submissionId,tags);
         setServlet("/"+groupName, groupName, this.runs);
 		MockRunsServlet servlet = getServlet();
 		HttpServletRequest req = getRequest();
@@ -490,8 +496,9 @@ public class TestGroupRunsRoute extends RunsServletTest{
         "\"sharedEnvironmentRunTime\": \"envRunTime\"," +
         "\"overrides\": {}," +
         "\"trace\": true }";
+        Set<String> tags = new HashSet<>();
         addRun("runnamename", "requestorType", JWT_USERNAME, "name", "submitted",
-               "Class", "java", groupName, submissionId);
+               "Class", "java", groupName, submissionId,tags);
 
         setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
@@ -516,7 +523,8 @@ public class TestGroupRunsRoute extends RunsServletTest{
 		String groupName = "valid";
         String[] classes = new String[]{"Class/name"};
         String submissionId = "submission1";
-        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, null, submissionId);
+        Set<String> tags = new HashSet<>();
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, null, submissionId,tags);
 
         setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
@@ -540,7 +548,8 @@ public class TestGroupRunsRoute extends RunsServletTest{
 		String groupName = "valid";
         String[] classes = new String[]{"Class/name"};
         String submissionId = "submission1";
-        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, null, groupName, null, submissionId);
+        Set<String> tags = new HashSet<>();
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, null, groupName, null, submissionId,tags);
 
         setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
@@ -566,7 +575,8 @@ public class TestGroupRunsRoute extends RunsServletTest{
 		String groupName = "valid";
         String[] classes = new String[]{"Class1/name", "Class2/name"};
         String submissionId = "submission1";
-        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, null, submissionId);
+        Set<String> tags = new HashSet<>();
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, null, submissionId,tags);
 
         setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
@@ -590,7 +600,8 @@ public class TestGroupRunsRoute extends RunsServletTest{
 		String groupName = "8149dc91-dabc-461a-b9e8-6f11a4455f59";
         String[] classes = new String[]{"Class1/name", "Class2/name"};
         String submissionId = "submission1";
-        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, null, submissionId);
+        Set<String> tags = new HashSet<>();
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, null, submissionId, tags);
 
         setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
@@ -628,8 +639,9 @@ public class TestGroupRunsRoute extends RunsServletTest{
         "\"overrides\": {}," +
         "\"trace\": true }";
 
+        Set<String> tags = new HashSet<>();
         addRun("runnamename", "requestorType", JWT_USERNAME, "name", "submitted",
-               "Class", "java", groupName, submissionId);
+               "Class", "java", groupName, submissionId,tags);
 
         setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
@@ -654,7 +666,8 @@ public class TestGroupRunsRoute extends RunsServletTest{
 		String groupName = "valid";
         String[] classes = new String[]{"Class/name"};
         String submissionId = "submission1";
-        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, "testRequestor", submissionId);
+        Set<String> tags = new HashSet<>();
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, "testRequestor", submissionId, tags);
 
         setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
@@ -678,7 +691,8 @@ public class TestGroupRunsRoute extends RunsServletTest{
 		String groupName = "valid";
         String submissionId = "submission1";
         String[] classes = new String[]{"Class1/name", "Class2/name"};
-        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, "testRequestor", submissionId);
+        Set<String> tags = new HashSet<>();
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, "testRequestor", submissionId,tags);
 
         setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();
@@ -702,7 +716,8 @@ public class TestGroupRunsRoute extends RunsServletTest{
 		String groupName = "8149dc91-dabc-461a-b9e8-6f11a4455f59";
         String[] classes = new String[]{"Class1/name", "Class2/name"};
         String submissionId = "submission1";
-        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, "testRequestor", submissionId);
+        Set<String> tags = new HashSet<>();
+        String payload = generatePayload(classes, "requestorType", JWT_USERNAME, "this.test.stream", groupName, "testRequestor", submissionId,tags);
 
         setServlet("/"+groupName, groupName, payload, "POST");
 		MockRunsServlet servlet = getServlet();

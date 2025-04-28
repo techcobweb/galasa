@@ -11,7 +11,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
+import java.time.Instant;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import dev.galasa.api.run.Run;
 import dev.galasa.framework.spi.DynamicStatusStoreException;
@@ -21,8 +29,6 @@ import dev.galasa.framework.spi.RunRasAction;
 import dev.galasa.framework.spi.utils.GalasaGson;
 
 public class RunImpl implements IRun {
-
-    private final GalasaGson gson = new GalasaGson();
 
     private final String  name;
     private final Instant heartbeat;
@@ -48,6 +54,10 @@ public class RunImpl implements IRun {
     private final String  rasRunId;
     private final String  interruptReason;
     private List<RunRasAction> rasActions = new ArrayList<>();
+    private final Set<String> tags;
+
+    private static final Log logger = LogFactory.getLog(RunImpl.class);
+    private static final GalasaGson gson = new GalasaGson();
 
     public RunImpl(String name, IDynamicStatusStoreService dss) throws DynamicStatusStoreException {
         this.name = name;
@@ -79,6 +89,7 @@ public class RunImpl implements IRun {
         trace = Boolean.parseBoolean(runProperties.get(prefix + "trace"));
         sharedEnvironment = Boolean.parseBoolean(runProperties.get(prefix + "shared.environment"));
         gherkin = runProperties.get(prefix + "gherkin");
+        tags = getTagsFromDss(runProperties, prefix);
 
         String encodedRasActions = runProperties.get(prefix + "rasActions");
         if (encodedRasActions != null) {
@@ -123,6 +134,29 @@ public class RunImpl implements IRun {
             this.bundleName = null;
             this.testName = null;
         }
+
+        logger.info("RunImpl created: "+this.toString());
+    }
+
+    private Set<String> getTagsFromDss(Map<String, String> runProperties, String prefix) {
+        Set<String> tags = new HashSet<String>();
+        try {
+            String tagsAsString = runProperties.get(prefix + "tags");
+            if (tagsAsString!= null && !tagsAsString.trim().isEmpty()) {
+                HashSet<?> tagSetOfObj = gson.fromJson(tagsAsString, HashSet.class);
+                for( Object entry : tagSetOfObj) {
+                    if( entry instanceof String) {
+                        tags.add((String)entry);
+                    }
+                }
+            }
+        } catch( Exception ex) {
+            logger.error("Failed to de-serialise tags from dss. ",ex);
+            // We don't want to fail the entire run because of this, so 
+            // we will forget any tags which may have been in the dss test structure.
+        }
+        logger.info("test tags retrieved from dss: "+tags.toString());
+        return tags;
     }
 
     private List<RunRasAction> getRasActionsFromEncodedString(String encodedRasActions) {
@@ -193,6 +227,11 @@ public class RunImpl implements IRun {
     }
 
     @Override
+    public Set<String> getTags() {
+        return this.tags;
+    }
+
+    @Override
     public Instant getQueued() {
         return this.queued;
     }
@@ -225,7 +264,7 @@ public class RunImpl implements IRun {
     @Override
     public Run getSerializedRun() {
         return new Run(name, heartbeat, type, group, test, bundleName, testName, status, result, queued,
-                finished, waitUntil, requestor, stream, repo, obr, local, trace, rasRunId, submissionId);
+                finished, waitUntil, requestor, stream, repo, obr, local, trace, rasRunId, submissionId, tags);
     }
 
     @Override
@@ -256,4 +295,79 @@ public class RunImpl implements IRun {
     public List<RunRasAction> getRasActions() {
         return this.rasActions;
     }
+    public String toString() {
+        ByteArrayOutputStream buffArray = new ByteArrayOutputStream();
+        PrintWriter buff = new PrintWriter(buffArray);
+
+        buff.append("Run:");
+
+        if (this.name==null) {
+            buff.append(" name: null");
+        } else {
+            buff.append(" name: "+this.name);
+        }
+
+        if (this.heartbeat == null) {
+            buff.append(" heartbeat: null");
+        } else {
+            buff.append(" heartbeat: "+heartbeat.toString());
+        }
+
+        buff.append(" type: "+type);
+        buff.append(" group: "+group);
+        buff.append(" submissionId: "+submissionId);
+        buff.append(" test: "+test);
+        buff.append(" bundleName: "+bundleName);
+
+
+        buff.append(" testName: "+testName);
+        buff.append(" gherkin: "+gherkin);
+        buff.append(" status: "+status);
+        buff.append(" result: "+result);
+
+
+        if (this.queued == null) {
+            buff.append(" queued: null");
+        } else {
+            buff.append(" queued: "+queued.toString());
+        }
+
+        if (this.finished == null) {
+            buff.append(" finished: null");
+        } else {
+            buff.append(" finished: "+finished.toString());
+        }
+
+        if (this.waitUntil == null) {
+            buff.append(" waitUntil: null");
+        } else {
+            buff.append(" waitUntil: "+waitUntil.toString());
+        }
+
+        buff.append(" requestor: "+requestor);
+        buff.append(" stream: "+stream);
+        buff.append(" repo: "+repo);
+        buff.append(" obr: "+obr);
+        buff.append(" local: "+Boolean.toString(local));
+        buff.append(" trace: "+Boolean.toString(trace));
+        buff.append(" sharedEnvironment: "+Boolean.toString(sharedEnvironment));
+        buff.append(" rasRunId: "+rasRunId);
+        buff.append(" bundleName: "+bundleName);
+        
+        buff.append(" tags: [");
+        boolean isFirst = true;
+        for( String tag : tags ) {
+            if (isFirst) {
+                isFirst = false ;
+            } else {
+                buff.append(",");
+            }
+            buff.append(tag);
+        }
+        buff.append("]");
+
+        buff.flush();
+        return buffArray.toString();
+    }
+
 }

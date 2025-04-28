@@ -118,6 +118,7 @@ func getTestStructureData(run galasaapi.Run, apiServerUrl string) runsformatter.
 	newFormattableTest.Bundle = run.TestStructure.GetBundle()
 	newFormattableTest.Methods = run.TestStructure.GetMethods()
 	newFormattableTest.Group = run.TestStructure.GetGroup()
+	newFormattableTest.Tags = run.TestStructure.GetTags()
 
 	return newFormattableTest
 }

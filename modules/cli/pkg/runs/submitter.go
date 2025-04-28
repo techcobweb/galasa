@@ -176,7 +176,7 @@ func (submitter *Submitter) executeSubmitRuns(
 		for len(submittedRuns) < throttle && len(readyRuns) > 0 {
 
 			readyRuns, err = submitter.submitRun(params.GroupName, readyRuns, submittedRuns,
-				lostRuns, &runOverrides, params.Trace, currentUser, params.RequestType)
+				lostRuns, &runOverrides, params.Trace, currentUser, params.RequestType, params.Tags)
 
 			if err != nil {
 				// Ignore the error and continue to process the list of available runs.
@@ -314,6 +314,7 @@ func (submitter *Submitter) submitRun(
 	trace bool,
 	requestor string,
 	requestType string,
+	tags []string,
 ) ([]TestRun, error) {
 
 	var err error
@@ -333,7 +334,7 @@ func (submitter *Submitter) submitRun(
 		var resultGroup *galasaapi.TestRuns
 		log.Printf("submitRun - %s, %s", className, requestType)
 		resultGroup, err = submitter.launcher.SubmitTestRun(groupName, className, requestType, requestor,
-			nextRun.Stream, nextRun.Obr, trace, nextRun.GherkinUrl, nextRun.GherkinFeature, submitOverrides)
+			nextRun.Stream, nextRun.Obr, trace, nextRun.GherkinUrl, nextRun.GherkinFeature, submitOverrides, tags)
 		if err != nil {
 			log.Printf("Failed to submit test %v/%v - %v\n", nextRun.Bundle, nextRun.Class, err)
 			lostRuns[className] = &nextRun
@@ -699,6 +700,10 @@ func (submitter *Submitter) validateAndCorrectParams(
 	}
 
 	submitter.tildaExpandAllPaths(params)
+
+	if err == nil {
+		params.Tags, err = utils.CombineAllCommaSeparatedLists(params.Tags)
+	}
 
 	return err
 }

@@ -76,6 +76,7 @@ func (launcher *RemoteLauncher) SubmitTestRun(
 	GherkinURL string,
 	GherkinFeature string,
 	overrides map[string]interface{},
+	tags []string,
 ) (*galasaapi.TestRuns, error) {
 
 	classNames := make([]string, 1)
@@ -88,6 +89,7 @@ func (launcher *RemoteLauncher) SubmitTestRun(
 	testRunRequest.SetTestStream(stream)
 	testRunRequest.SetTrace(isTraceEnabled)
 	testRunRequest.SetOverrides(overrides)
+	testRunRequest.SetTags(tags)
 
 	log.Printf("RemoteLauncher.SubmitTestRuns : using requestor %s\n", requestor)
 

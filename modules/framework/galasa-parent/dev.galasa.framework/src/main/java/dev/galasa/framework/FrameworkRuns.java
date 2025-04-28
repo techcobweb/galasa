@@ -186,7 +186,7 @@ public class FrameworkRuns implements IFrameworkRuns {
     @NotNull
     public @NotNull IRun submitRun(String runType, String requestor, String bundleName,
             @NotNull String testName, String groupName, String mavenRepository, String obr, String stream,
-            boolean local, boolean trace, Properties overrides, SharedEnvironmentPhase sharedEnvironmentPhase, String sharedEnvironmentRunName,
+            boolean local, boolean trace, Set<String> tags, Properties overrides, SharedEnvironmentPhase sharedEnvironmentPhase, String sharedEnvironmentRunName,
             String language, String submissionId) throws FrameworkException {
         SubmitRunRequest runRequest = new SubmitRunRequest(
             runType,
@@ -200,6 +200,7 @@ public class FrameworkRuns implements IFrameworkRuns {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -224,6 +225,7 @@ public class FrameworkRuns implements IFrameworkRuns {
         Properties overrides = runRequest.getOverrides();
         boolean local = runRequest.isLocalRun();
         boolean trace = runRequest.isTraceEnabled();
+        Set<String> tags = runRequest.getTags();
 
         String runPropertyPrefix = RUN_PREFIX + runName;
 
@@ -254,6 +256,12 @@ public class FrameworkRuns implements IFrameworkRuns {
         }
 
         otherRunProperties.put(runPropertyPrefix + ".submissionId", submissionId);
+
+        if (tags != null) {
+            String tagsAsString = gson.toJson(tags);
+            otherRunProperties.put(runPropertyPrefix + ".tags",tagsAsString);
+        }
+
         otherRunProperties.put(runPropertyPrefix + ".requestor", requestor);
 
         if (sharedEnvironmentPhase != null) {
