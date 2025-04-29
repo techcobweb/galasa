@@ -43,3 +43,5 @@ pkg/galasaapi/
 
 # Don't check-in certificates
 *.der
+
+temp/

@@ -8,6 +8,7 @@ package dev.galasa.api.runs;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 public class ScheduleRequest implements Serializable {
     private static final long       serialVersionUID = 1L;
@@ -22,6 +23,7 @@ public class ScheduleRequest implements Serializable {
     private String                  sharedEnvironmentPhase;
     private String                  sharedEnvironmentRunName;
     private Properties              overrides;
+    private Set<String>             tags;
 
     public static long getSerialversionuid() {
         return serialVersionUID;
@@ -110,5 +112,12 @@ public class ScheduleRequest implements Serializable {
     }
     
     
+    public void setTags(Set<String> newTags) {
+        this.tags = newTags;
+    }
+
+    public Set<String> getTags() {
+        return this.tags;
+    }
 
 }

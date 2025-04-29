@@ -77,6 +77,7 @@ func (launcher *MockLauncher) SubmitTestRun(
 	GherkinURL string,
 	GherkinFeature string,
 	overrides map[string]interface{},
+	tags []string,
 ) (*galasaapi.TestRuns, error) {
 
 	launchRecord := LaunchParameters{

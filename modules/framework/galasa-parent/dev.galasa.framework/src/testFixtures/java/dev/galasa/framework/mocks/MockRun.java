@@ -7,6 +7,8 @@ package dev.galasa.framework.mocks;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import dev.galasa.api.run.Run;
@@ -31,6 +33,7 @@ public class MockRun implements IRun {
     private String result;
     private String runId;
     private List<RunRasAction> rasActions;
+    private Set<String> tags = new HashSet<String>();
 
     public MockRun(
         String testBundleName, 
@@ -43,14 +46,15 @@ public class MockRun implements IRun {
             testClassName, testRunName , 
             testStream, testStreamOBR, 
             testStreamRepoUrl, requestorName, 
-            isRunLocal ,null, null, UUID.randomUUID().toString());
+            isRunLocal ,null, null, UUID.randomUUID().toString(), new HashSet<String>());
     }
     public MockRun(
         String testBundleName, 
         String testClassName, String testRunName , 
         String testStream, String testStreamOBR, 
         String testStreamRepoUrl, String requestorName, 
-        boolean isRunLocal , String gherkinUrl, String group, String submissionId
+        boolean isRunLocal , 
+        String gherkinUrl, String group, String submissionId, Set<String>tags
     ) {
         this.testBundleName = testBundleName;
         this.testClassName = testClassName ;
@@ -62,6 +66,7 @@ public class MockRun implements IRun {
         this.isRunLocal = isRunLocal;
         this.gherkinUrl = gherkinUrl;
         this.submissionId = submissionId;
+        this.tags = tags;
     }
 
     // Shared environment not used very often so not adding
@@ -187,6 +192,10 @@ public class MockRun implements IRun {
     public void setRasActions(List<RunRasAction> rasActions) {
         this.rasActions = rasActions;
     }
+    
+    public Set<String> getTags() {
+        return this.tags;
+    }
 
     // ------------- un-implemented methods follow ----------------
 
@@ -219,4 +228,5 @@ public class MockRun implements IRun {
     public Run getSerializedRun() {
         throw new UnsupportedOperationException("Unimplemented method 'getSerializedRun'");
     }
+
 }

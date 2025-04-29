@@ -107,6 +107,7 @@ func TestDetailsFormatterReturnsExpectedFormat(t *testing.T) {
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-123/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -146,6 +147,7 @@ func TestDetailsFormatterWithMultipleRunsReturnsSeparatedWithDashes(t *testing.T
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-123/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -164,6 +166,7 @@ func TestDetailsFormatterWithMultipleRunsReturnsSeparatedWithDashes(t *testing.T
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-456/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -182,6 +185,7 @@ func TestDetailsFormatterWithMultipleRunsReturnsSeparatedWithDashes(t *testing.T
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-789/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -219,6 +223,7 @@ func TestDetailsNoRunEndtimeReturnsBlankEndtimeFieldAndNoDuration(t *testing.T) 
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-123/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -256,6 +261,7 @@ func TestMethodTableRendersOkIfNoEndtime(t *testing.T) {
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-123/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC) duration(ms)\n" +
@@ -301,6 +307,7 @@ func TestDetailsFormatterMultipleRunsDifferentResultsProducesExpectedTotalsCount
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-123/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -319,6 +326,7 @@ func TestDetailsFormatterMultipleRunsDifferentResultsProducesExpectedTotalsCount
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-456/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -337,6 +345,7 @@ func TestDetailsFormatterMultipleRunsDifferentResultsProducesExpectedTotalsCount
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-789/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -355,6 +364,7 @@ func TestDetailsFormatterMultipleRunsDifferentResultsProducesExpectedTotalsCount
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-12345/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -373,6 +383,7 @@ func TestDetailsFormatterMultipleRunsDifferentResultsProducesExpectedTotalsCount
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-67890/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -391,6 +402,7 @@ func TestDetailsFormatterMultipleRunsDifferentResultsProducesExpectedTotalsCount
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-98765/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -409,6 +421,7 @@ func TestDetailsFormatterMultipleRunsDifferentResultsProducesExpectedTotalsCount
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-543210/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -427,6 +440,7 @@ func TestDetailsFormatterMultipleRunsDifferentResultsProducesExpectedTotalsCount
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-222/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -445,6 +459,7 @@ func TestDetailsFormatterMultipleRunsDifferentResultsProducesExpectedTotalsCount
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-333/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -490,6 +505,7 @@ func TestDetailsFormatterMultipleRunsDoesNotDisplayLostRunsAndProducesExpectedTo
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-456/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -508,6 +524,7 @@ func TestDetailsFormatterMultipleRunsDoesNotDisplayLostRunsAndProducesExpectedTo
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-12345/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -526,6 +543,7 @@ func TestDetailsFormatterMultipleRunsDoesNotDisplayLostRunsAndProducesExpectedTo
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-98765/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -544,6 +562,7 @@ func TestDetailsFormatterMultipleRunsDoesNotDisplayLostRunsAndProducesExpectedTo
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-543210/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -562,6 +581,7 @@ func TestDetailsFormatterMultipleRunsDoesNotDisplayLostRunsAndProducesExpectedTo
 			"requestor           : galasa\n" +
 			"bundle              : dev.galasa\n" +
 			"group               : none\n" +
+			"tags                : \n" +
 			"run-log             : https://127.0.0.1/ras/runs/cbd-333/runlog\n" +
 			"\n" +
 			"method          type status   result start-time(UTC)     end-time(UTC)       duration(ms)\n" +

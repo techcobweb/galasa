@@ -7,6 +7,7 @@ package dev.galasa.api.ras;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 
 public class RasTestStructure {
@@ -24,10 +25,11 @@ public class RasTestStructure {
    private Instant startTime;
    private Instant endTime;
    private List<RasTestMethod> methods;
+   private Set<String> tags;
    
    public RasTestStructure(String runName, String bundle, String testName, String testShortName, String requestor,
          String status, String result, Instant queued, Instant startTime, Instant endTime, List<RasTestMethod> methods,
-         String group, String submissionId
+         String group, String submissionId, Set<String> tags
    ) {
       this.runName = runName;
       this.bundle = bundle;
@@ -42,6 +44,7 @@ public class RasTestStructure {
       this.methods = methods;
       this.group = group;
       this.submissionId = submissionId;
+      this.tags = tags;
    }
 
    public String getRunName() {
@@ -148,5 +151,12 @@ public class RasTestStructure {
       this.methods = methods;
    }
    
+   public Set<String> getTags() {
+      return this.tags;
+   }
+
+   public void setTags(Set<String> newTags) {
+      this.tags = newTags;
+   }
    
 }

@@ -7,6 +7,8 @@ package dev.galasa.framework.api.common.mocks;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import dev.galasa.api.run.Run;
 import dev.galasa.framework.spi.IRun;
@@ -31,7 +33,7 @@ public class MockIRun implements IRun{
     private String repo;
     private String obr;
     private String result = "Passed";
-
+    private Set<String> tags ;
     
     public MockIRun(
         String runName,
@@ -42,7 +44,8 @@ public class MockIRun implements IRun{
         String bundle,
         String testClass,
         String groupName,
-        String submissionId
+        String submissionId,
+        Set<String> tags
     ) {
         this.runName = runName;
         this.runType = runType;
@@ -53,6 +56,10 @@ public class MockIRun implements IRun{
         this.testClass = testClass;
         this.groupName = groupName;
         this.submissionId = submissionId;
+        this.tags = new HashSet<String>();
+        if( tags != null) {
+            this.tags.addAll(tags);
+        }
     }
 
     @Override
@@ -143,7 +150,7 @@ public class MockIRun implements IRun{
     @Override
     public Run getSerializedRun() {
         return new Run(runName, heartbeat, runType, groupName, testClass, bundle, test, runStatus, result, queued,
-                finished, waitUntil, requestor, stream, repo, obr, false, false, "cdb-"+runName, submissionId);
+                finished, waitUntil, requestor, stream, repo, obr, false, false, "cdb-"+runName, submissionId, tags);
     }
 
     @Override
@@ -180,4 +187,10 @@ public class MockIRun implements IRun{
     public List<RunRasAction> getRasActions() {
         throw new UnsupportedOperationException("Unimplemented method 'getRasActions'");
     }
+    public Set<String> getTags() {
+        Set<String> tagsToReturn = new HashSet<String>();
+        tagsToReturn.addAll(this.tags);
+        return tagsToReturn;
+    }
+    
 }

@@ -196,6 +196,7 @@ func (launcher *JvmLauncher) SubmitTestRun(
 	gherkinURL string,
 	GherkinFeature string,
 	overrides map[string]interface{},
+	tags []string,
 ) (*galasaapi.TestRuns, error) {
 
 	if gherkinURL != "" {

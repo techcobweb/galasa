@@ -166,17 +166,17 @@ func (cmd *RunsSubmitLocalCommand) executeSubmitLocal(
 	err = utils.CaptureLog(fileSystem, commsFlagSetValues.logFileName)
 	if err == nil {
 		commsFlagSetValues.isCapturingLogs = true
-	
+
 		log.Println("Galasa CLI - Submit tests (Local)")
-	
+
 		// Get the ability to query environment variables.
 		env := factory.GetEnvironment()
-	
+
 		// Work out where galasa home is, only once.
 		var galasaHome spi.GalasaHome
 		galasaHome, err = utils.NewGalasaHome(fileSystem, env, commsFlagSetValues.CmdParamGalasaHomePath)
 		if err == nil {
-	
+
 			var commsClient api.APICommsClient
 			commsClient, err = api.NewAPICommsClient(
 				commsFlagSetValues.bootstrap,
@@ -185,25 +185,25 @@ func (cmd *RunsSubmitLocalCommand) executeSubmitLocal(
 				factory,
 				galasaHome,
 			)
-	
+
 			if err == nil {
-	
+
 				timeService := utils.NewRealTimeService()
 				timedSleeper := utils.NewRealTimedSleeper()
-	
+
 				// the submit is targetting a local JVM
 				embeddedFileSystem := embedded.GetReadOnlyFileSystem()
-	
+
 				// Something which can kick off new operating system processes
 				processFactory := launcher.NewRealProcessFactory()
-	
+
 				// Validate the test selection parameters.
 				validator := runs.NewObrBasedValidator()
 				err = validator.Validate(cmd.values.submitLocalSelectionFlags)
 				if err == nil {
-	
+
 					bootstrapData := commsClient.GetBootstrapData()
-	
+
 					// A launcher is needed to launch anythihng
 					var launcherInstance launcher.Launcher
 					launcherInstance, err = launcher.NewJVMLauncher(
@@ -211,13 +211,13 @@ func (cmd *RunsSubmitLocalCommand) executeSubmitLocal(
 						bootstrapData.Properties, embeddedFileSystem,
 						cmd.values.runsSubmitLocalCmdParams,
 						processFactory, galasaHome, timedSleeper)
-	
+
 					if err == nil {
 						var console = factory.GetStdOutConsole()
-	
+
 						renderer := images.NewImageRenderer(embeddedFileSystem)
 						expander := images.NewImageExpander(fileSystem, renderer, true)
-	
+
 						// Do the launching of the tests.
 						submitter := runs.NewSubmitter(
 							galasaHome,
@@ -229,12 +229,12 @@ func (cmd *RunsSubmitLocalCommand) executeSubmitLocal(
 							console,
 							expander,
 						)
-	
+
 						err = submitter.ExecuteSubmitRuns(
 							runsSubmitCmdValues,
 							cmd.values.submitLocalSelectionFlags,
 						)
-	
+
 						if err == nil {
 							reportOnExpandedImages(expander)
 						}

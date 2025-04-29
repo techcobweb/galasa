@@ -28,7 +28,7 @@ func (*RawFormatter) IsNeedingMethodDetails() bool {
 	return false
 }
 
-func (*RawFormatter) FormatRuns(runs []FormattableTest) (string, error) {
+func (formatter *RawFormatter) FormatRuns(runs []FormattableTest) (string, error) {
 	var result string = ""
 	var err error
 	buff := strings.Builder{}
@@ -45,19 +45,33 @@ func (*RawFormatter) FormatRuns(runs []FormattableTest) (string, error) {
 
 		runLog := run.ApiServerUrl + RAS_RUNS_URL + run.RunId + "/runlog"
 
-		buff.WriteString(run.Name + "|" +
-			run.Status + "|" +
-			run.Result + "|" +
-			run.QueuedTimeUTC + "|" +
-			startTimeStringRaw + "|" +
-			endTimeStringRaw + "|" +
-			duration + "|" +
-			run.TestName + "|" +
-			run.Requestor + "|" +
-			run.Bundle + "|" +
-			run.Group + "|" +
-			runLog,
-		)
+		tags := strings.Join(run.Tags[:], ",")
+
+		buff.WriteString(run.Name)
+		buff.WriteString("|")
+		buff.WriteString(run.Status)
+		buff.WriteString("|")
+		buff.WriteString(run.Result)
+		buff.WriteString("|")
+		buff.WriteString(run.QueuedTimeUTC)
+		buff.WriteString("|")
+		buff.WriteString(startTimeStringRaw)
+		buff.WriteString("|")
+		buff.WriteString(endTimeStringRaw)
+		buff.WriteString("|")
+		buff.WriteString(duration)
+		buff.WriteString("|")
+		buff.WriteString(run.TestName)
+		buff.WriteString("|")
+		buff.WriteString(run.Requestor)
+		buff.WriteString("|")
+		buff.WriteString(run.Bundle)
+		buff.WriteString("|")
+		buff.WriteString(run.Group)
+		buff.WriteString("|")
+		buff.WriteString(runLog)
+		buff.WriteString("|")
+		buff.WriteString(tags)
 
 		buff.WriteString("\n")
 
