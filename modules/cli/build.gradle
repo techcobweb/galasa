@@ -20,9 +20,9 @@ def galasaVersion = '0.41.0'
 repositories {
     gradlePluginPortal()
     mavenLocal()
-    maven {
-        url "https://development.galasa.dev/main/maven-repo/obr/"
-    }
+    // maven {
+    //     url "https://development.galasa.dev/main/maven-repo/obr/"
+    // }
     mavenCentral()
 }
 apply plugin: 'java'
