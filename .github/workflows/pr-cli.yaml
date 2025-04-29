@@ -81,32 +81,32 @@ jobs:
       # For any modules that weren't changed in this PR,
       # download artifacts from the last successful workflow.
 
-      - name: Download platform from last successful workflow
-        if: ${{ steps.download-platform.outcome == 'failure' }}
-        uses: actions/download-artifact@v4
-        with:
-          name: platform
-          path: modules/artifacts
-          github-token: ${{ github.token }}
-          run-id: ${{ inputs.artifact-id }}
+      # - name: Download platform from last successful workflow
+      #   if: ${{ steps.download-platform.outcome == 'failure' }}
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: platform
+      #     path: modules/artifacts
+      #     github-token: ${{ github.token }}
+      #     run-id: ${{ inputs.artifact-id }}
 
-      - name: Download framework artifacts from last successful workflow
-        if: ${{ steps.download-framework.outcome == 'failure' }}
-        uses: actions/download-artifact@v4
-        with:
-            name: framework
-            path: modules/artifacts
-            github-token: ${{ github.token }}
-            run-id: ${{ inputs.artifact-id }}
+      # - name: Download framework artifacts from last successful workflow
+      #   if: ${{ steps.download-framework.outcome == 'failure' }}
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #       name: framework
+      #       path: modules/artifacts
+      #       github-token: ${{ github.token }}
+      #       run-id: ${{ inputs.artifact-id }}
 
-      - name: Download obr artifacts from last successful workflow
-        if: ${{ steps.download-obr.outcome == 'failure' }}
-        uses: actions/download-artifact@v4
-        with:
-            name: obr
-            path: modules/artifacts
-            github-token: ${{ github.token }}
-            run-id: ${{ inputs.artifact-id }}
+      # - name: Download obr artifacts from last successful workflow
+      #   if: ${{ steps.download-obr.outcome == 'failure' }}
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #       name: obr
+      #       path: modules/artifacts
+      #       github-token: ${{ github.token }}
+      #       run-id: ${{ inputs.artifact-id }}
 
       # Pull down dependencies with Gradle and put them in the right places.
       - name: Gather dependencies using Gradle
