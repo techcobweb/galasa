@@ -128,6 +128,41 @@ func TestRunConvertsTags(t *testing.T) {
 	assert.Equal(t, 0, len(output[1].Tags))
 }
 
+func TestRunConvertsTagsOutOfOrderGetSorted(t *testing.T) {
+	//Given
+	tags := make([]string, 2)
+	tags[0] = "tag2"
+	tags[1] = "tag1"
+
+	methods := make([]galasaapi.TestMethod, 0)
+
+	runs := make([]galasaapi.Run, 0)
+	//runName, testName, requestor, status, result, queued, methods
+	run1 := createRunForConverter("LongRunName", "TestName", "requestor", "LongStatus", "Passed", "2023-05-04T10:45:29.545323Z", methods)
+
+	// run1 has tags
+	run1.TestStructure.Tags = tags
+
+	run2 := createRunForConverter("U456", "MyTestName", "myRequestorString", "Status", "Failed", "2023-05-04T10:55:29.545323Z", methods)
+	// run2 does not have any tags
+
+	runs = append(runs, run1, run2)
+	apiServerUrl := ""
+
+	//When
+	var output []runsformatter.FormattableTest
+	output = FormattableTestFromGalasaApi(runs, apiServerUrl)
+
+	assert.NotNil(t, output[0])
+	// Check that the tag1 comes first, as they should be sorted in the galasactl output.
+	assert.Contains(t, output[0].Tags, "tag1")
+	assert.Contains(t, output[0].Tags, "tag2")
+	assert.Equal(t, 2, len(output[0].Tags))
+
+	assert.NotNil(t, output[1])
+	assert.Equal(t, 0, len(output[1].Tags))
+}
+
 func TestGalasaapiRunHasRecordsReturnsSameAmountOfRecordsWithMethods(t *testing.T) {
 	//Given
 	methods := make([]galasaapi.TestMethod, 0)

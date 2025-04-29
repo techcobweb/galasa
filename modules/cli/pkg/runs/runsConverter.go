@@ -118,7 +118,11 @@ func getTestStructureData(run galasaapi.Run, apiServerUrl string) runsformatter.
 	newFormattableTest.Bundle = run.TestStructure.GetBundle()
 	newFormattableTest.Methods = run.TestStructure.GetMethods()
 	newFormattableTest.Group = run.TestStructure.GetGroup()
+
+	// Get the tags, and sort them alphabetically. Order shouldn't matter, but the output will be more
+	// consistent across runs this way.
 	newFormattableTest.Tags = run.TestStructure.GetTags()
+	sort.Strings(newFormattableTest.Tags)
 
 	return newFormattableTest
 }
