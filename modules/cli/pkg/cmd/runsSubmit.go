@@ -94,7 +94,7 @@ func (cmd *RunsSubmitCommand) createRunsSubmitCobraCmd(factory spi.Factory,
 
 	runsSubmitCmd.PersistentFlags().StringSliceVar(&cmd.values.Tags, "tags", []string{},
 		"tagging metadata to be associated with the submitted runs. "+
-			"This can be specified as a comma-separated list of tag strings, or by repeating the --tag parameter, or both.",
+			"This can be specified as a comma-separated list of tag strings, or by repeating the --tags parameter, or both.",
 	)
 
 	runsSubmitCmd.PersistentFlags().StringVar(&cmd.values.ThrottleFileName, "throttlefile", "",

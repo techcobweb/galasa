@@ -145,6 +145,8 @@ public class RunImpl implements IRun {
             if (tagsAsString!= null && !tagsAsString.trim().isEmpty()) {
                 HashSet<?> tagSetOfObj = gson.fromJson(tagsAsString, HashSet.class);
                 for( Object entry : tagSetOfObj) {
+                    // Tags are always going to be strings, so we can safely cast as a string,
+                    // but do an instanceof check to keep the compiler happy.
                     if( entry instanceof String) {
                         tags.add((String)entry);
                     }
