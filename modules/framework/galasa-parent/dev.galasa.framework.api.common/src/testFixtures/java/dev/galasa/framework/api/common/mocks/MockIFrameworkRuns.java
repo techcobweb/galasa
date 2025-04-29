@@ -15,6 +15,7 @@ import dev.galasa.framework.spi.DynamicStatusStoreException;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFrameworkRuns;
 import dev.galasa.framework.spi.IRun;
+import dev.galasa.framework.spi.RunRasAction;
 
 public class MockIFrameworkRuns implements IFrameworkRuns{
     protected String groupName;
@@ -93,12 +94,17 @@ public class MockIFrameworkRuns implements IFrameworkRuns{
     }
 
     @Override
-    public boolean markRunCancelled(String runName) throws DynamicStatusStoreException {
+    public boolean markRunInterrupted(String runName, String interruptReason) throws DynamicStatusStoreException {
         return true;
     }
 
     @Override
     public void markRunFinished(String runName, String result) throws DynamicStatusStoreException {
         throw new UnsupportedOperationException("Unimplemented method 'setRunStatus'");
+    }
+
+    @Override
+    public void addRunRasAction(IRun run, RunRasAction rasActionToAdd) throws DynamicStatusStoreException {
+        throw new UnsupportedOperationException("Unimplemented method 'addRunRasAction'");
     }
 }

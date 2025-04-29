@@ -59,6 +59,8 @@ public class BaseTestRunner {
 
     private ITestRunnerEventsProducer eventsProducer ;
 
+    protected RunRasActionProcessor rasActionProcessor;
+
 
     protected Properties overrideProperties;
 
@@ -76,6 +78,7 @@ public class BaseTestRunner {
         this.overrideProperties = dataProvider.getOverrideProperties();
 
         this.eventsProducer = dataProvider.getEventsProducer();
+        this.rasActionProcessor = new RunRasActionProcessor(this.ras);
 
         checkRunIsSet(this.run);
 
@@ -390,5 +393,3 @@ public class BaseTestRunner {
         return continueOnTestFailure ;
     }
 }
-
-

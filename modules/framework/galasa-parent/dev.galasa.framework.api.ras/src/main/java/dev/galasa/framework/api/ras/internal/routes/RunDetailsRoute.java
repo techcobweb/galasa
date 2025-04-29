@@ -30,6 +30,7 @@ import dev.galasa.framework.spi.DynamicStatusStoreException;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.IRunResult;
+import dev.galasa.framework.spi.Result;
 import dev.galasa.framework.spi.ResultArchiveStoreException;
 import dev.galasa.framework.spi.rbac.BuiltInAction;
 import dev.galasa.framework.spi.rbac.RBACException;
@@ -153,14 +154,17 @@ public class RunDetailsRoute extends RunsRoute {
    }
 
    private void resetRun(String runName) throws InternalServletException {
-      boolean isReset = false;
+      boolean isMarkedRequeued = false;
       try {
-      isReset = framework.getFrameworkRuns().reset(runName);
+         // If a run is marked as requeued, the DSS record for the run will be given an interrupt reason.
+         // This call would return false if the run could not be found in the DSS.
+         isMarkedRequeued = framework.getFrameworkRuns().markRunInterrupted(runName, Result.REQUEUED);
       } catch (FrameworkException e){
          ServletError error = new ServletError(GAL5047_UNABLE_TO_RESET_RUN, runName);
          throw new InternalServletException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
       }
-      if (!isReset){
+
+      if (!isMarkedRequeued) {
          ServletError error = new ServletError(GAL5049_UNABLE_TO_RESET_COMPLETED_RUN, runName);
          throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);
       }
@@ -176,7 +180,7 @@ public class RunDetailsRoute extends RunsRoute {
       try {
          // If a run is marked as cancelled, the DSS record for the run will have been updated with an interrupt reason.
          // When a run could not be found in the DSS, the run may have already finished and its DSS record was cleared.
-         isMarkedCancelled = framework.getFrameworkRuns().markRunCancelled(runName);
+         isMarkedCancelled = framework.getFrameworkRuns().markRunInterrupted(runName, Result.CANCELLED);
       } catch (FrameworkException e) {
          ServletError error = new ServletError(GAL5048_UNABLE_TO_CANCEL_RUN, runName);
          throw new InternalServletException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);

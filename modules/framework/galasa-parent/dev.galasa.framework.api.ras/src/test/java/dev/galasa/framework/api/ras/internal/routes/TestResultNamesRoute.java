@@ -83,6 +83,8 @@ public class TestResultNamesRoute extends RasServletTest{
 		resultNames.add("EnvFail");
 		resultNames.add("Ignored");
 		resultNames.add("Cancelled");
+		resultNames.add("Requeued");
+		resultNames.add("Hung");
 		for (IRunResult run : mockInputRunResults){
 				String result  = run.getTestStructure().getResult().toString();
 				if (!resultNames.contains(result)){
