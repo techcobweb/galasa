@@ -20,7 +20,7 @@ There are 2 ways of annotating a test run with tags:
 1. Send a collection of tags to the Galasa Service when the test is launched
 2. Add fixed tags to the test source code using an annotation
 
-We will discuss each of these methods in separate secctions.
+We will discuss each of these methods in separate sections.
 
 ### Inject tags when a test is submitted to the Galasa Service
 When you launch a test using the REST inteface, or with the `galasactl` command-line tool, you can specify a collection of tags using the `--tags` flag.
@@ -35,7 +35,7 @@ So, consider the command-line to launch a single test:
 --tags tag1,tag2,tag3
 ```
 
-Alternatively, one or more tags can be specified using multiple occurrances of the same `--tags` option:
+Alternatively, one or more tags can be specified using multiple occurrences of the same `--tags` option:
 
 ```shell
 >galasactl runs submit \
