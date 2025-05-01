@@ -7,6 +7,7 @@ package dev.galasa.framework.spi;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 import dev.galasa.api.run.Run;
 
@@ -61,4 +62,5 @@ public interface IRun {
     String getRasRunId();
 
     List<RunRasAction> getRasActions();
+    public Set<String> getTags();
 }

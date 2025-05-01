@@ -92,6 +92,11 @@ func (cmd *RunsSubmitCommand) createRunsSubmitCobraCmd(factory spi.Factory,
 	runsSubmitCmd.PersistentFlags().StringVarP(&cmd.values.GroupName, "group", "g", "", "the group name to assign the test runs to, if not provided, a psuedo unique id will be generated")
 	runsSubmitCmd.PersistentFlags().StringVar(&cmd.values.RequestType, "requesttype", "CLI", "the type of request, used to allocate a run name. Defaults to CLI.")
 
+	runsSubmitCmd.PersistentFlags().StringSliceVar(&cmd.values.Tags, "tags", []string{},
+		"tagging metadata to be associated with the submitted runs. "+
+			"This can be specified as a comma-separated list of tag strings, or by repeating the --tags parameter, or both.",
+	)
+
 	runsSubmitCmd.PersistentFlags().StringVar(&cmd.values.ThrottleFileName, "throttlefile", "",
 		"a file where the current throttle is stored. Periodically the throttle value is read from the file used. "+
 			"Someone with edit access to the file can change it which dynamically takes effect. "+

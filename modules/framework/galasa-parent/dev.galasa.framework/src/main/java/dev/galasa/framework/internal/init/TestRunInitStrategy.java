@@ -6,6 +6,7 @@
 package dev.galasa.framework.internal.init;
 
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -28,6 +29,8 @@ public class TestRunInitStrategy implements IFrameworkInitialisationStrategy {
 
     private final static Log logger = LogFactory.getLog(Framework.class);
     private static final GalasaGson gson = new GalasaGson();
+
+    private static final Set<String> NULL_TAGS = null;
 
     @Override
     public void startLoggingCapture(Framework framework) {
@@ -63,7 +66,7 @@ public class TestRunInitStrategy implements IFrameworkInitialisationStrategy {
         return runName;
     }
 
-        /**
+    /**
      * Submit the run and return the run name.
      * 
      * @param runBundleClass
@@ -81,10 +84,10 @@ public class TestRunInitStrategy implements IFrameworkInitialisationStrategy {
                 String split[] = runBundleClass.split("/");
                 String bundle = split[0];
                 String test = split[1];
-                run = frameworkRuns.submitRun("local", null, bundle, test, null, null, null, null, true, false, null, null, null, language, submissionId);
+                run = frameworkRuns.submitRun("local", null, bundle, test, null, null, null, null, true, false, NULL_TAGS, null, null, null, language, submissionId);
                 break;
             case "gherkin":
-                run = frameworkRuns.submitRun("local", null, null, runBundleClass, null, null, null, null, true, false, null, null, null, language, submissionId);
+                run = frameworkRuns.submitRun("local", null, null, runBundleClass, null, null, null, null, true, false, NULL_TAGS, null, null, null, language, submissionId);
                 break;
             default:
                 throw new FrameworkException("Unknown language to create run");

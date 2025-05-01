@@ -8,11 +8,13 @@ package dev.galasa.framework;
 import static org.assertj.core.api.Assertions.*;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.junit.BeforeClass;
@@ -24,6 +26,7 @@ import com.google.gson.JsonObject;
 import dev.galasa.framework.mocks.MockCPSStore;
 import dev.galasa.framework.mocks.MockDSSStore;
 import dev.galasa.framework.mocks.MockFramework;
+import dev.galasa.framework.mocks.MockRun;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IRun;
 import dev.galasa.framework.spi.Result;
@@ -73,6 +76,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
         String override1Key = "override1";
@@ -98,6 +102,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -150,6 +155,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
         String override1Key = "override1";
@@ -175,6 +181,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -229,6 +236,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
         String override1Key = "override1";
@@ -255,6 +263,7 @@ public class FrameworkRunsTest {
                 stream,
                 local,
                 trace,
+                tags,
                 overrides,
                 sharedEnvironmentPhase,
                 sharedEnvironmentRunName,
@@ -289,6 +298,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -309,6 +319,7 @@ public class FrameworkRunsTest {
                 stream,
                 local,
                 trace,
+                tags,
                 overrides,
                 sharedEnvironmentPhase,
                 sharedEnvironmentRunName,
@@ -343,6 +354,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -363,6 +375,7 @@ public class FrameworkRunsTest {
                 stream,
                 local,
                 trace,
+                tags,
                 overrides,
                 sharedEnvironmentPhase,
                 sharedEnvironmentRunName,
@@ -398,6 +411,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -416,6 +430,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -451,6 +466,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -469,6 +485,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -504,6 +521,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -522,6 +540,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -575,6 +594,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -590,6 +610,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -644,6 +665,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -660,6 +682,7 @@ public class FrameworkRunsTest {
                 stream,
                 local,
                 trace,
+                tags,
                 overrides,
                 sharedEnvironmentPhase,
                 sharedEnvironmentRunName,
@@ -701,6 +724,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -716,6 +740,7 @@ public class FrameworkRunsTest {
             stream,
             local,
             trace,
+            tags,
             overrides,
             sharedEnvironmentPhase,
             sharedEnvironmentRunName,
@@ -762,6 +787,7 @@ public class FrameworkRunsTest {
         String stream = "a-test-stream";
         boolean local = true;
         boolean trace = true;
+        Set<String> tags = null ;
 
         Properties overrides = new Properties();
 
@@ -778,6 +804,7 @@ public class FrameworkRunsTest {
                 stream,
                 local,
                 trace,
+                tags,
                 overrides,
                 sharedEnvironmentPhase,
                 sharedEnvironmentRunName,
@@ -807,7 +834,7 @@ public class FrameworkRunsTest {
         mockDss.put("run." + runName + ".rasrunid", rasRunId);
 
         // When...
-        boolean isRunMarkedCancelled = frameworkRuns.markRunCancelled(runName);
+        boolean isRunMarkedCancelled = frameworkRuns.markRunInterrupted(runName, Result.CANCELLED);
 
         // Then...
         assertThat(isRunMarkedCancelled).isTrue();
@@ -835,7 +862,7 @@ public class FrameworkRunsTest {
         String runName = "mytestrun1";
 
         // When...
-        boolean isRunMarkedCancelled = frameworkRuns.markRunCancelled(runName);
+        boolean isRunMarkedCancelled = frameworkRuns.markRunInterrupted(runName, Result.CANCELLED);
 
         // Then...
         assertThat(isRunMarkedCancelled).isFalse();
@@ -867,7 +894,7 @@ public class FrameworkRunsTest {
         mockDss.put("run." + runName + ".rasActions", encodedRasActionStr);
 
         // When...
-        boolean isRunMarkedCancelled = frameworkRuns.markRunCancelled(runName);
+        boolean isRunMarkedCancelled = frameworkRuns.markRunInterrupted(runName, Result.CANCELLED);
 
         // Then...
         assertThat(isRunMarkedCancelled).isTrue();
@@ -901,12 +928,192 @@ public class FrameworkRunsTest {
         mockDss.put("run." + runName + ".rasActions", encodedRasActionStr);
 
         // When...
-        boolean isRunMarkedCancelled = frameworkRuns.markRunCancelled(runName);
+        boolean isRunMarkedCancelled = frameworkRuns.markRunInterrupted(runName, Result.CANCELLED);
 
         // Then...
         assertThat(isRunMarkedCancelled).isTrue();
 
         // We don't want the 'rasActions' property to have changed
         assertThat(mockDss.get("run." + runName + ".rasActions")).isEqualTo(encodedRasActionStr);
+    }
+
+    @Test
+    public void testAddRasActionAddsRasActionToDss() throws Exception {
+        // Given...
+        MockDSSStore mockDss = new MockDSSStore(new HashMap<>());
+        MockCPSStore mockCps = new MockCPSStore(new HashMap<>());
+        MockFramework mockFramework = new MockFramework(mockCps, mockDss);
+
+        FrameworkRuns frameworkRuns = new FrameworkRuns(mockFramework);
+
+        String runName = "mytestrun1";
+        
+        MockRun mockRun = new MockRun(null, null, runName, null, null, null, null, false);
+        
+        String rasRunId = "my-run-document-id";
+        RunRasAction rasAction = new RunRasAction(rasRunId, TestRunLifecycleStatus.FINISHED.toString(), Result.CANCELLED);
+        
+        List<RunRasAction> rasActions = new ArrayList<>();
+        rasActions.add(rasAction);
+        String rasActionJsonStr = gson.toJson(rasActions);
+        String encodedRasActionStr = Base64.getEncoder().encodeToString(rasActionJsonStr.getBytes(StandardCharsets.UTF_8));
+
+        // When...
+        frameworkRuns.addRunRasAction(mockRun, rasAction);
+
+        // Then...
+        assertThat(mockDss.get("run." + runName + ".rasActions")).isEqualTo(encodedRasActionStr);
+    }
+
+    @Test
+    public void testmarkRunInterruptedSetsInterruptReasonAndRasActionOk() throws Exception {
+        // Given...
+        MockDSSStore mockDss = new MockDSSStore(new HashMap<>());
+        MockCPSStore mockCps = new MockCPSStore(new HashMap<>());
+        MockFramework mockFramework = new MockFramework(mockCps, mockDss);
+
+        FrameworkRuns frameworkRuns = new FrameworkRuns(mockFramework);
+
+        String runName = "mytestrun1";
+        String rasRunId = "my-run-document-id";
+
+        // Put a run-related property into the DSS to show that the run with the given name exists in the DSS
+        mockDss.put("run." + runName + ".rasrunid", rasRunId);
+
+        // When...
+        boolean isRunMarkedRequeued = frameworkRuns.markRunInterrupted(runName, Result.REQUEUED);
+
+        // Then...
+        assertThat(isRunMarkedRequeued).isTrue();
+        assertThat(mockDss.get("run." + runName + ".interruptReason")).isEqualTo(Result.REQUEUED);
+
+        // We expect the 'rasActions' property to be populated with a base64-encoded JSON structure
+        List<RunRasAction> expectedRasActions = new ArrayList<>();
+        RunRasAction rasAction = new RunRasAction(rasRunId, TestRunLifecycleStatus.FINISHED.toString(), Result.REQUEUED);
+        expectedRasActions.add(rasAction);
+        String expectedJsonStr = gson.toJson(expectedRasActions);
+        String expectedEncodedStr = Base64.getEncoder().encodeToString(expectedJsonStr.getBytes(StandardCharsets.UTF_8));
+
+        assertThat(mockDss.get("run." + runName + ".rasActions")).isEqualTo(expectedEncodedStr);
+    }
+
+    @Test
+    public void testRequeueRunOnAlreadyMarkedRunDoesNotUpdateDssAgain() throws Exception {
+        // Given...
+        MockDSSStore mockDss = new MockDSSStore(new HashMap<>());
+        MockCPSStore mockCps = new MockCPSStore(new HashMap<>());
+        MockFramework mockFramework = new MockFramework(mockCps, mockDss);
+
+        FrameworkRuns frameworkRuns = new FrameworkRuns(mockFramework);
+
+        String runName = "mytestrun1";
+        String rasRunId = "my-run-document-id";
+
+        List<RunRasAction> existingRasActions = new ArrayList<>();
+        RunRasAction rasAction = new RunRasAction(rasRunId, TestRunLifecycleStatus.FINISHED.toString(), Result.REQUEUED);
+        existingRasActions.add(rasAction);
+
+        String rasActionJsonStr = gson.toJson(existingRasActions);
+        String encodedRasActionStr = Base64.getEncoder().encodeToString(rasActionJsonStr.getBytes(StandardCharsets.UTF_8));
+
+        // Mark the run as requeued already
+        mockDss.put("run." + runName + ".rasrunid", rasRunId);
+        mockDss.put("run." + runName + ".interruptReason", Result.REQUEUED);
+        mockDss.put("run." + runName + ".rasActions", encodedRasActionStr);
+
+        // When...
+        boolean isRunMarkedRequeued = frameworkRuns.markRunInterrupted(runName, Result.REQUEUED);
+
+        // Then...
+        assertThat(isRunMarkedRequeued).isTrue();
+
+        // We don't want the 'rasActions' property to have changed
+        assertThat(mockDss.get("run." + runName + ".rasActions")).isEqualTo(encodedRasActionStr);
+    }
+
+    @Test
+    public void testRequeueRunOnNonExistantRunDoesNotUpdateDss() throws Exception {
+        // Given...
+        MockDSSStore mockDss = new MockDSSStore(new HashMap<>());
+        MockCPSStore mockCps = new MockCPSStore(new HashMap<>());
+        MockFramework mockFramework = new MockFramework(mockCps, mockDss);
+
+        FrameworkRuns frameworkRuns = new FrameworkRuns(mockFramework);
+
+        // Don't set any DSS properties for the run
+        String runName = "mytestrun1";
+
+        // When...
+        boolean isRunMarkedRequeued = frameworkRuns.markRunInterrupted(runName, Result.REQUEUED);
+
+        // Then...
+        assertThat(isRunMarkedRequeued).isFalse();
+    }
+
+    @Test
+    public void testResetRunOnLocalRunDoesNotUpdateDss() throws Exception {
+        // Given...
+        MockDSSStore mockDss = new MockDSSStore(new HashMap<>());
+        MockCPSStore mockCps = new MockCPSStore(new HashMap<>());
+        MockFramework mockFramework = new MockFramework(mockCps, mockDss);
+
+        FrameworkRuns frameworkRuns = new FrameworkRuns(mockFramework);
+
+        String runName = "mytestrun1";
+
+        // Mark the run as local
+        mockDss.put("run." + runName + ".local", "true");
+
+        // When...
+        boolean isRunReset = frameworkRuns.reset(runName);
+
+        // Then...
+        assertThat(isRunReset).isFalse();
+    }
+
+    @Test
+    public void testResetRunOnNonExistantRunDoesNotUpdateDss() throws Exception {
+        // Given...
+        MockDSSStore mockDss = new MockDSSStore(new HashMap<>());
+        MockCPSStore mockCps = new MockCPSStore(new HashMap<>());
+        MockFramework mockFramework = new MockFramework(mockCps, mockDss);
+
+        FrameworkRuns frameworkRuns = new FrameworkRuns(mockFramework);
+
+        // Don't set any DSS properties for the run
+        String runName = "mytestrun1";
+
+
+        // When...
+        boolean isRunReset = frameworkRuns.reset(runName);
+
+        // Then...
+        assertThat(isRunReset).isFalse();
+    }
+
+    @Test
+    public void testResetRunUpdatesStatusAndRemovesInterruptReasonAndHeartbeat() throws Exception {
+        // Given...
+        MockDSSStore mockDss = new MockDSSStore(new HashMap<>());
+        MockCPSStore mockCps = new MockCPSStore(new HashMap<>());
+        MockFramework mockFramework = new MockFramework(mockCps, mockDss);
+
+        FrameworkRuns frameworkRuns = new FrameworkRuns(mockFramework);
+
+        String runName = "mytestrun1";
+        String rasRunId = "my-run-document-id";
+
+        mockDss.put("run." + runName + ".rasrunid", rasRunId);
+        mockDss.put("run." + runName + ".interruptReason", Result.REQUEUED);
+        mockDss.put("run." + runName + ".heartbeat", Instant.now().toString());
+
+        // When...
+        boolean isRunReset = frameworkRuns.reset(runName);
+
+        // Then...
+        assertThat(isRunReset).isTrue();
+        assertThat(mockDss.get("run." + runName + ".interruptReason")).isNull();
+        assertThat(mockDss.get("run." + runName + ".heartbeat")).isNull();
+        assertThat(mockDss.get("run." + runName + ".status")).isEqualTo(TestRunLifecycleStatus.QUEUED.toString());
     }
 }

@@ -231,6 +231,8 @@ func TestCanLaunchLocalJvmTest(t *testing.T) {
 	isTraceEnabled := true
 	var overrides map[string]interface{} = make(map[string]interface{})
 
+	var tags []string
+
 	// When...
 	testRuns, err := launcher.SubmitTestRun(
 		"myGroup",
@@ -243,6 +245,7 @@ func TestCanLaunchLocalJvmTest(t *testing.T) {
 		"", // No Gherkin URL supplied
 		"", // No Gherkin Feature supplied
 		overrides,
+		tags,
 	)
 	if err != nil {
 		assert.Fail(t, "Launcher should have launched command OK")
@@ -290,6 +293,8 @@ func TestCanGetRunGroupStatus(t *testing.T) {
 	isTraceEnabled := true
 	var overrides map[string]interface{} = make(map[string]interface{})
 
+	var tags []string
+
 	launcher.SubmitTestRun(
 		"myGroup",
 		"galasa.dev.example.banking.account/galasa.dev.example.banking.account.TestAccount",
@@ -301,6 +306,7 @@ func TestCanGetRunGroupStatus(t *testing.T) {
 		"", // No Gherkin URL supplied
 		"", // No Gherkin Feature supplied
 		overrides,
+		tags,
 	)
 
 	// Wait for the child process to complete...
@@ -435,6 +441,8 @@ func TestBadlyFormedObrFromProfileInfoCausesError(t *testing.T) {
 	isTraceEnabled := true
 	var overrides map[string]interface{} = make(map[string]interface{})
 
+	var tags []string
+
 	// When...
 	var err error
 	_, err = launcher.SubmitTestRun(
@@ -448,6 +456,7 @@ func TestBadlyFormedObrFromProfileInfoCausesError(t *testing.T) {
 		"", // No Gherkin URL supplied
 		"", // No Gherkin Feature supplied
 		overrides,
+		tags,
 	)
 
 	assert.NotNil(t, err)
@@ -479,6 +488,8 @@ func TestNoObrsFromParameterOrProfileCausesError(t *testing.T) {
 	// Empty list of obrs from the command-line.
 	jvmLaunchParams.Obrs = make([]string, 0)
 
+	var tags []string
+
 	// When...
 	var err error
 	_, err = launcher.SubmitTestRun(
@@ -492,6 +503,7 @@ func TestNoObrsFromParameterOrProfileCausesError(t *testing.T) {
 		"", // No Gherkin URL supplied
 		"", // No Gherkin Feature supplied
 		overrides,
+		tags,
 	)
 
 	assert.NotNil(t, err)
@@ -1397,6 +1409,8 @@ func TestCanLaunchLocalJvmGherkinTest(t *testing.T) {
 	isTraceEnabled := true
 	var overrides map[string]interface{} = make(map[string]interface{})
 
+	var tags []string
+
 	// When...
 	testRuns, err := launcher.SubmitTestRun(
 		"myGroup",
@@ -1409,6 +1423,7 @@ func TestCanLaunchLocalJvmGherkinTest(t *testing.T) {
 		"file:///dev.galasa.simbank.tests/src/main/java/dev/galasa/simbank/tests/GherkinLog.feature",
 		"GherkinLog",
 		overrides,
+		tags,
 	)
 	if err != nil {
 		assert.Fail(t, "Launcher should have launched command OK")
@@ -1443,6 +1458,7 @@ func TestBadGherkinURLSuffixReturnsError(t *testing.T) {
 
 	isTraceEnabled := true
 	var overrides map[string]interface{} = make(map[string]interface{})
+	var tags []string
 
 	// When...
 	_, err = launcher.SubmitTestRun(
@@ -1456,6 +1472,7 @@ func TestBadGherkinURLSuffixReturnsError(t *testing.T) {
 		"file:///dev.galasa.simbank.tests/src/main/java/dev/galasa/simbank/tests/GherkinLog.future",
 		"GherkinLog",
 		overrides,
+		tags,
 	)
 
 	assert.NotNil(t, err)
@@ -1486,7 +1503,7 @@ func TestBadGherkinURLPrefixReutrnsError(t *testing.T) {
 
 	isTraceEnabled := true
 	var overrides map[string]interface{} = make(map[string]interface{})
-
+	var tags []string
 	// When...
 	_, err = launcher.SubmitTestRun(
 		"myGroup",
@@ -1499,6 +1516,7 @@ func TestBadGherkinURLPrefixReutrnsError(t *testing.T) {
 		"https://dev.galasa.simbank.tests/src/main/java/dev/galasa/simbank/tests/GherkinLog.feature",
 		"GherkinLog",
 		overrides,
+		tags,
 	)
 
 	assert.NotNil(t, err)
@@ -1677,7 +1695,7 @@ func TestGetRunsByIdReturnsOk(t *testing.T) {
 
 	isTraceEnabled := true
 	var overrides map[string]interface{} = make(map[string]interface{})
-
+	var tags []string
 	launcher.SubmitTestRun(
 		"myGroup",
 		"galasa.dev.examples.banking.account/galasa.dev.examples.banking.account.TestAccount",
@@ -1689,6 +1707,7 @@ func TestGetRunsByIdReturnsOk(t *testing.T) {
 		"", // No Gherkin URL supplied
 		"", // No Gherkin Feature supplied
 		overrides,
+		tags,
 	)
 
 	// Wait for the child process to complete...

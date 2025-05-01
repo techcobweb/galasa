@@ -59,10 +59,12 @@ public class BaseTestRunner {
 
     private ITestRunnerEventsProducer eventsProducer ;
 
+    protected RunRasActionProcessor rasActionProcessor;
+
 
     protected Properties overrideProperties;
 
-    private static final GalasaGson gson = new GalasaGson();
+    protected static final GalasaGson gson = new GalasaGson();
 
     protected void init(ITestRunnerDataProvider dataProvider) throws TestRunException {
         this.run = dataProvider.getRun() ;
@@ -76,6 +78,7 @@ public class BaseTestRunner {
         this.overrideProperties = dataProvider.getOverrideProperties();
 
         this.eventsProducer = dataProvider.getEventsProducer();
+        this.rasActionProcessor = new RunRasActionProcessor(this.ras);
 
         checkRunIsSet(this.run);
 
@@ -185,6 +188,11 @@ public class BaseTestRunner {
         }
     }
 
+    /**
+     * Create a new test structure, and populate it with as much information as we can from the DSS.
+     * @param run The run structure. It has data loaded already from the DSS
+     * @return A TestStructure which is written into the RAS eventually.
+     */
     protected TestStructure createNewTestStructure(IRun run) {
         TestStructure testStructure = new TestStructure();
 
@@ -200,6 +208,11 @@ public class BaseTestRunner {
         testStructure.setRequestor(requestor);
         testStructure.setGroup(group);
         testStructure.setSubmissionId(submissionId);
+        
+        for( String tag : run.getTags()) {
+            testStructure.addTag(tag);
+        }
+
         return testStructure;
     }
 
@@ -380,5 +393,3 @@ public class BaseTestRunner {
         return continueOnTestFailure ;
     }
 }
-
-

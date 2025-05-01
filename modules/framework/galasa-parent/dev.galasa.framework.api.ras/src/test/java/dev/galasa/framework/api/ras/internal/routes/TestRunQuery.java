@@ -258,6 +258,7 @@ public class TestRunQuery extends RasServletTest {
         jsonResult.addProperty("amountOfRuns", mockInputRunResults.size());
         jsonResult.addProperty("nextCursor", nextCursor);
         jsonResult.add("runs", runsJson);
+
 		return gson.toJson(jsonResult);
 	}
 
@@ -2297,9 +2298,13 @@ public class TestRunQuery extends RasServletTest {
 		servlet.doGet(req,resp);
 
 		// Then...
+		String payloadGotBack = outStream.toString();
+		// System.out.println("Got back: "+payloadGotBack);
 		String expectedJson = generateExpectedJson(mockInputRunResults, nextCursor, pageSize);
+
+		// System.out.println("Expected: "+expectedJson);
 		assertThat(resp.getStatus()).isEqualTo(200);
-		assertThat(outStream.toString()).isEqualTo(expectedJson);
+		assertThat(payloadGotBack).isEqualTo(expectedJson);
 		assertThat(resp.getContentType()).isEqualTo("application/json");
 	}
 

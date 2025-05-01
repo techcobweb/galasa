@@ -44,6 +44,12 @@ public class TestTestRunner {
         String TEST_REQUESTOR_NAME = "daffyduck";
         boolean TEST_IS_LOCAL_RUN_TRUE = true;
         boolean IGNORE_TEST_CLASS_FALSE = false;
+        String TEST_GHERKIN_URL = "http://my.gherkin.url";
+        String TEST_GROUP = "myGroup";
+        String TEST_SUBMISSION_ID = "mySubmissionId";
+        Set<String> testTagsInput = new HashSet<String>();
+        testTagsInput.add("tag1");
+        testTagsInput.add("tag2");
 
         MockFileSystem mockFileSystem = new MockFileSystem();
         Properties overrideProps = new Properties();
@@ -59,7 +65,11 @@ public class TestTestRunner {
             TEST_STREAM_OBR , 
             TEST_STREAM_REPO_URL,
             TEST_REQUESTOR_NAME,
-            TEST_IS_LOCAL_RUN_TRUE
+            TEST_IS_LOCAL_RUN_TRUE,
+            TEST_GHERKIN_URL,
+            TEST_GROUP,
+            TEST_SUBMISSION_ID,
+            testTagsInput
         );
 
 
@@ -167,6 +177,9 @@ public class TestTestRunner {
         // initial setup.
         assertThat(rasHistory.get(0)).extracting("runName","bundle", "testName", "testShortName", "requestor", "status", "result")
             .containsExactly("myTestRun",null,null, null, "daffyduck", null,null);
+
+        // Check that the RAS structure is populated with tags from the outset.
+        assertThat(rasHistory.get(0).getTags()).containsOnly("tag1","tag2");
 
         // status = started
         assertThat(rasHistory.get(1)).extracting("runName","bundle", "testName", "testShortName", "requestor", "status", "result")

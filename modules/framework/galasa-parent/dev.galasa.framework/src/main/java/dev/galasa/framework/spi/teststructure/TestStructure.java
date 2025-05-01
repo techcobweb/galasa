@@ -44,9 +44,15 @@ public class TestStructure {
 
     private List<String>     artifactRecordIds;
 
+    private Set<String>     tags = new HashSet<String>();
+
     public TestStructure() {
     }
 
+    /**
+     * Deep clone the source Test stucture.
+     * @param source
+     */
     public TestStructure( TestStructure source ) {
         if (source!=null) {
             this.runName = source.runName;
@@ -75,7 +81,27 @@ public class TestStructure {
                 this.artifactRecordIds = new ArrayList<String>();
                 this.artifactRecordIds.addAll(source.artifactRecordIds);
             }
+            if (source.tags != null ) {
+                this.tags = new HashSet<String>();
+                this.tags.addAll(source.tags);
+            }
         }
+    }
+
+    /**
+     * @return a deep clone of the tags set associated with this test structure.
+     * If you wish to manipulate the test structure directly, use the {@link #addTag(java.lang.String) Set<String>} and {@link #removeTag(java.lang.String) void} calls.
+     */
+    public Set<String> getTags() {
+        Set<String> tagsToReturn = new HashSet<String>();
+        tagsToReturn.addAll(tags);
+        return tagsToReturn;
+    }
+    public void addTag(String additionalTag) {
+        this.tags.add(additionalTag);
+    }
+    public void removeTag(String tagToRemove) {
+        this.tags.remove(tagToRemove);
     }
 
     public String getSubmissionId() {
@@ -267,6 +293,10 @@ public class TestStructure {
 
         if (this.queued == null) {
             this.queued = this.startTime;
+        }
+
+        if (this.tags == null) {
+            this.tags = new HashSet<String>();
         }
     }
 

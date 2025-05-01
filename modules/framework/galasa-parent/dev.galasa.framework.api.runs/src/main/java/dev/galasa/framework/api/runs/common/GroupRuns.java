@@ -120,6 +120,7 @@ public class GroupRuns extends ProtectedRoute {
                     request.getTestStream(),
                     false,
                     request.isTrace(),
+                    request.getTags(),
                     request.getOverrides(), 
                     senvPhase, 
                     request.getSharedEnvironmentRunName(),

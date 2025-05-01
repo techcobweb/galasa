@@ -259,7 +259,7 @@ func TestRunsGetOfRunNameWhichExistsProducesExpectedSummary(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -272,8 +272,8 @@ func TestRunsGetOfRunNameWhichExistsProducesExpectedSummary(t *testing.T) {
 		textGotBack := mockConsole.ReadText()
 		assert.Contains(t, textGotBack, runName)
 		want :=
-			"submitted-time(UTC) name requestor   status   result test-name                group\n" +
-				"2023-05-10 06:00:13 U456 unitTesting Finished Passed myTestPackage.MyTestName dummyGroup\n" +
+			"submitted-time(UTC) name requestor   status   result test-name                group      tags\n" +
+				"2023-05-10 06:00:13 U456 unitTesting Finished Passed myTestPackage.MyTestName dummyGroup \n" +
 				"\n" +
 				"Total:1 Passed:1\n"
 		assert.Equal(t, want, textGotBack)
@@ -301,7 +301,7 @@ func TestRunsGetOfRunNameWhichDoesNotExistProducesError(t *testing.T) {
 	outputFormat := "summary"
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -336,7 +336,7 @@ func TestRunsGetWhereRunNameExistsTwiceProducesTwoRunResultLines(t *testing.T) {
 	outputFormat := "summary"
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -349,12 +349,12 @@ func TestRunsGetWhereRunNameExistsTwiceProducesTwoRunResultLines(t *testing.T) {
 		textGotBack := mockConsole.ReadText()
 		assert.Contains(t, textGotBack, runName)
 		want :=
-			"submitted-time(UTC) name requestor     status   result           test-name                group\n" +
-				"2023-05-10 06:00:13 U456 unitTesting   Finished Passed           myTestPackage.MyTestName dummyGroup\n" +
-				"2023-05-10 06:00:13 U456 unitTesting22 Finished LongResultString myTestPackage.MyTest2    \n" +
+			"submitted-time(UTC) name requestor     status   result           test-name                group      tags\n" +
+				"2023-05-10 06:00:13 U456 unitTesting   Finished Passed           myTestPackage.MyTestName dummyGroup \n" +
+				"2023-05-10 06:00:13 U456 unitTesting22 Finished LongResultString myTestPackage.MyTest2               \n" +
 				"\n" +
 				"Total:2 Passed:1\n"
-		assert.Equal(t, textGotBack, want)
+		assert.Equal(t, want, textGotBack)
 	}
 }
 
@@ -377,7 +377,7 @@ func TestFailingGetRunsRequestReturnsError(t *testing.T) {
 	outputFormat := "summary"
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -417,7 +417,7 @@ func TestRunsGetOfRunNameWhichExistsProducesExpectedDetails(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -441,6 +441,7 @@ func TestRunsGetOfRunNameWhichExistsProducesExpectedDetails(t *testing.T) {
 				"requestor           : unitTesting\n" +
 				"bundle              : myBundleId\n" +
 				"group               : dummyGroup\n" +
+				"tags                : \n" +
 				"run-log             : " + apiServerUrl + "/ras/runs/xxx876xxx/runlog\n" +
 				"\n" +
 				"method           type status result  start-time(UTC)     end-time(UTC)       duration(ms)\n" +
@@ -483,7 +484,7 @@ func TestAPIInternalErrorIsHandledOk(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -517,7 +518,7 @@ func TestRunsGetOfRunNameWhichExistsProducesExpectedRaw(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -527,7 +528,7 @@ func TestRunsGetOfRunNameWhichExistsProducesExpectedRaw(t *testing.T) {
 	assert.Nil(t, err)
 	textGotBack := mockConsole.ReadText()
 	assert.Contains(t, textGotBack, runName)
-	want := "U456|Finished|Passed|2023-05-10T06:00:13.043037Z|2023-05-10T06:00:36.159003Z|2023-05-10T06:02:53.823338Z|137664|myTestPackage.MyTestName|unitTesting|myBundleId|dummyGroup|" + apiServerUrl + "/ras/runs/xxx876xxx/runlog\n"
+	want := "U456|Finished|Passed|2023-05-10T06:00:13.043037Z|2023-05-10T06:00:36.159003Z|2023-05-10T06:02:53.823338Z|137664|myTestPackage.MyTestName|unitTesting|myBundleId|dummyGroup|" + apiServerUrl + "/ras/runs/xxx876xxx/runlog|\n"
 	assert.Equal(t, textGotBack, want)
 }
 
@@ -653,7 +654,7 @@ func TestRunsGetURLQueryWithFromAndToDate(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -687,7 +688,7 @@ func TestRunsGetURLQueryJustFromAge(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -721,7 +722,7 @@ func TestRunsGetURLQueryWithNoRunNameAndNoFromAgeReturnsError(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -756,7 +757,7 @@ func TestRunsGetURLQueryWithOlderToAgeThanFromAgeReturnsError(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -791,7 +792,7 @@ func TestRunsGetURLQueryWithBadlyFormedFromAndToParameterReturnsError(t *testing
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -981,7 +982,7 @@ func TestRunsGetURLQueryWithRequestorNotSuppliedReturnsOK(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1017,7 +1018,7 @@ func TestRunsGetURLQueryWithRequestorSuppliedReturnsOK(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1053,7 +1054,7 @@ func TestRunsGetURLQueryWithNumericRequestorSuppliedReturnsOK(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1089,7 +1090,7 @@ func TestRunsGetURLQueryWithDashInRequestorSuppliedReturnsOK(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1125,7 +1126,7 @@ func TestRunsGetURLQueryWithAmpersandRequestorSuppliedReturnsOK(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1162,7 +1163,7 @@ func TestRunsGetURLQueryWithSpecialCharactersRequestorSuppliedReturnsOK(t *testi
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1192,7 +1193,7 @@ func TestRunsGetURLQueryWithResultSuppliedReturnsOK(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1224,7 +1225,7 @@ func TestRunsGetURLQueryWithMultipleResultSuppliedReturnsOK(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 
@@ -1257,7 +1258,7 @@ func TestRunsGetURLQueryWithResultNotSuppliedReturnsOK(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1287,7 +1288,7 @@ func TestRunsGetURLQueryWithInvalidResultSuppliedReturnsError(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1319,7 +1320,7 @@ func TestActiveAndResultAreMutuallyExclusiveShouldReturnError(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1350,7 +1351,7 @@ func TestActiveParameterReturnsOk(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1389,7 +1390,7 @@ func TestRunsGetActiveRunsBuildsQueryCorrectly(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1423,7 +1424,7 @@ func TestRunsGetWithNextCursorGetsNextPageOfRuns(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1433,7 +1434,7 @@ func TestRunsGetWithNextCursorGetsNextPageOfRuns(t *testing.T) {
 	runsReturned := mockConsole.ReadText()
 	assert.Contains(t, runsReturned, runName)
 
-	run := "U456|Finished|Passed|2023-05-10T06:00:13.043037Z|2023-05-10T06:00:36.159003Z|2023-05-10T06:02:53.823338Z|137664|myTestPackage.MyTestName|unitTesting|myBundleId|dummyGroup|" + apiServerUrl + "/ras/runs/xxx876xxx/runlog\n"
+	run := "U456|Finished|Passed|2023-05-10T06:00:13.043037Z|2023-05-10T06:00:36.159003Z|2023-05-10T06:02:53.823338Z|137664|myTestPackage.MyTestName|unitTesting|myBundleId|dummyGroup|" + apiServerUrl + "/ras/runs/xxx876xxx/runlog|\n"
 	expectedResults := run + run
 	assert.Equal(t, runsReturned, expectedResults)
 }
@@ -1460,7 +1461,7 @@ func TestRunsGetOfGroupWhichExistsProducesExpectedRaw(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)
@@ -1470,7 +1471,7 @@ func TestRunsGetOfGroupWhichExistsProducesExpectedRaw(t *testing.T) {
 	assert.Nil(t, err)
 	textGotBack := mockConsole.ReadText()
 	assert.Contains(t, textGotBack, runName)
-	want := "U456|Finished|Passed|2023-05-10T06:00:13.043037Z|2023-05-10T06:00:36.159003Z|2023-05-10T06:02:53.823338Z|137664|myTestPackage.MyTestName|unitTesting|myBundleId|dummyGroup|" + apiServerUrl + "/ras/runs/xxx876xxx/runlog\n"
+	want := "U456|Finished|Passed|2023-05-10T06:00:13.043037Z|2023-05-10T06:00:36.159003Z|2023-05-10T06:02:53.823338Z|137664|myTestPackage.MyTestName|unitTesting|myBundleId|dummyGroup|" + apiServerUrl + "/ras/runs/xxx876xxx/runlog|\n"
 	assert.Equal(t, textGotBack, want)
 }
 
@@ -1479,7 +1480,7 @@ func TestRunsGetWithBadGroupNameThrowsError(t *testing.T) {
 	// Given ...
 	pages := make(map[string][]string, 0)
 	pages[""] = []string{}
-	nextPageCursors := []string{ "" }
+	nextPageCursors := []string{""}
 
 	runName := "U457"
 	age := ""
@@ -1498,7 +1499,7 @@ func TestRunsGetWithBadGroupNameThrowsError(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
 	err := GetRuns(runName, age, requestor, result, shouldGetActive, outputFormat, group, mockTimeService, mockConsole, commsClient)

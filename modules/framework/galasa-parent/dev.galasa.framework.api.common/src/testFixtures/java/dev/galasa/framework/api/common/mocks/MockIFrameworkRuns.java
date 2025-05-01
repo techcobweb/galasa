@@ -15,6 +15,7 @@ import dev.galasa.framework.spi.DynamicStatusStoreException;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFrameworkRuns;
 import dev.galasa.framework.spi.IRun;
+import dev.galasa.framework.spi.RunRasAction;
 
 public class MockIFrameworkRuns implements IFrameworkRuns{
     protected String groupName;
@@ -64,13 +65,13 @@ public class MockIFrameworkRuns implements IFrameworkRuns{
 
     @Override
     public @NotNull IRun submitRun(String type, String requestor, String bundleName, String testName, String groupName,
-            String mavenRepository, String obr, String stream, boolean local, boolean trace, Properties overrides,
+            String mavenRepository, String obr, String stream, boolean local, boolean trace, Set<String> tags, Properties overrides,
             SharedEnvironmentPhase sharedEnvironmentPhase, String sharedEnvironmentRunName, String language, String submissionId)
             throws FrameworkException {
             if (stream.equals("null")){
                 throw new FrameworkException(language);
             }
-        return new MockIRun("runname"+testName, type, requestor, testName, sharedEnvironmentRunName, bundleName, language, groupName, this.mockSubmissionId);
+        return new MockIRun("runname"+testName, type, requestor, testName, sharedEnvironmentRunName, bundleName, language, groupName, this.mockSubmissionId, tags);
     }
 
     @Override
@@ -93,12 +94,17 @@ public class MockIFrameworkRuns implements IFrameworkRuns{
     }
 
     @Override
-    public boolean markRunCancelled(String runName) throws DynamicStatusStoreException {
+    public boolean markRunInterrupted(String runName, String interruptReason) throws DynamicStatusStoreException {
         return true;
     }
 
     @Override
     public void markRunFinished(String runName, String result) throws DynamicStatusStoreException {
         throw new UnsupportedOperationException("Unimplemented method 'setRunStatus'");
+    }
+
+    @Override
+    public void addRunRasAction(IRun run, RunRasAction rasActionToAdd) throws DynamicStatusStoreException {
+        throw new UnsupportedOperationException("Unimplemented method 'addRunRasAction'");
     }
 }

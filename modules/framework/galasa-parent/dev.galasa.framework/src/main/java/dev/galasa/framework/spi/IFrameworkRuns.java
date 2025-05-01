@@ -36,7 +36,7 @@ public interface IFrameworkRuns {
 
     @NotNull
     IRun submitRun(String type, String requestor, String bundleName, String testName, String groupName,
-            String mavenRepository, String obr, String stream, boolean local, boolean trace, Properties overrides,
+            String mavenRepository, String obr, String stream, boolean local, boolean trace, Set<String> tags, Properties overrides,
             SharedEnvironmentPhase sharedEnvironmentPhase, String sharedEnvironmentRunName, String language, String submissionId) throws FrameworkException;
 
     boolean delete(String runname) throws DynamicStatusStoreException;
@@ -45,8 +45,9 @@ public interface IFrameworkRuns {
 
     boolean reset(String runname) throws DynamicStatusStoreException;
 
-    boolean markRunCancelled(String runName) throws DynamicStatusStoreException;
+    boolean markRunInterrupted(String runName, String interruptReason) throws DynamicStatusStoreException;
 
     void markRunFinished(String runName, String result) throws DynamicStatusStoreException;
 
+    void addRunRasAction(IRun run, RunRasAction rasActionToAdd) throws DynamicStatusStoreException;
 }

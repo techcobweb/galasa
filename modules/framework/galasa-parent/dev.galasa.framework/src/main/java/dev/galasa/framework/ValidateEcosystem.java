@@ -7,6 +7,7 @@ package dev.galasa.framework;
 
 import java.time.Instant;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -24,6 +25,8 @@ public class ValidateEcosystem {
     private Log             logger  =  LogFactory.getLog(this.getClass());
     
     private IFramework framework;
+
+    private static final Set<String> NULL_TAGS = null ;
     
     /**
      * <p>Validate the Ecosystem will work for remote access</p>
@@ -68,7 +71,8 @@ public class ValidateEcosystem {
                     null, 
                     null, 
                     false, 
-                    true, 
+                    true,
+                    NULL_TAGS, 
                     null, 
                     null, 
                     null, 

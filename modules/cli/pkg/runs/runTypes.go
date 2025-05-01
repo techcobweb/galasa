@@ -22,6 +22,7 @@ type TestRun struct {
 	Group          string            `yaml:"group" json:"group"`
 	SubmissionId   string            `yaml:"submissionId" json:"submissionId"`
 	RunId          string            `yaml:"runId,omitempty" json:"runId,omitempty"`
+	Tags           []string          `yaml:"tags,omitempty" json:"tags,omitempty"`
 }
 
 type TestMethod struct {

@@ -6,6 +6,8 @@
 package dev.galasa.api.run;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Run {
     private String  name;
@@ -28,12 +30,13 @@ public class Run {
     private boolean isLocal;
     private boolean isTraceEnabled;
     private String  rasRunId;
+    private Set<String> tags;
 
 
     public Run(String name, Instant heartbeat, String type, String group, String test, String bundleName,
             String testName, String status, String result, Instant queued, Instant finished, Instant waitUntil,
             String requestor, String stream, String repo, String obr, boolean isLocal, boolean isTraceEnabled,
-            String rasRunId, String submissionId
+            String rasRunId, String submissionId, Set<String> tags
     ) {
         this.name = name;
         this.heartbeat = heartbeat;
@@ -55,6 +58,11 @@ public class Run {
         this.isLocal = isLocal;
         this.isTraceEnabled = isTraceEnabled;
         this.rasRunId = rasRunId;
+
+        this.tags = new HashSet<String>();
+        if( tags != null) {
+            this.tags.addAll(tags);
+        }
     }
 
     public String getName() {
@@ -163,6 +171,10 @@ public class Run {
     
     public String getRasRunId() {
         return rasRunId;
+    }
+
+    public Set<String> getTags() {
+        return this.tags; 
     }
 
 }
