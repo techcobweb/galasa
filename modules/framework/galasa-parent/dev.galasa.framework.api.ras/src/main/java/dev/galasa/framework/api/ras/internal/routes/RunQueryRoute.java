@@ -18,6 +18,7 @@ import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.api.common.SupportedQueryParameterNames;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.TestRunLifecycleStatus;
+import dev.galasa.framework.api.ras.internal.common.RasDetailsQueryParams;
 import dev.galasa.framework.api.ras.internal.common.RasQueryParameters;
 import dev.galasa.framework.api.ras.internal.common.RunResultUtility;
 import dev.galasa.framework.spi.FrameworkException;
@@ -28,7 +29,6 @@ import dev.galasa.framework.spi.ResultArchiveStoreException;
 import dev.galasa.framework.spi.ras.IRasSearchCriteria;
 import dev.galasa.framework.spi.ras.RasRunResultPage;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaBundle;
-import dev.galasa.framework.spi.ras.RasSearchCriteriaDetail;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaGroup;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaQueuedFrom;
 import dev.galasa.framework.spi.ras.RasSearchCriteriaQueuedTo;
@@ -83,6 +83,7 @@ public class RunQueryRoute extends RunsRoute {
 	public static final String QUERY_PARAMETER_RUNNAME = "runname";
 	public static final String QUERY_PARAMETER_RUNID = "runid";
 	public static final String QUERY_PARAMATER_DETAIL = "detail";
+	public static final String DETAILS_METHOD_QUERY_PARAM_VALUE = "methods";
     public static final SupportedQueryParameterNames SUPPORTED_QUERY_PARAMETER_NAMES = new SupportedQueryParameterNames(
 		QUERY_PARAMETER_SORT, QUERY_PARAMETER_RESULT, QUERY_PARAMETER_STATUS,
 		QUERY_PARAMETER_BUNDLE, QUERY_PARAMATER_DETAIL, QUERY_PARAMETER_REQUESTOR, QUERY_PARAMETER_FROM,
@@ -94,6 +95,7 @@ public class RunQueryRoute extends RunsRoute {
 
 
 	private static final GalasaGson gson = new GalasaGson();
+	private final RasDetailsQueryParams rasDetailsQueryParams;
 
 	public RunQueryRoute(ResponseBuilder responseBuilder, IFramework framework) throws RBACException {
 		/* Regex to match endpoints:
@@ -102,6 +104,7 @@ public class RunQueryRoute extends RunsRoute {
 		*  -> /ras/runs?{querystring}
 		*/
 		super(responseBuilder, path, framework);
+		this.rasDetailsQueryParams = new RasDetailsQueryParams();
 	}
 
 	@Override 
@@ -139,16 +142,10 @@ public class RunQueryRoute extends RunsRoute {
 
         RasRunResultPage runsPage = null;
         String responseJson = null;
-
-		boolean isMethodDetailsRequested = false;
-		String detailParam = queryParams.getDetail();
-		if(detailParam != null && !detailParam.isEmpty() && detailParam.equals("methods")) {
-			isMethodDetailsRequested = true;
-		}
 		
         try {
 			if (runIds != null && runIds.size() > 0) {
-                runs = getRunsByIds(runIds, isMethodDetailsRequested);
+                runs = getRunsByIds(runIds);
             } else {
                 List<IRasSearchCriteria> criteria = getCriteria(queryParams);
 
@@ -170,7 +167,7 @@ public class RunQueryRoute extends RunsRoute {
                 runs = sortResults(runs, queryParams, sortValue);
                 responseJson = buildResponseBody(runs, pageNum, pageSize);
             } else {
-                responseJson = buildResponseBody(runsPage, pageSize, isMethodDetailsRequested);
+                responseJson = buildResponseBody(runsPage, pageSize);
             }
         } catch (ResultArchiveStoreException e) {
             ServletError error = new ServletError(GAL5003_ERROR_RETRIEVING_RUNS);
@@ -196,9 +193,10 @@ public class RunQueryRoute extends RunsRoute {
         return sortField;
     }
 
-    private List<RasRunResult> getRunsByIds(List<String> runIds, boolean isMethodDetailsRequested) throws InternalServletException {
+    private List<RasRunResult> getRunsByIds(List<String> runIds) throws InternalServletException {
         
-		boolean isShort = isTestRunShort(isMethodDetailsRequested);
+		boolean isShort = isTestRunShort(rasDetailsQueryParams.getDetail());
+		// Convert each result to the required format
 		List<RasRunResult> runs = new ArrayList<>();
 
         for (String runId : runIds) {
@@ -279,8 +277,7 @@ public class RunQueryRoute extends RunsRoute {
 			critList.add(submissionIdCriteria);
 		}
 		if (detail != null && !detail.isEmpty()) {
-			RasSearchCriteriaDetail detailCriteria = new RasSearchCriteriaDetail(detail);
-			critList.add(detailCriteria);
+			rasDetailsQueryParams.setDetail(detail);
 		}
 
 		return critList;
@@ -313,12 +310,12 @@ public class RunQueryRoute extends RunsRoute {
         return gson.toJson(runsPage);
 	}
 
-	private String buildResponseBody(RasRunResultPage runsPage, int pageSize, boolean isMethodDetailsRequested) throws ResultArchiveStoreException {
+	private String buildResponseBody(RasRunResultPage runsPage, int pageSize) throws ResultArchiveStoreException {
 
 		//Building the object to be returned by the API and splitting
         JsonObject pageJson = new JsonObject();        
 
-        List<RasRunResult> runs = convertRunsToRunResults(runsPage.getRuns(), isMethodDetailsRequested);
+        List<RasRunResult> runs = convertRunsToRunResults(runsPage.getRuns());
         JsonElement tree = gson.toJsonTree(runs);
         pageJson.addProperty("pageSize", pageSize);
         pageJson.addProperty("amountOfRuns", runs.size());
@@ -346,16 +343,13 @@ public class RunQueryRoute extends RunsRoute {
 
 		IRasSearchCriteria[] criteria = new IRasSearchCriteria[critList.size()];
 
-		critList.toArray(criteria);
-		boolean isMethodDetailsRequested = critList.stream().anyMatch(e -> e instanceof RasSearchCriteriaDetail);
-		
 		// Collect all the runs from all the RAS stores into a single list
 		List<IRunResult> runs = new ArrayList<>();
 		for (IResultArchiveStoreDirectoryService directoryService : getFramework().getResultArchiveStore().getDirectoryServices()) {
 			runs.addAll(directoryService.getRuns(criteria));
 		}
 
-		List<RasRunResult> runResults = convertRunsToRunResults(runs,isMethodDetailsRequested);
+		List<RasRunResult> runResults = convertRunsToRunResults(runs);
 
 		return runResults;
 	}
@@ -392,8 +386,8 @@ public class RunQueryRoute extends RunsRoute {
 		return runs;
 	}
 
-    private List<RasRunResult> convertRunsToRunResults(List<IRunResult> runs,boolean isMethodDetailsRequested) throws ResultArchiveStoreException {
-		boolean isShort = isTestRunShort(isMethodDetailsRequested);
+    private List<RasRunResult> convertRunsToRunResults(List<IRunResult> runs) throws ResultArchiveStoreException {
+		boolean isShort = isTestRunShort(rasDetailsQueryParams.getDetail());
         // Convert each result to the required format
         List<RasRunResult> runResults = new ArrayList<>();
         for (IRunResult run : runs) {
@@ -526,8 +520,14 @@ public class RunQueryRoute extends RunsRoute {
         return runsComparator;
     }
 
-	private boolean isTestRunShort(boolean isMethodDetailsRequested) {
-		return isMethodDetailsRequested ? false : true;
+	private boolean isTestRunShort(String detailParam) {
+		
+		boolean isShort = true;
+		if(detailParam != null && detailParam.equals(DETAILS_METHOD_QUERY_PARAM_VALUE)) {
+			isShort = false;
+		}
+
+		return isShort;
 	}
 
 	Instant getQueriedFromTime(RasQueryParameters params, Instant defaultFromTimestamp) throws InternalServletException {

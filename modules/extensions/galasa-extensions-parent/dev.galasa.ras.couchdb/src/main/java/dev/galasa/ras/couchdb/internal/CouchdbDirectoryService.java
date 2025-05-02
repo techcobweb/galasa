@@ -507,9 +507,6 @@ public class CouchdbDirectoryService implements IResultArchiveStoreDirectoryServ
             } else if (searchCriteria instanceof RasSearchCriteriaStatus) {
                 RasSearchCriteriaStatus sStatus = (RasSearchCriteriaStatus) searchCriteria;
                 inArray(and, "status", sStatus.getStatusesAsStrings());
-            } else if (searchCriteria instanceof RasSearchCriteriaDetail) {
-                RasSearchCriteriaDetail sDetail = (RasSearchCriteriaDetail) searchCriteria;
-                inArray(and, "detail", sDetail.getDetails());
             } else {
                 throw new ResultArchiveStoreException(
                         "Unrecognised search criteria class " + searchCriteria.getClass().getName());
