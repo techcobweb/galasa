@@ -7,22 +7,21 @@ package dev.galasa.framework.api.ras.internal.common;
 
 public class RasDetailsQueryParams {
     
-    private String detail;
+    public static final String DETAILS_METHOD_QUERY_PARAM_VALUE = "methods";
 
     public RasDetailsQueryParams() {
         
     }
 
-    public RasDetailsQueryParams(String detail) {
-        this.detail = detail;
-    }
+    public boolean isMethodDetailsExcluded(String detailParam) {
 
-    public String getDetail() {
-        return detail;
-    }
+        boolean isMethodDetailsExcluded = true;
+        if(detailParam != null && detailParam.equals(DETAILS_METHOD_QUERY_PARAM_VALUE)) {
+            isMethodDetailsExcluded = false;
+        }
 
-    public void setDetail(String detail) {
-        this.detail = detail;
+        return isMethodDetailsExcluded;
+
     }
 
 }
