@@ -95,7 +95,6 @@ public class RunQueryRoute extends RunsRoute {
 
 
 	private static final GalasaGson gson = new GalasaGson();
-	private boolean IS_METHOD_DETAILS_EXCLUDED = true;
 
 	public RunQueryRoute(ResponseBuilder responseBuilder, IFramework framework) throws RBACException {
 		/* Regex to match endpoints:
@@ -116,12 +115,20 @@ public class RunQueryRoute extends RunsRoute {
 		HttpServletRequest request = requestContext.getRequest();
 
 		RasQueryParameters queryParams = new RasQueryParameters(generalQueryParams);
+		boolean isMethodDetailsExcluded = true;
 
-		String outputString = retrieveResults(queryParams);
+		String detail = queryParams.getDetail();
+		if (detail != null && !detail.isEmpty()) {
+			RasDetailsQueryParams rasDetailsQueryParams = new RasDetailsQueryParams();
+			isMethodDetailsExcluded = rasDetailsQueryParams.isMethodDetailsExcluded(detail);
+		}
+
+
+		String outputString = retrieveResults(queryParams, isMethodDetailsExcluded);
 		return getResponseBuilder().buildResponse(request, res, "application/json", outputString, HttpServletResponse.SC_OK);
 	}
 
-	private String retrieveResults(RasQueryParameters queryParams) throws InternalServletException {
+	private String retrieveResults(RasQueryParameters queryParams, boolean isMethodDetailsExcluded) throws InternalServletException {
 
 		int pageNum = queryParams.getPageNumber();
 		int pageSize = queryParams.getPageSize();
@@ -139,18 +146,12 @@ public class RunQueryRoute extends RunsRoute {
         // Default to sorting in descending order based on the "queued time" of runs
         RasSortField sortValue = queryParams.getSortValue("from:desc");
 
-		String detail = queryParams.getDetail();
-		if (detail != null && !detail.isEmpty()) {
-			RasDetailsQueryParams rasDetailsQueryParams = new RasDetailsQueryParams();
-			IS_METHOD_DETAILS_EXCLUDED = rasDetailsQueryParams.isMethodDetailsExcluded(detail);
-		}
-
         RasRunResultPage runsPage = null;
         String responseJson = null;
 		
         try {
 			if (runIds != null && runIds.size() > 0) {
-                runs = getRunsByIds(runIds);
+                runs = getRunsByIds(runIds, isMethodDetailsExcluded);
             } else {
                 List<IRasSearchCriteria> criteria = getCriteria(queryParams);
 
@@ -164,7 +165,7 @@ public class RunQueryRoute extends RunsRoute {
                         runsPage = getRunsPage(pageCursor, pageSize, formatSortField(sortValue), criteria);
                     }
                 } else {
-                    runs = getRuns(criteria);
+                    runs = getRuns(criteria, isMethodDetailsExcluded);
                 }
             }
     
@@ -172,7 +173,7 @@ public class RunQueryRoute extends RunsRoute {
                 runs = sortResults(runs, queryParams, sortValue);
                 responseJson = buildResponseBody(runs, pageNum, pageSize);
             } else {
-                responseJson = buildResponseBody(runsPage, pageSize);
+                responseJson = buildResponseBody(runsPage, pageSize, isMethodDetailsExcluded);
             }
         } catch (ResultArchiveStoreException e) {
             ServletError error = new ServletError(GAL5003_ERROR_RETRIEVING_RUNS);
@@ -198,7 +199,7 @@ public class RunQueryRoute extends RunsRoute {
         return sortField;
     }
 
-    private List<RasRunResult> getRunsByIds(List<String> runIds) throws InternalServletException {
+    private List<RasRunResult> getRunsByIds(List<String> runIds, boolean isMethodDetailsExcluded) throws InternalServletException {
         
 		// Convert each result to the required format
 		List<RasRunResult> runs = new ArrayList<>();
@@ -208,7 +209,7 @@ public class RunQueryRoute extends RunsRoute {
                 IRunResult run = getRunByRunId(runId.trim());
 
                 if (run != null) {
-                    runs.add(RunResultUtility.toRunResult(run, IS_METHOD_DETAILS_EXCLUDED));
+                    runs.add(RunResultUtility.toRunResult(run, isMethodDetailsExcluded));
                 }
             } catch (ResultArchiveStoreException e) {
                 ServletError error = new ServletError(GAL5002_INVALID_RUN_ID,runId);
@@ -310,12 +311,12 @@ public class RunQueryRoute extends RunsRoute {
         return gson.toJson(runsPage);
 	}
 
-	private String buildResponseBody(RasRunResultPage runsPage, int pageSize) throws ResultArchiveStoreException {
+	private String buildResponseBody(RasRunResultPage runsPage, int pageSize, boolean isMethodDetailsExcluded) throws ResultArchiveStoreException {
 
 		//Building the object to be returned by the API and splitting
         JsonObject pageJson = new JsonObject();        
 
-        List<RasRunResult> runs = convertRunsToRunResults(runsPage.getRuns());
+        List<RasRunResult> runs = convertRunsToRunResults(runsPage.getRuns(), isMethodDetailsExcluded);
         JsonElement tree = gson.toJsonTree(runs);
         pageJson.addProperty("pageSize", pageSize);
         pageJson.addProperty("amountOfRuns", runs.size());
@@ -339,7 +340,7 @@ public class RunQueryRoute extends RunsRoute {
 		return obj;
 	}
 
-	private List<RasRunResult> getRuns(List<IRasSearchCriteria> critList) throws ResultArchiveStoreException, InternalServletException {
+	private List<RasRunResult> getRuns(List<IRasSearchCriteria> critList, boolean isMethodDetailsExcluded) throws ResultArchiveStoreException, InternalServletException {
 
 		IRasSearchCriteria[] criteria = new IRasSearchCriteria[critList.size()];
 
@@ -350,7 +351,7 @@ public class RunQueryRoute extends RunsRoute {
 			runs.addAll(directoryService.getRuns(criteria));
 		}
 
-		List<RasRunResult> runResults = convertRunsToRunResults(runs);
+		List<RasRunResult> runResults = convertRunsToRunResults(runs, isMethodDetailsExcluded);
 
 		return runResults;
 	}
@@ -387,12 +388,12 @@ public class RunQueryRoute extends RunsRoute {
 		return runs;
 	}
 
-    private List<RasRunResult> convertRunsToRunResults(List<IRunResult> runs) throws ResultArchiveStoreException {
+    private List<RasRunResult> convertRunsToRunResults(List<IRunResult> runs, boolean isMethodDetailsExcluded) throws ResultArchiveStoreException {
 		
         // Convert each result to the required format
         List<RasRunResult> runResults = new ArrayList<>();
         for (IRunResult run : runs) {
-            runResults.add(RunResultUtility.toRunResult(run, IS_METHOD_DETAILS_EXCLUDED));
+            runResults.add(RunResultUtility.toRunResult(run, isMethodDetailsExcluded));
         }
         return runResults;
     }
