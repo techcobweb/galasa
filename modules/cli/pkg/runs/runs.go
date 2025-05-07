@@ -30,8 +30,9 @@ func getRunIdFromRunName(runName string,
 	fromAgeHours := 0
 	toAgeHours := 0
 	shouldGetActive := true
+	isNeedingMethodDetails := false
 
-	runs, err = GetRunsFromRestApi(runName, requestorParameter, resultParameter, fromAgeHours, toAgeHours, shouldGetActive, timeService, commsClient, group)
+	runs, err = GetRunsFromRestApi(runName, requestorParameter, resultParameter, fromAgeHours, toAgeHours, shouldGetActive, timeService, commsClient, group, isNeedingMethodDetails)
 
 	if err == nil {
 

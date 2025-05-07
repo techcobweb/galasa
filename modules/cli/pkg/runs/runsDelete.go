@@ -45,8 +45,9 @@ func RunsDelete(
 		toAgeHours := 0
 		group := ""
 		shouldGetActive := false
+		isNeedingMethodDetails := false
 		var runs []galasaapi.Run
-		runs, err = GetRunsFromRestApi(runName, requestorParameter, resultParameter, fromAgeHours, toAgeHours, shouldGetActive, timeService, commsClient, group)
+		runs, err = GetRunsFromRestApi(runName, requestorParameter, resultParameter, fromAgeHours, toAgeHours, shouldGetActive, timeService, commsClient, group, isNeedingMethodDetails)
 
 		if err == nil {
 
@@ -104,11 +105,11 @@ func deleteRun(
 
 		apicall := apiClient.ResultArchiveStoreAPIApi.DeleteRasRunById(context, runId).ClientApiVersion(restApiVersion)
 		httpResponse, err = apicall.Execute()
-	
+
 		if httpResponse != nil {
 			defer httpResponse.Body.Close()
 		}
-	
+
 		// 200-299 http status codes manifest in an error.
 		if err != nil {
 			if httpResponse == nil {
@@ -127,7 +128,7 @@ func deleteRun(
 				)
 			}
 		}
-	
+
 		if err == nil {
 			log.Printf("Run with runId '%s' and runName '%s', was deleted OK.\n", runId, run.TestStructure.GetRunName())
 		}

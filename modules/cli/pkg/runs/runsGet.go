@@ -89,27 +89,20 @@ func GetRuns(
 		chosenFormatter, err = validateOutputFormatFlagValue(outputFormatString, validFormatters)
 		if err == nil {
 			var runJson []galasaapi.Run
-			runJson, err = GetRunsFromRestApi(runName, requestorParameter, resultParameter, fromAge, toAge, shouldGetActive, timeService, commsClient, group)
+			isNeedingMethodDetails := chosenFormatter.IsNeedingMethodDetails()
+			runJson, err = GetRunsFromRestApi(runName, requestorParameter, resultParameter, fromAge, toAge, shouldGetActive, timeService, commsClient, group, isNeedingMethodDetails)
 			if err == nil {
-				// Some formatters need extra fields filled-in so they can be displayed.
-				if chosenFormatter.IsNeedingMethodDetails() {
-					log.Println("This type of formatter needs extra detail about each run to display")
-					runJson, err = GetRunDetailsFromRasSearchRuns(runJson, commsClient)
-				}
+				var outputText string
+
+				log.Printf("There are %v results to display in total.\n", len(runJson))
+
+				//convert galsaapi.Runs tests into formattable data
+				apiServerUrl := commsClient.GetBootstrapData().ApiServerURL
+				formattableTest := FormattableTestFromGalasaApi(runJson, apiServerUrl)
+				outputText, err = chosenFormatter.FormatRuns(formattableTest)
 
 				if err == nil {
-					var outputText string
-
-					log.Printf("There are %v results to display in total.\n", len(runJson))
-
-					//convert galsaapi.Runs tests into formattable data
-					apiServerUrl := commsClient.GetBootstrapData().ApiServerURL
-					formattableTest := FormattableTestFromGalasaApi(runJson, apiServerUrl)
-					outputText, err = chosenFormatter.FormatRuns(formattableTest)
-
-					if err == nil {
-						err = writeOutput(outputText, console)
-					}
+					err = writeOutput(outputText, console)
 				}
 			}
 		}
@@ -205,16 +198,16 @@ func getRunByRunIdFromRestApi(
 		var err error
 		var httpResponse *http.Response
 		var context context.Context = nil
-	
+
 		log.Printf("Getting details for run %v\n", runId)
 		details, httpResponse, err = apiClient.ResultArchiveStoreAPIApi.GetRasRunById(context, runId).ClientApiVersion(restApiVersion).Execute()
-	
+
 		var statusCode int
 		if httpResponse != nil {
 			defer httpResponse.Body.Close()
 			statusCode = httpResponse.StatusCode
 		}
-	
+
 		if err != nil {
 			err = galasaErrors.NewGalasaErrorWithHttpStatusCode(statusCode, galasaErrors.GALASA_ERROR_QUERY_RUNS_FAILED, err.Error())
 		} else {
@@ -239,6 +232,7 @@ func GetRunsFromRestApi(
 	timeService spi.TimeService,
 	commsClient api.APICommsClient,
 	group string,
+	isNeedingMethodDetails bool,
 ) ([]galasaapi.Run, error) {
 
 	var err error
@@ -260,6 +254,7 @@ func GetRunsFromRestApi(
 			toAgeMins,
 			shouldGetActive,
 			timeService.Now(),
+			isNeedingMethodDetails,
 		)
 
 		for !gotAllResults && err == nil {

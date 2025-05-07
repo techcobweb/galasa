@@ -1586,6 +1586,14 @@ paths:
           schema:
             type: string
           example: a6847035-7768-4416-91a6-fe05cf10da85
+        - name: detail
+          in: query
+          description: |
+            The detail level requested in the request.
+            "methods" value will result in returning method details in a test run
+          schema:
+            type: string
+          example: methods
         
         # Temporary feature flag to enable cursor-based pagination
         - name: includeCursor
