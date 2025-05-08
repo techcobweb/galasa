@@ -50,7 +50,11 @@ func DownloadArtifacts(
 		fromAgeHours := 0
 		toAgeHours := 0
 		shouldGetActive := false
-		runs, err = GetRunsFromRestApi(runName, requestorParameter, resultParameter, fromAgeHours, toAgeHours, shouldGetActive, timeService, commsClient, group)
+		isNeedingMethodDetails := false
+
+		runsQuery := NewRunsQuery(runName, requestorParameter, resultParameter, group, fromAgeHours, toAgeHours, shouldGetActive, timeService.Now(), isNeedingMethodDetails)
+
+		runs, err = GetRunsFromRestApi(runsQuery, commsClient)
 		if err == nil {
 			if len(runs) > 1 {
 				// get list of runs that are reRuns - get list of runs that are reRuns of each other
@@ -286,18 +290,18 @@ func GetArtifactPathsFromRestApi(runId string, commsClient api.APICommsClient) (
 			var err error
 			var httpResponse *http.Response
 			var artifactsList []galasaapi.ArtifactIndexEntry
-	
+
 			artifactsList, httpResponse, err = apiClient.ResultArchiveStoreAPIApi.
 				GetRasRunArtifactList(context.Background(), runId).
 				ClientApiVersion(restApiVersion).
 				Execute()
-	
+
 			var statusCode int
 			if httpResponse != nil {
 				defer httpResponse.Body.Close()
 				statusCode = httpResponse.StatusCode
 			}
-	
+
 			if err != nil {
 				err = galasaErrors.NewGalasaErrorWithHttpStatusCode(statusCode, galasaErrors.GALASA_ERROR_RETRIEVING_ARTIFACTS_FAILED, err.Error())
 			} else {
@@ -444,12 +448,12 @@ func GetFileFromRestApi(runId string, artifactPath string, commsClient api.APICo
 				GetRasRunArtifactByPath(context.Background(), runId, artifactPath).
 				ClientApiVersion(restApiVersion).
 				Execute()
-	
+
 			var statusCode int
 			if httpResponse != nil {
 				statusCode = httpResponse.StatusCode
 			}
-	
+
 			if err != nil {
 				downloadErr := galasaErrors.NewGalasaErrorWithHttpStatusCode(statusCode, galasaErrors.GALASA_ERROR_DOWNLOADING_ARTIFACT_FAILED, artifactPath, err.Error())
 				err = downloadErr
@@ -462,7 +466,7 @@ func GetFileFromRestApi(runId string, artifactPath string, commsClient api.APICo
 				log.Printf("Failed to download artifact. %s\n", err.Error())
 			} else {
 				log.Printf("Artifact '%s' http response from API server OK\n", artifactPath)
-	
+
 				if fileDownloaded == nil {
 					log.Printf("Artifact '%s' http response returned nil file content.\n", artifactPath)
 					isFileEmpty = true

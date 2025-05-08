@@ -2694,4 +2694,34 @@ public class TestRunQuery extends RasServletTest {
 		assertThat(outStream.toString()).isEqualTo(expectedJson);
 		assertThat(resp.getContentType()).isEqualTo("application/json");
 	}
+
+	@Test
+	public void testQueryWithDetailParametersGetsRunsWithUnrecognizedDetailParamTypeReturnsBadRequest() throws Exception {
+		// Given..
+
+		List<IRunResult> mockInputRunResults = generateTestDataAscendingTime(1,1,1);
+        IRunResult run = mockInputRunResults.get(0);
+
+        // Build query parameters
+        int pageSize = 100;
+		Map<String, String[]> parameterMap = setQueryParameter(null,pageSize,null, run.getTestStructure().getRunName(),null, null, null,null, "some_fake");
+        addQueryParameter(parameterMap, "includeCursor", "true");
+
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest(parameterMap, "/runs");
+		MockRasServletEnvironment mockServletEnvironment = new MockRasServletEnvironment(mockInputRunResults,mockRequest);
+
+		RasServlet servlet = mockServletEnvironment.getServlet();
+		HttpServletRequest req = mockServletEnvironment.getRequest();
+		HttpServletResponse resp = mockServletEnvironment.getResponse();
+		ServletOutputStream outStream = resp.getOutputStream();
+
+		// When...
+		servlet.init();
+		servlet.doGet(req,resp);
+
+		// Then...
+		assertThat(resp.getStatus()).isEqualTo(400);
+		assertThat(outStream.toString()).contains("GAL5428E", "E: Error parsing the query parameters.");
+		assertThat(resp.getContentType()).isEqualTo("application/json");
+	}
 }
