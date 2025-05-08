@@ -11,7 +11,7 @@ public class RasDetailsQueryParams {
     
     public static final String DETAILS_METHOD_QUERY_PARAM_VALUE = "methods";
 
-    SupportedQueryParameterNames SUPPORTED_DETAIL_QUERY_PARAMS = new SupportedQueryParameterNames(DETAILS_METHOD_QUERY_PARAM_VALUE);
+    public static final SupportedQueryParameterNames SUPPORTED_DETAIL_QUERY_PARAMS = new SupportedQueryParameterNames(DETAILS_METHOD_QUERY_PARAM_VALUE);
 
     public RasDetailsQueryParams() {
         

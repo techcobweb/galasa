@@ -539,7 +539,7 @@ public class RunQueryRoute extends RunsRoute {
 			RasDetailsQueryParams rasDetailsQueryParams = new RasDetailsQueryParams();
 
 			if(!rasDetailsQueryParams.isParamSupported(detailParam)){
-				ServletError error = new ServletError(GAL5428_DETAIL_VALUE_NOT_RECOGNIZED, SUPPORTED_QUERY_PARAMETER_NAMES.toString());
+				ServletError error = new ServletError(GAL5428_DETAIL_VALUE_NOT_RECOGNIZED, RasDetailsQueryParams.SUPPORTED_DETAIL_QUERY_PARAMS.toString());
 				throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);
 			}
 
