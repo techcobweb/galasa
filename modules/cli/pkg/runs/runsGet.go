@@ -169,26 +169,6 @@ func validateOutputFormatFlagValue(outputFormatString string, validFormatters ma
 	return chosenFormatter, err
 }
 
-func GetRunDetailsFromRasSearchRuns(runs []galasaapi.Run, commsClient api.APICommsClient) ([]galasaapi.Run, error) {
-	var err error
-	var runsDetails []galasaapi.Run = make([]galasaapi.Run, 0)
-	var details *galasaapi.Run
-
-	var restApiVersion string
-	restApiVersion, err = embedded.GetGalasactlRestApiVersion()
-
-	if err == nil {
-		for _, run := range runs {
-			details, err = getRunByRunIdFromRestApi(run.GetRunId(), commsClient, restApiVersion)
-			if err == nil && details != nil {
-				runsDetails = append(runsDetails, *details)
-			}
-		}
-	}
-
-	return runsDetails, err
-}
-
 func getRunByRunIdFromRestApi(
 	runId string,
 	commsClient api.APICommsClient,

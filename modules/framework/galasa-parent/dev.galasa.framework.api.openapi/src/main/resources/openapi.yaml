@@ -1591,7 +1591,7 @@ paths:
           description: |
             Controls the amount of details extracted from a run's test structure and included in responses.
             Providing "methods" will include the list of methods that were executed as part of a test run.
-            Only "methods" is supported yet.
+            Only "methods" is supported. Query parameter values are case-sensitive, for e.g providing METHODS would result in a Bad Request
           schema:
             type: string
           example: methods
