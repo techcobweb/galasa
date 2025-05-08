@@ -9,6 +9,8 @@ public class RasDetailsQueryParams {
     
     public static final String DETAILS_METHOD_QUERY_PARAM_VALUE = "methods";
 
+    public static final String[] SUPPORTED_DETAIL_QUERY_PARAMS = {DETAILS_METHOD_QUERY_PARAM_VALUE};
+
     public RasDetailsQueryParams() {
         
     }
@@ -21,6 +23,19 @@ public class RasDetailsQueryParams {
         }
 
         return isMethodDetailsExcluded;
+
+    }
+
+    public boolean isParamSupported(String queryParam) {
+
+        boolean isParamSupported = false;
+
+        for(String type: SUPPORTED_DETAIL_QUERY_PARAMS) {
+            if(type.equals(queryParam))
+            isParamSupported = true;
+        }
+
+        return isParamSupported;
 
     }
 

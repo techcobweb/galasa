@@ -103,7 +103,7 @@ func (query *RunsQuery) GetRunsPageFromRestApi(
 		if query.group != "" {
 			apicall = apicall.Group(query.group)
 		}
-		if query.isNeedingMethodDetails == true {
+		if query.isNeedingMethodDetails {
 			apicall = apicall.Detail(METHOD_DETAIL_QUERY_PARAM)
 		}
 		apicall = apicall.Sort("from:desc")

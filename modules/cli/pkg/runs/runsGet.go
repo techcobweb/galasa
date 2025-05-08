@@ -90,7 +90,10 @@ func GetRuns(
 		if err == nil {
 			var runJson []galasaapi.Run
 			isNeedingMethodDetails := chosenFormatter.IsNeedingMethodDetails()
-			runJson, err = GetRunsFromRestApi(runName, requestorParameter, resultParameter, fromAge, toAge, shouldGetActive, timeService, commsClient, group, isNeedingMethodDetails)
+
+			runsQuery := NewRunsQuery(runName, requestorParameter, resultParameter, group, fromAge, toAge, shouldGetActive, timeService.Now(), isNeedingMethodDetails)
+			runJson, err = GetRunsFromRestApi(runsQuery, commsClient)
+
 			if err == nil {
 				var outputText string
 
@@ -223,16 +226,8 @@ func getRunByRunIdFromRestApi(
 // Retrieves test runs from the ecosystem API that match a given runName.
 // Multiple test runs can be returned as the runName is not unique.
 func GetRunsFromRestApi(
-	runName string,
-	requestorParameter string,
-	resultParameter string,
-	fromAgeMins int,
-	toAgeMins int,
-	shouldGetActive bool,
-	timeService spi.TimeService,
+	runsQuery *RunsQuery,
 	commsClient api.APICommsClient,
-	group string,
-	isNeedingMethodDetails bool,
 ) ([]galasaapi.Run, error) {
 
 	var err error
@@ -244,18 +239,6 @@ func GetRunsFromRestApi(
 
 	restApiVersion, err = embedded.GetGalasactlRestApiVersion()
 	if err == nil {
-
-		runsQuery := NewRunsQuery(
-			runName,
-			requestorParameter,
-			resultParameter,
-			group,
-			fromAgeMins,
-			toAgeMins,
-			shouldGetActive,
-			timeService.Now(),
-			isNeedingMethodDetails,
-		)
 
 		for !gotAllResults && err == nil {
 

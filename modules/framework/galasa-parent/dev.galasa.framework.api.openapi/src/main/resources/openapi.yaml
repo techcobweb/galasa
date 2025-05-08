@@ -1589,8 +1589,9 @@ paths:
         - name: detail
           in: query
           description: |
-            The detail level requested in the request.
-            "methods" value will result in returning method details in a test run
+            Controls the amount of details extracted from a run's test structure and included in responses.
+            Providing "methods" will include the list of methods that were executed as part of a test run.
+            Only "methods" is supported yet.
           schema:
             type: string
           example: methods

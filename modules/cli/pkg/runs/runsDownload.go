@@ -51,7 +51,10 @@ func DownloadArtifacts(
 		toAgeHours := 0
 		shouldGetActive := false
 		isNeedingMethodDetails := false
-		runs, err = GetRunsFromRestApi(runName, requestorParameter, resultParameter, fromAgeHours, toAgeHours, shouldGetActive, timeService, commsClient, group, isNeedingMethodDetails)
+
+		runsQuery := NewRunsQuery(runName, requestorParameter, resultParameter, group, fromAgeHours, toAgeHours, shouldGetActive, timeService.Now(), isNeedingMethodDetails)
+
+		runs, err = GetRunsFromRestApi(runsQuery, commsClient)
 		if err == nil {
 			if len(runs) > 1 {
 				// get list of runs that are reRuns - get list of runs that are reRuns of each other
