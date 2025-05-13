@@ -2063,6 +2063,102 @@ paths:
           $ref: "#/components/responses/Forbidden"
         '500':
           $ref: '#/components/responses/InternalServerError'
+  #------------------------------------------
+  #  Update the status of an active test run
+  #  by group id to cancel.
+  #------------------------------------------
+  /ras/groups/{groupid}:
+    put:
+      summary: Update the status of a test run by group id
+      description: |
+        Updates the status of a test run in order to cancel it.
+
+        To cancel the run, put a value such that the status is "finished" and the result is "cancelled".
+
+        To reset the run, put a value such that the status is "queued" and the result is null or ""
+
+        Requests to this endpoint require a valid bearer token in JWT format to be provided
+        in the 'Authorization' header (e.g. 'Authorization: Bearer <bearer-token>').
+      operationId: putRasRunStatusByGroupId
+      tags:
+      - Result Archive Store API
+      parameters:
+        - name: groupid
+          in: path
+          description: Group Id of the runs to be cancelled
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRunStatusRequest'
+      responses:
+        '202':
+          description: Run status updated
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                cancelRun:
+                  value: The request to reset run with group id xxgroupxx has been received.
+                  summary: Cancel run action success
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                invalidStatusUpdateRequest:
+                  value:
+                    error_code: 5045
+                    error_message: "GAL5045E: Error occurred. The field 'status' in the request body is invalid. The 'status' value 'create' supplied is not supported. Supported values are: 'cancel' and 'reset'"
+                  summary: An Error occurred because the status field does not contain an expected action
+                runNameDoesNotMatch:
+                  value:
+                    error_code: 5046
+                    error_message: "GAL5046E: The 'runName' 'badRun' from the request body does not match the  'runName' 'U123'  associated with the runID in the url 'xx12345xx'."
+                  summary: An Error occurred because the runName in the request body does not match the runName derived from runID in the URL
+                resetRunHasAlreadyCompleted:
+                  value:
+                    error_code: 5049
+                    error_message: "GAL5049E: Error occurred when trying to reset the run ''{0}''. The run has already completed."
+                  summary: The run in the request has already completed and can not be reset
+                cancelRunHasAlreadyCompleted:
+                  value:
+                    error_code: 5050
+                    error_message: "GAL5050E: Error occurred when trying to cancel the run 'U123'. The run has already completed."
+                  summary: The run in the request has already completed and can not be cancelled
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '403':
+          $ref: "#/components/responses/Forbidden"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                genericerror:
+                  value:
+                    error_code: 5000
+                    error_message: "GAL5000E: Error occurred when trying to access the endpoint. Report the problem to your Galasa Ecosystem owner."
+                  summary: An Error occurred when trying to access the endpoint
+                unableToReset:
+                  value:
+                   error_code: 5047
+                   error_message: "GAL5047E: Error occurred when trying to reset the run 'U123'. Report the problem to your Galasa Ecosystem owner."
+                  summary: An Error occurred when trying to action the run reset
+                unableToCancel:
+                  value:
+                    error_code: 5048
+                    error_message: "GAL5048E: Error occurred when trying to cancel the run 'U123'. Report the problem to your Galasa Ecosystem owner."
+                  summary: An Error occurred when trying to action the run cancel
 
 ##################################################################################
 # Runs API

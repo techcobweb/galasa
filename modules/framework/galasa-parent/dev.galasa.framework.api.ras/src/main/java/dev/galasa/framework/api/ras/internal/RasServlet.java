@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 
 import dev.galasa.framework.FileSystem;
 import dev.galasa.framework.IFileSystem;
+import dev.galasa.framework.api.ras.internal.routes.GroupDetailsRoute;
 import dev.galasa.framework.api.ras.internal.routes.RequestorRoute;
 import dev.galasa.framework.api.ras.internal.routes.ResultNamesRoute;
 import dev.galasa.framework.api.ras.internal.routes.RunArtifactsDownloadRoute;
@@ -69,6 +70,7 @@ public class RasServlet extends BaseServlet {
 			addRoute(new ResultNamesRoute(getResponseBuilder(), framework));
 			addRoute(new RequestorRoute(getResponseBuilder(), framework));
 			addRoute(new TestClassesRoute(getResponseBuilder(), framework));
+			addRoute(new GroupDetailsRoute(getResponseBuilder(), framework));
 		} catch (RBACException e) {
 			throw new ServletException("Failed to initialise the RAS servlet");
 		}
