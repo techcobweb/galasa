@@ -1,15 +1,14 @@
-package dev.galasa.framework.api.ras.internal.common;
+/*
+ * Copyright contributors to the Galasa project
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package dev.galasa.framework.api.common;
+
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dev.galasa.framework.api.common.InternalServletException;
-import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
 import dev.galasa.framework.spi.Result;
@@ -22,14 +21,6 @@ public class RunStatusUpdate {
 
    public RunStatusUpdate (IFramework framework) {
       this.framework = framework;
-   }
-
-   public RunActionJson getUpdatedRunActionFromRequestBody(HttpServletRequest request) throws IOException {
-      ServletInputStream body = request.getInputStream();
-      String jsonString = new String(body.readAllBytes(), StandardCharsets.UTF_8);
-      body.close();
-      RunActionJson runAction = gson.fromJson(jsonString, RunActionJson.class);
-      return runAction;
    }
 
    public void resetRun(String runName) throws InternalServletException {
@@ -70,5 +61,5 @@ public class RunStatusUpdate {
          throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);
       }
    }
-
-}  
+    
+}

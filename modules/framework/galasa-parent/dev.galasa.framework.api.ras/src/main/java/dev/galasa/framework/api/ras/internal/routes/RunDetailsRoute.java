@@ -8,9 +8,11 @@ package dev.galasa.framework.api.ras.internal.routes;
 import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
@@ -18,11 +20,11 @@ import javax.validation.constraints.NotNull;
 import dev.galasa.framework.api.ras.internal.common.RunActionJson;
 import dev.galasa.framework.api.ras.internal.common.RunActionStatus;
 import dev.galasa.framework.api.ras.internal.common.RunResultUtility;
-import dev.galasa.framework.api.ras.internal.common.RunStatusUpdate;
 import dev.galasa.framework.api.common.HttpRequestContext;
 import dev.galasa.framework.api.common.InternalServletException;
 import dev.galasa.framework.api.common.QueryParameters;
 import dev.galasa.framework.api.common.ResponseBuilder;
+import dev.galasa.framework.api.common.RunStatusUpdate;
 import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.api.ras.RasRunResult;
 import dev.galasa.framework.spi.DynamicStatusStoreException;
@@ -72,7 +74,7 @@ public class RunDetailsRoute extends RunsRoute {
       String runName = getRunNameFromRunId(runId);
 
       RunStatusUpdate runStatusUpdate = new RunStatusUpdate(framework);
-      RunActionJson runAction = runStatusUpdate.getUpdatedRunActionFromRequestBody(request);
+      RunActionJson runAction = getUpdatedRunActionFromRequestBody(request);
       
       return getResponseBuilder().buildResponse(request, response, "text/plain", updateRunStatus(runName, runAction, runStatusUpdate), HttpServletResponse.SC_ACCEPTED);
    } 
@@ -142,6 +144,14 @@ public class RunDetailsRoute extends RunsRoute {
       IRunResult run = getRunByRunId(runId);
       String runName = run.getTestStructure().getRunName();
       return runName;
-   }   
+   }
+   
+   private RunActionJson getUpdatedRunActionFromRequestBody(HttpServletRequest request) throws IOException {
+      ServletInputStream body = request.getInputStream();
+      String jsonString = new String(body.readAllBytes(), StandardCharsets.UTF_8);
+      body.close();
+      RunActionJson runAction = gson.fromJson(jsonString, RunActionJson.class);
+      return runAction;
+   }
 
 }
