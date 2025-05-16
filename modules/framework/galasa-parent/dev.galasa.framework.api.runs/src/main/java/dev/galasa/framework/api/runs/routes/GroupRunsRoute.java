@@ -24,7 +24,6 @@ import dev.galasa.framework.api.common.ResponseBuilder;
 import dev.galasa.framework.api.common.RunStatusUpdate;
 import dev.galasa.framework.api.common.ServletError;
 import dev.galasa.framework.api.runs.common.GroupRunActionJson;
-import dev.galasa.framework.api.runs.common.GroupRunActionStatus;
 import dev.galasa.framework.api.runs.common.GroupRuns;
 import dev.galasa.framework.spi.FrameworkException;
 import dev.galasa.framework.spi.IFramework;
@@ -38,6 +37,7 @@ public class GroupRunsRoute extends GroupRuns{
 
     protected static final String path = "\\/[a-zA-Z0-9_\\-]*";
     private final GalasaGson gson = new GalasaGson();
+    private final String GROUP_RUNS_CANCELLED_STATUS = "cancelled";
 
     public GroupRunsRoute(ResponseBuilder responseBuilder, IFramework framework, Environment env) throws RBACException {
         // Regex to match endpoints:
@@ -114,28 +114,25 @@ public class GroupRunsRoute extends GroupRuns{
 
         String responseBody = "";
         List<IRun> groupedRuns = getRuns(groupId);
-        GroupRunActionStatus cancelAction = GroupRunActionStatus.getfromString(runAction.getResult());
         String result = runAction.getResult();
         RunStatusUpdate runStatusUpdate = new RunStatusUpdate(framework);
+
+        if (!result.equals(GROUP_RUNS_CANCELLED_STATUS)) {
+            ServletError error = new ServletError(GAL5431_INVALID_CANCEL_UPDATE_REQUEST, runAction.getResult());
+            throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);
+        }
                 
         if (groupedRuns != null && !groupedRuns.isEmpty()) {
 
             for (IRun run : groupedRuns) {
 
                 String runName = run.getName();
-
-                if (cancelAction != GroupRunActionStatus.CANCELLED) {
-                    ServletError error = new ServletError(GAL5431_INVALID_CANCEL_UPDATE_REQUEST, runAction.getResult());
-                    throw new InternalServletException(error, HttpServletResponse.SC_BAD_REQUEST);
-                } else if (cancelAction.equals(GroupRunActionStatus.CANCELLED)) {
-                    runStatusUpdate.cancelRun(runName, result);
-                    logger.info("Run cancelled by external source.");
-                }
+                runStatusUpdate.cancelRun(runName, result);
+                logger.info("Run cancelled by external source.");
 
             }
 
-            responseBody = String.format("The request to cancel run with group id %s has been received.",
-                            groupId);
+            responseBody = String.format("The request to cancel run with group id %s has been received.", groupId);
 
         }
 

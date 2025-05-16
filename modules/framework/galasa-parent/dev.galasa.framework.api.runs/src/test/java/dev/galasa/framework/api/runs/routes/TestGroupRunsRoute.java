@@ -803,8 +803,8 @@ public class TestGroupRunsRoute extends RunsServletTest{
         addRun("name3", "type3", "requestor3", "test3", "BUILDING","bundle3", "testClass3", groupName, submissionId,tags);
         addRun("name4", "type4", "requestor4", "test4", "BUILDING","bundle4", "testClass4", groupName, submissionId,tags);
         addRun("name5", "type6", "requestor5", "test5", "BUILDING","bundle5", "testClass6", groupName, submissionId,tags);
-        addRun("name6", "type6", "requestor6", "test6", "FINISHED","bundle6", "testClass6", groupName, submissionId,tags);
-        addRun("name7", "type7", "requestor7", "test7", "FINISHED","bundle7", "testClass7", groupName, submissionId,tags);
+        addRun("name6", "type6", "requestor6", "test6", "BUILDING","bundle6", "testClass6", groupName, submissionId,tags);
+        addRun("name7", "type7", "requestor7", "test7", "BUILDING","bundle7", "testClass7", groupName, submissionId,tags);
         addRun("name8", "type8", "requestor8", "test8", "BUILDING","bundle8", "testClass8", groupName, submissionId,tags);
         addRun("name9", "type9", "requestor9", "test9", "BUILDING","bundle9", "testClass9", groupName, submissionId,tags);
         addRun("name10", "type10", "requestor10", "test10", "BUILDING","bundle10", "testClass10", groupName, submissionId,tags);
@@ -830,14 +830,8 @@ public class TestGroupRunsRoute extends RunsServletTest{
         // Given...
 		String groupName = "8149dc91-dabc-461a-b9e8-6f11a4455f59";
         String payload = generateStatusUpdateJson("some-fake-status");
-        String submissionId = "submission1";
-        Set<String> tags = new HashSet<>();
-        addRun("name1", "type1", "requestor1", "test1", "BUILDING","bundle1", "testClass1", groupName, submissionId,tags);
-        addRun("name2", "type2", "requestor2", "test2", "BUILDING","bundle2", "testClass2", groupName, submissionId,tags);
-        addRun("name3", "type3", "requestor3", "test3", "BUILDING","bundle3", "testClass3", groupName, submissionId,tags);
-        addRun("name4", "type4", "requestor4", "test4", "BUILDING","bundle4", "testClass4", groupName, submissionId,tags);
 
-        setServlet("/" + groupName, groupName, payload, "PUT", this.runs);
+        setServlet("/" + groupName, groupName, payload, "PUT");
 		MockRunsServlet servlet = getServlet();
 		HttpServletRequest req = getRequest();
 		HttpServletResponse resp = getResponse();

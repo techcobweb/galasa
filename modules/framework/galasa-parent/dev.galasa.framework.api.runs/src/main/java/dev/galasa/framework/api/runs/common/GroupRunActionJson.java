@@ -9,7 +9,7 @@ public class GroupRunActionJson {
 
     private String result;
 
-    public GroupRunActionJson(String status, String result){
+    public GroupRunActionJson(String result){
         this.result = result;
     }
 

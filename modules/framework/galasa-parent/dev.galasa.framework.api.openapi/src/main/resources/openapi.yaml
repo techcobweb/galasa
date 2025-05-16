@@ -2151,7 +2151,7 @@ paths:
         in the 'Authorization' header (e.g. 'Authorization: Bearer <bearer-token>').
       operationId: putRasRunStatusByGroupId
       tags:
-      - Result Archive Store API
+      - Runs API
       parameters:
         - name: groupid
           in: path
@@ -3007,12 +3007,6 @@ components:
         status:
           type: string
           enum: ["queued","finished"]
-        result:
-          type: string
-          enum: [nil,"cancelled"]
-    GroupCancelRunStatusRequest:
-      type: object
-      properties:
         result:
           type: string
           enum: [nil,"cancelled"]
