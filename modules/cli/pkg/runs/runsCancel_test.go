@@ -228,7 +228,7 @@ func TestRunsCancelWhereServerSideResponseCannotBeParsedReturnsError(t *testing.
 	assert.ErrorContains(t, err, "GAL1136")
 }
 
-func skipTestGroupRunsCancelWithInvalidGroupNameReturnsError(t *testing.T) {
+func TestGroupRunsCancelWithInvalidGroupNameReturnsError(t *testing.T) {
 	// Given ...
 	runName := ""
 	group := "bad$group.name"
