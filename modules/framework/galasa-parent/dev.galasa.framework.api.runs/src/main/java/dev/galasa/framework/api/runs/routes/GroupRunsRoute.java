@@ -132,7 +132,7 @@ public class GroupRunsRoute extends GroupRuns{
 
             }
 
-            responseBody = String.format("The request to cancel run with group id %s has been received.", groupId);
+            responseBody = String.format("The request to cancel run with group id '%s' has been received.", groupId);
 
         }
 

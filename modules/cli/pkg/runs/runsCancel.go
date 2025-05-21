@@ -32,49 +32,23 @@ func CancelRun(
 	group string,
 ) error {
 	var err error
-	var runId string
-	var statusCode int
 
 	log.Println("CancelRun entered.")
 
-	if (err == nil) && (runName != "") {
+	if runName != "" {
+
 		err = ValidateRunName(runName)
+		if err == nil {
+			err = cancelByRunName(runName, timeService, commsClient, console)
+		}
+
 	}
 
-	if err == nil && (group != "") {
-		group, err = validateGroupname(group)
-	}
+	if group != "" {
 
-	if err == nil {
-
-		if runName != "" {
-			runId, err = getRunIdFromRunName(runName, timeService, commsClient)
-
-			if err == nil {
-
-				updateRunStatusRequest := createUpdateRunStatusRequest(CANCEL_STATUS, CANCEL_RESULT)
-
-				err = cancelRun(runName, runId, updateRunStatusRequest, commsClient)
-
-				if err == nil {
-					err = writeConsoleMessage(console, *galasaErrors.GALASA_INFO_RUNS_CANCEL_SUCCESS, runName)
-				}
-
-			}
-
-		} else if group != "" {
-
-			groupStatusUpdateRequest := createGroupUpdateStatusRequest()
-			statusCode, err = cancelRunsByGroup(group, groupStatusUpdateRequest, commsClient)
-
-			if err == nil {
-				if statusCode == http.StatusAccepted {
-					err = writeConsoleMessage(console, *galasaErrors.GALASA_INFO_GROUP_RUNS_CANCEL_SUCCESS, group)
-				} else if statusCode == http.StatusOK {
-					err = writeConsoleMessage(console, *galasaErrors.GALASA_INFO_GROUP_RUNS_ALREADY_FINISHED, group)
-				}
-			}
-
+		group, err = validateGroupName(group)
+		if err == nil {
+			err = cancelRunsByGroupName(group, commsClient, console)
 		}
 
 	}
@@ -192,13 +166,47 @@ func cancelRunsByGroup(groupName string,
 	return statusCode, err
 }
 
-func writeConsoleMessage(console spi.Console, errorMessage galasaErrors.MessageType, groupName string) error {
+func cancelByRunName(runName string, timeService spi.TimeService, commsClient api.APICommsClient, console spi.Console) error {
+
 	var err error
+	var runId string
 
-	consoleErr := console.WriteString(fmt.Sprintf(errorMessage.Template, groupName))
+	runId, err = getRunIdFromRunName(runName, timeService, commsClient)
 
-	if consoleErr != nil {
-		err = consoleErr
+	if err == nil {
+
+		updateRunStatusRequest := createUpdateRunStatusRequest(CANCEL_STATUS, CANCEL_RESULT)
+		err = cancelRun(runName, runId, updateRunStatusRequest, commsClient)
+
+		if err == nil {
+			err = writeConsoleMessage(console, *galasaErrors.GALASA_INFO_RUNS_CANCEL_SUCCESS, runName)
+		}
+
 	}
+
 	return err
+
+}
+
+func cancelRunsByGroupName(groupName string, commsClient api.APICommsClient, console spi.Console) error {
+
+	var err error
+	var statusCode int
+
+	groupStatusUpdateRequest := createGroupUpdateStatusRequest()
+	statusCode, err = cancelRunsByGroup(groupName, groupStatusUpdateRequest, commsClient)
+
+	if err == nil {
+		if statusCode == http.StatusAccepted {
+			err = writeConsoleMessage(console, *galasaErrors.GALASA_INFO_GROUP_RUNS_CANCEL_SUCCESS, groupName)
+		} else if statusCode == http.StatusOK {
+			err = writeConsoleMessage(console, *galasaErrors.GALASA_INFO_GROUP_RUNS_ALREADY_FINISHED, groupName)
+		}
+	}
+
+	return err
+}
+
+func writeConsoleMessage(console spi.Console, errorMessage galasaErrors.MessageType, groupName string) error {
+	return console.WriteString(fmt.Sprintf(errorMessage.Template, groupName))
 }

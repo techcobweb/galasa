@@ -85,11 +85,11 @@ func (cmd *RunsCancelCommand) createRunsCancelCobraCmd(factory spi.Factory,
 		},
 	}
 
-	runsCancelCmd.PersistentFlags().StringVar(&cmd.values.runName, "name", "", "An optional flag indicating the name of the test run to cancel. Cannot be used with --group")
-	runsCancelCmd.PersistentFlags().StringVar(&cmd.values.group, "group", "", "An optional flag indicating the name of the test group to cancel. Cannot be used with --name")
+	runsCancelCmd.PersistentFlags().StringVar(&cmd.values.runName, "name", "", "A flag indicating the name of the test run to cancel. Cannot be used with --group")
+	runsCancelCmd.PersistentFlags().StringVar(&cmd.values.group, "group", "", "A flag indicating the name of the test group to cancel. Cannot be used with --name")
 
-	runsCancelCmd.MarkFlagsMutuallyExclusive("group", "name") // Only one of these flags can be used at a time.
-	runsCancelCmd.MarkFlagsOneRequired("name", "group")       // At least one of these flags must be used.
+	runsCancelCmd.MarkFlagsMutuallyExclusive("group", "name")
+	runsCancelCmd.MarkFlagsOneRequired("name", "group")
 
 	runsCommand.CobraCommand().AddCommand(runsCancelCmd)
 

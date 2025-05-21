@@ -2153,7 +2153,7 @@ paths:
       tags:
       - Runs API
       parameters:
-        - name: groupid
+        - name: groupId
           in: path
           description: Group Id of the runs to be cancelled
           required: true
