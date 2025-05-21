@@ -5,7 +5,6 @@
  */
 package dev.galasa.framework.api.runs;
 
-import static dev.galasa.framework.api.common.ServletErrorMessage.*;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -111,7 +110,7 @@ public class RunsServletTest extends BaseServletTest {
         if(statusCode == 202) {
             responseMessage = String.format("The request to cancel run with group id %s has been received.", groupId);
         } else if (statusCode == 200){
-            responseMessage = String.format(GAL5430_GROUP_RUNS_ALREADY_FINISHED.toString(), groupId);
+            responseMessage = String.format("Info: When trying to cancel the run group '%s', no recent active (unfinished) test runs were found which are part of that group. Archived test runs may be part of that group, which can be queried separately from the Result Archive Store.", groupId);
         }
         
         return responseMessage;
