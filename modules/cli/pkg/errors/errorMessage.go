@@ -467,5 +467,5 @@ var (
 	GALASA_INFO_RUNS_CANCEL_SUCCESS  = NewMessageType("GAL2504I: The request to cancel run '%s' has been accepted by the server.\n", 2504, STACK_TRACE_NOT_WANTED)
 
 	GALASA_INFO_GROUP_RUNS_CANCEL_SUCCESS   = NewMessageType("GAL2505I: The request to cancel runs with group name '%s' has been accepted by the server.\n", 2505, STACK_TRACE_NOT_WANTED)
-	GALASA_INFO_GROUP_RUNS_ALREADY_FINISHED = NewMessageType("GAL2506I: The request to cancel runs with group name '%s' has been handled successfully. However, no recent active (unfinished) test runs were found which are part of that group. Archived test runs may be part of that group, which can be queried separately from the Result Archive Store..\n", 2506, STACK_TRACE_NOT_WANTED)
+	GALASA_INFO_GROUP_RUNS_ALREADY_FINISHED = NewMessageType("GAL2506I: The request to cancel runs with group name '%s' has been handled successfully. However, no recent active (unfinished) test runs were found which are part of that group. Archived test runs may be part of that group, which can be queried separately from the Result Archive Store.\n", 2506, STACK_TRACE_NOT_WANTED)
 )
