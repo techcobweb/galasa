@@ -16,8 +16,6 @@ import (
 	"github.com/galasa-dev/cli/pkg/spi"
 )
 
-const GROUP_CANCELLED_RESULT = "cancelled"
-
 func getRunIdFromRunName(runName string,
 	timeService spi.TimeService,
 	commsClient api.APICommsClient,
@@ -101,7 +99,7 @@ func createUpdateRunStatusRequest(status string, result string) *galasaapi.Updat
 func createGroupUpdateStatusRequest() *galasaapi.UpdateGroupStatusRequest {
 	var updateGroupStatusRequest = galasaapi.NewUpdateGroupStatusRequest()
 
-	updateGroupStatusRequest.SetResult(GROUP_CANCELLED_RESULT)
+	updateGroupStatusRequest.SetResult(CANCEL_RESULT)
 
 	return updateGroupStatusRequest
 }
