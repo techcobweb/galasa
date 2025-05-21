@@ -47,6 +47,29 @@ func WriteMockRasRunsPutStatusFinishedResponse(
 	writer.Write([]byte(response))
 }
 
+func WriteMockGroupRunsPutStatusFinishedResponse(
+	t *testing.T,
+	writer http.ResponseWriter,
+	req *http.Request,
+	groupName string) {
+
+	var statusCode int
+	var response string
+
+	if groupName == "valid-group-name" {
+		statusCode = 202
+		response = fmt.Sprintf("The request to cancel run with group id %s has been received.", groupName)
+		writer.Header().Set("Content-Type", "text/plain")
+	} else if groupName == "finished-runs-group" {
+		statusCode = 200
+		response = fmt.Sprintf("Info: When trying to cancel the run group '%s', no recent active (unfinished) test runs were found which are part of that group. Archived test runs may be part of that group, which can be queried separately from the Result Archive Store.", groupName)
+		writer.Header().Set("Content-Type", "text/plain")
+	}
+
+	writer.WriteHeader(statusCode)
+	writer.Write([]byte(response))
+}
+
 func NewRunsCancelServletMock(
 	t *testing.T,
 	runName string,
@@ -70,6 +93,25 @@ func NewRunsCancelServletMock(
 	return server
 }
 
+func NewGroupRunsCancelServletMock(
+	t *testing.T,
+	groupName string,
+	runResultStrings []string,
+) *httptest.Server {
+
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
+
+		assert.NotEmpty(t, req.Header.Get("ClientApiVersion"))
+		acceptHeader := req.Header.Get("Accept")
+
+		assert.Equal(t, "application/json", acceptHeader, "Expected Accept: application/json header, got: %s", acceptHeader)
+		WriteMockGroupRunsPutStatusFinishedResponse(t, writer, req, groupName)
+
+	}))
+
+	return server
+}
+
 //------------------------------------------------------------------
 // Test methods
 //------------------------------------------------------------------
@@ -78,6 +120,7 @@ func TestRunsCancelWithOneActiveRunReturnsOK(t *testing.T) {
 	// Given ...
 	runName := "U123"
 	runId := "xxx123xxx"
+	group := ""
 
 	runResultStrings := []string{RUN_U123_RE_RUN}
 
@@ -88,10 +131,10 @@ func TestRunsCancelWithOneActiveRunReturnsOK(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
-	err := CancelRun(runName, mockTimeService, mockConsole, commsClient)
+	err := CancelRun(runName, mockTimeService, mockConsole, commsClient, group)
 
 	// Then...
 	assert.Nil(t, err)
@@ -104,6 +147,7 @@ func TestRunsCancelWithMultipleActiveRunsReturnsOK(t *testing.T) {
 	// Given ...
 	runName := "U123"
 	runId := "xxx122xxx"
+	group := ""
 
 	runResultStrings := []string{RUN_U123_FIRST_RUN, RUN_U123_RE_RUN, RUN_U123_RE_RUN_2}
 
@@ -114,10 +158,10 @@ func TestRunsCancelWithMultipleActiveRunsReturnsOK(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
-	err := CancelRun(runName, mockTimeService, mockConsole, commsClient)
+	err := CancelRun(runName, mockTimeService, mockConsole, commsClient, group)
 
 	// Then...
 	assert.Nil(t, err)
@@ -130,6 +174,7 @@ func TestRunsCancelWithNoActiveRunReturnsError(t *testing.T) {
 	// Given ...
 	runName := "U123"
 	runId := "xxx123xxx"
+	group := ""
 
 	runResultStrings := []string{}
 
@@ -140,10 +185,10 @@ func TestRunsCancelWithNoActiveRunReturnsError(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
-	err := CancelRun(runName, mockTimeService, mockConsole, commsClient)
+	err := CancelRun(runName, mockTimeService, mockConsole, commsClient, group)
 
 	// Then...
 	assert.Contains(t, err.Error(), "GAL1132")
@@ -154,6 +199,7 @@ func TestRunsCancelWithInvalidRunNameReturnsError(t *testing.T) {
 	// Given ...
 	runName := "garbage"
 	runId := "xxx123xxx"
+	group := ""
 
 	runResultStrings := []string{RUN_U123_RE_RUN}
 
@@ -164,10 +210,10 @@ func TestRunsCancelWithInvalidRunNameReturnsError(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
-	err := CancelRun(runName, mockTimeService, mockConsole, commsClient)
+	err := CancelRun(runName, mockTimeService, mockConsole, commsClient, group)
 
 	// Then...
 	assert.Contains(t, err.Error(), "GAL1075")
@@ -178,6 +224,7 @@ func TestRunsCancelWhereOperationFailedServerSideReturnsError(t *testing.T) {
 	// Given ...
 	runName := "U120"
 	runId := "xxx120xxx"
+	group := ""
 
 	runResultStrings := []string{RUN_U120}
 
@@ -188,10 +235,10 @@ func TestRunsCancelWhereOperationFailedServerSideReturnsError(t *testing.T) {
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
-	err := CancelRun(runName, mockTimeService, mockConsole, commsClient)
+	err := CancelRun(runName, mockTimeService, mockConsole, commsClient, group)
 
 	// Then...
 	assert.Error(t, err)
@@ -202,6 +249,7 @@ func TestRunsCancelWhereServerSideResponseCannotBeParsedReturnsError(t *testing.
 	// Given ...
 	runName := "U121"
 	runId := "xxx121xxx"
+	group := ""
 
 	runResultStrings := []string{RUN_U121}
 
@@ -212,12 +260,87 @@ func TestRunsCancelWhereServerSideResponseCannotBeParsedReturnsError(t *testing.
 
 	apiServerUrl := server.URL
 	mockTimeService := utils.NewMockTimeService()
-    commsClient := api.NewMockAPICommsClient(apiServerUrl)
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
 
 	// When...
-	err := CancelRun(runName, mockTimeService, mockConsole, commsClient)
+	err := CancelRun(runName, mockTimeService, mockConsole, commsClient, group)
 
 	// Then...
 	assert.Error(t, err)
 	assert.ErrorContains(t, err, "GAL1136")
+}
+
+func TestGroupRunsCancelWithInvalidGroupNameReturnsError(t *testing.T) {
+	// Given ...
+	runName := ""
+	group := "bad$group.name"
+
+	runResultStrings := []string{RUN_U123_RE_RUN}
+
+	server := NewGroupRunsCancelServletMock(t, group, runResultStrings)
+	defer server.Close()
+
+	mockConsole := utils.NewMockConsole()
+
+	apiServerUrl := server.URL
+	mockTimeService := utils.NewMockTimeService()
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
+
+	// When...
+	err := CancelRun(runName, mockTimeService, mockConsole, commsClient, group)
+
+	// Then...
+	assert.Contains(t, err.Error(), "GAL1105")
+}
+
+func TestGroupRunsCancelWithValidGroupNameReturnsAccepted(t *testing.T) {
+	// Given ...
+	runName := ""
+	group := "valid-group-name"
+
+	runResultStrings := []string{RUN_U123_RE_RUN}
+
+	server := NewGroupRunsCancelServletMock(t, group, runResultStrings)
+	defer server.Close()
+
+	mockConsole := utils.NewMockConsole()
+
+	apiServerUrl := server.URL
+	mockTimeService := utils.NewMockTimeService()
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
+
+	// When...
+	err := CancelRun(runName, mockTimeService, mockConsole, commsClient, group)
+
+	// Then...
+	assert.Nil(t, err)
+	textGotBack := mockConsole.ReadText()
+	assert.Contains(t, textGotBack, "GAL2505I")
+	assert.Contains(t, textGotBack, group)
+}
+
+func TestGroupRunsCancelWithRunsAlreadyFInishedReturnsOK(t *testing.T) {
+	// Given ...
+	runName := ""
+	group := "finished-runs-group"
+
+	runResultStrings := []string{RUN_U120}
+
+	server := NewGroupRunsCancelServletMock(t, group, runResultStrings)
+	defer server.Close()
+
+	mockConsole := utils.NewMockConsole()
+
+	apiServerUrl := server.URL
+	mockTimeService := utils.NewMockTimeService()
+	commsClient := api.NewMockAPICommsClient(apiServerUrl)
+
+	// When...
+	err := CancelRun(runName, mockTimeService, mockConsole, commsClient, group)
+
+	// Then...
+	assert.Nil(t, err)
+	textGotBack := mockConsole.ReadText()
+	assert.Contains(t, textGotBack, "GAL2506I")
+	assert.Contains(t, textGotBack, group)
 }
